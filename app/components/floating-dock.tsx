@@ -10,10 +10,8 @@ import {
   FiHeart,
   FiMonitor,
   FiMoon,
-  FiRefreshCw,
   FiSettings,
   FiSun,
-  FiX,
 } from "react-icons/fi";
 
 type ThemeMode = "light" | "dark" | "system";
@@ -131,12 +129,9 @@ export default function FloatingDock() {
     return isAccentName(savedAccent) ? savedAccent : "blue";
   });
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [changelogOpen, setChangelogOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const changelogDialogRef = useRef<HTMLElement>(null);
   const settingsDialogRef = useRef<HTMLElement>(null);
   const dialogTriggerRef = useRef<HTMLElement | null>(null);
-  const modalOpen = settingsOpen || changelogOpen;
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -176,13 +171,11 @@ export default function FloatingDock() {
   }, []);
 
   useEffect(() => {
-    if (!modalOpen) return;
+    if (!settingsOpen) return;
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const dialog = settingsOpen
-      ? settingsDialogRef.current
-      : changelogDialogRef.current;
+    const dialog = settingsDialogRef.current;
     const initialFocus = dialog?.querySelector<HTMLElement>(
       "[data-dialog-initial-focus]",
     );
@@ -191,7 +184,6 @@ export default function FloatingDock() {
     const handleDialogKeys = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setSettingsOpen(false);
-        setChangelogOpen(false);
         return;
       }
       if (event.key !== "Tab" || !dialog) return;
@@ -220,17 +212,10 @@ export default function FloatingDock() {
       window.removeEventListener("keydown", handleDialogKeys);
       dialogTriggerRef.current?.focus();
     };
-  }, [changelogOpen, modalOpen, settingsOpen]);
-
-  function openChangelog() {
-    dialogTriggerRef.current = document.activeElement as HTMLElement;
-    setSettingsOpen(false);
-    setChangelogOpen(true);
-  }
+  }, [settingsOpen]);
 
   function openSettings() {
     dialogTriggerRef.current = document.activeElement as HTMLElement;
-    setChangelogOpen(false);
     setSettingsOpen(true);
   }
 
@@ -239,7 +224,7 @@ export default function FloatingDock() {
       <aside
         className={`floating-dock${isToolPage ? " is-tool-page" : ""}`}
         aria-label="页面快捷操作"
-        aria-hidden={modalOpen || undefined}
+        aria-hidden={settingsOpen || undefined}
       >
         <a
           className="dock-button"
@@ -251,15 +236,6 @@ export default function FloatingDock() {
         >
           <FiHeart aria-hidden="true" />
         </a>
-        <button
-          className={`dock-button${changelogOpen ? " is-active" : ""}`}
-          type="button"
-          onClick={openChangelog}
-          aria-label="打开更新日志"
-          title="更新日志"
-        >
-          <FiRefreshCw aria-hidden="true" />
-        </button>
         <button
           className={`dock-button${settingsOpen ? " is-active" : ""}`}
           type="button"
@@ -281,41 +257,6 @@ export default function FloatingDock() {
           </button>
         ) : null}
       </aside>
-
-      {changelogOpen ? (
-        <div
-          className="dialog-backdrop"
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setChangelogOpen(false);
-          }}
-        >
-          <section
-            className="changelog-dialog"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="changelog-title"
-            ref={changelogDialogRef}
-          >
-            <header className="dialog-header">
-              <div>
-                <span>版本动态</span>
-                <h2 id="changelog-title">更新日志</h2>
-              </div>
-              <button
-                className="icon-close-button"
-                type="button"
-                onClick={() => setChangelogOpen(false)}
-                aria-label="关闭更新日志"
-                data-dialog-initial-focus
-              >
-                <FiX aria-hidden="true" />
-              </button>
-            </header>
-            <p className="changelog-empty">懒得写...</p>
-          </section>
-        </div>
-      ) : null}
 
       {settingsOpen ? (
         <section

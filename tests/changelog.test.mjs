@@ -7,9 +7,13 @@ const componentSource = await readFile(
   "utf8",
 );
 
-test("keeps the changelog intentionally empty", () => {
-  assert.match(componentSource, /懒得写\.\.\./);
-  assert.doesNotMatch(componentSource, /const changelog\s*=/);
-  assert.doesNotMatch(componentSource, /全工具箱稳定性检查/);
-  assert.doesNotMatch(componentSource, /三个视频工具上线/);
+test("removes the changelog entry and dialog while preserving other dock actions", () => {
+  assert.doesNotMatch(componentSource, /更新日志|changelog|懒得写|FiRefreshCw/i);
+  assert.match(componentSource, /aria-label="爱发电支持作者"/);
+  assert.match(componentSource, /aria-label="打开设置"/);
+  assert.match(componentSource, /aria-label="回到顶部"/);
+  assert.match(componentSource, /window\.scrollY > 32/);
+  assert.match(componentSource, /if \(!settingsOpen\) return/);
+  assert.match(componentSource, /event\.key === "Escape"/);
+  assert.match(componentSource, /dialogTriggerRef\.current\?\.focus\(\)/);
 });

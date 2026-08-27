@@ -79,7 +79,6 @@ html[data-theme="dark"] .settings-view {
 html[data-theme="dark"] .tool-card,
 html[data-theme="dark"] .converter-card,
 html[data-theme="dark"] .settings-card,
-html[data-theme="dark"] .changelog-dialog,
 html[data-theme="dark"] .floating-dock {
   box-shadow: none;
 }
@@ -5134,18 +5133,6 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
   animation: backdrop-in 180ms ease-out both;
 }
 
-.changelog-dialog {
-  width: min(520px, 100%);
-  max-height: min(640px, calc(100vh - 48px));
-  overflow: auto;
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  padding: 24px;
-  background: var(--surface);
-  box-shadow: 0 24px 70px rgba(20, 43, 56, 0.22);
-  animation: dialog-in 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
 .dialog-header {
   display: flex;
   align-items: flex-start;
@@ -5193,17 +5180,6 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
 .icon-close-button svg {
   width: 18px;
   height: 18px;
-}
-
-.changelog-empty {
-  min-height: 116px;
-  margin: 0;
-  display: grid;
-  place-items: center;
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 14px;
-  letter-spacing: 0.02em;
 }
 
 .settings-view {
@@ -5907,9 +5883,6 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
     align-items: flex-start;
   }
 
-  .changelog-dialog {
-    padding: 20px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
