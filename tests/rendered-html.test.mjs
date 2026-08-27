@@ -104,6 +104,9 @@ for (const [path, title, apiHost, description] of toolPages) {
     assert.match(html, /VRChat视频播放器可使用哦/);
     assert.match(html, new RegExp(`https://${apiHost}\\.easonzhan\\.xyz/\\?url=`));
     assert.match(html, /Eason的工具箱/);
+    assert.match(html, /class="share-field-label"/);
+    assert.match(html, /aria-controls="share-text"/);
+    assert.match(html, /粘贴[^"<>]*分享链接/);
     assert.doesNotMatch(html, /page-mark/);
     assert.doesNotMatch(html, /在线工具/);
   });
