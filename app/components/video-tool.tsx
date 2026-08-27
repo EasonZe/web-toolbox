@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
-import { FiDownload } from "react-icons/fi";
+import { FiClipboard, FiDownload } from "react-icons/fi";
 import { buildApiUrl, extractSource } from "../lib/video-links";
 
 export type VideoToolConfig = {
@@ -25,19 +25,54 @@ export default function VideoTool({ config }: { config: VideoToolConfig }) {
   const [result, setResult] = useState("");
   const [downloading, setDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState<number | null>(null);
-  const [toast, setToast] = useState(false);
+  const [toast, setToast] = useState("");
+  const [pasting, setPasting] = useState(false);
+  const shareInput = useRef<HTMLTextAreaElement>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  function showToast() {
+  useEffect(() => () => {
     if (toastTimer.current) clearTimeout(toastTimer.current);
-    setToast(true);
-    toastTimer.current = setTimeout(() => setToast(false), 1500);
+  }, []);
+
+  function showToast(text: string) {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    setToast(text);
+    toastTimer.current = setTimeout(() => setToast(""), 2000);
+  }
+
+  function updateValue(text: string) {
+    setValue(text);
+    setMessage("");
+    setResult("");
+    setDownloadProgress(null);
+    setToast("");
+  }
+
+  async function pasteShareLink() {
+    if (pasting) return;
+    setPasting(true);
+    setMessage("");
+    setToast("");
+    try {
+      if (!navigator.clipboard?.readText) throw new Error("clipboard unavailable");
+      const text = await navigator.clipboard.readText();
+      if (!text.trim()) {
+        setMessage("剪贴板中没有文字，请先复制分享链接。");
+        return;
+      }
+      updateValue(text);
+    } catch {
+      setMessage("无法读取剪贴板，请允许粘贴，或在输入框内长按粘贴（电脑可按 Ctrl+V）。");
+    } finally {
+      setPasting(false);
+      shareInput.current?.focus();
+    }
   }
 
   async function copyText(text: string) {
     try {
       await navigator.clipboard.writeText(text);
-      showToast();
+      showToast("已复制");
     } catch {
       const helper = document.createElement("textarea");
       helper.value = text;
@@ -48,13 +83,14 @@ export default function VideoTool({ config }: { config: VideoToolConfig }) {
       helper.select();
       const copied = document.execCommand("copy");
       helper.remove();
-      if (copied) showToast();
+      if (copied) showToast("已复制");
       else setMessage("浏览器未允许复制，请长按链接手动复制。");
     }
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setToast("");
     const source = extractSource(value, config);
 
     if (!value.trim()) {
@@ -72,6 +108,7 @@ export default function VideoTool({ config }: { config: VideoToolConfig }) {
     setMessage("");
     setDownloadProgress(null);
     setResult(buildApiUrl(config.apiPrefix, source));
+    showToast("转换完成");
   }
 
   async function downloadVideo() {
@@ -191,15 +228,29 @@ export default function VideoTool({ config }: { config: VideoToolConfig }) {
 
         <form onSubmit={handleSubmit} noValidate>
           <div className="field">
-            <label htmlFor="share-text">{config.name}分享链接</label>
+            <div className="share-field-label">
+              <label htmlFor="share-text">{config.name}分享链接</label>
+              <button
+                className="copy-button paste-share-button"
+                type="button"
+                onClick={() => void pasteShareLink()}
+                disabled={pasting}
+                aria-label={`粘贴${config.name}分享链接`}
+                aria-controls="share-text"
+              >
+                <FiClipboard aria-hidden="true" />
+                {pasting ? "正在粘贴…" : "粘贴"}
+              </button>
+            </div>
             <textarea
+              ref={shareInput}
               id="share-text"
               rows={6}
               autoComplete="off"
               spellCheck={false}
               placeholder={config.placeholder}
               value={value}
-              onChange={(event) => setValue(event.target.value)}
+              onChange={(event) => updateValue(event.target.value)}
             />
           </div>
           <button className="convert-button" type="submit">
@@ -255,7 +306,7 @@ export default function VideoTool({ config }: { config: VideoToolConfig }) {
 
       {toast ? (
         <div className="toast" role="status" aria-live="polite">
-          已复制
+          {toast}
         </div>
       ) : null}
     </main>
