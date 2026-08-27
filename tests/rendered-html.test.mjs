@@ -73,6 +73,9 @@ test("renders the Eason toolbox homepage with internal and third-party tools", a
   assert.doesNotMatch(html, /tool-mark|进入工具/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/);
   assert.doesNotMatch(html, /href="\/youtube"|YouTube视频解析/);
+  assert.doesNotMatch(html, /更新日志|changelog/i);
+  assert.match(html, /aria-label="打开设置"/);
+  assert.match(html, /aria-label="爱发电支持作者"/);
 });
 
 test("文件哈希页面初始显示算法、结果占位与比对输入", async () => {
