@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const toolComponents = [
+  "file-hash.tsx",
   "ascii-art-generator.tsx",
   "audio-converter.tsx",
   "background-remover.tsx",
