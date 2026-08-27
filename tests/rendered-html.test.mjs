@@ -47,6 +47,8 @@ test("renders the Eason toolbox homepage with internal and third-party tools", a
   assert.match(html, /href="\/background-remover"/);
   assert.match(html, /href="\/qr-code"/);
   assert.match(html, /href="\/qr-reader"/);
+  assert.match(html, /href="\/file-hash"/);
+  assert.match(html, /文件哈希计算/);
   assert.match(html, /href="https:\/\/wyapi\.toubiec\.cn\/"/);
   assert.match(html, /抖音视频解析/);
   assert.match(html, /B站视频解析/);
@@ -71,6 +73,17 @@ test("renders the Eason toolbox homepage with internal and third-party tools", a
   assert.doesNotMatch(html, /tool-mark|进入工具/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/);
   assert.doesNotMatch(html, /href="\/youtube"|YouTube视频解析/);
+});
+
+test("文件哈希页面初始显示算法、结果占位与比对输入", async () => {
+  const response = await render("/file-hash");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /文件哈希计算工具/);
+  for (const text of ["MD5", "SHA-1", "SHA-256", "SHA-512", "计算结果", "哈希值比对", "选择文件并开始计算"]) assert.ok(html.includes(text));
+  assert.match(html, /type="checkbox" checked=""/);
+  assert.match(html, /disabled="">开始计算/);
+  assert.doesNotMatch(html, /不会上传|浏览器本地运行/);
 });
 
 const toolPages = [

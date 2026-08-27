@@ -17,6 +17,7 @@
     "@mediabunny/mp3-encoder": "^1.51.0",
     "figlet": "^1.11.4",
     "gifenc": "^1.0.3",
+    "hash-wasm": "4.12.0",
     "jsqr": "^1.4.0",
     "mediabunny": "^1.51.0",
     "next": "16.2.12",

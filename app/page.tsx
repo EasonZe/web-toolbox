@@ -9,6 +9,7 @@ import {
   TbBackground,
   TbColorSwatch,
   TbGif,
+  TbHash,
   TbMusicCog,
   TbPhoto,
   TbPhotoDown,
@@ -132,6 +133,12 @@ const tools = [
     title: "二维码解析",
     href: "/qr-reader",
     icon: TbScan,
+  },
+  {
+    name: "文件哈希",
+    title: "文件哈希计算",
+    href: "/file-hash",
+    icon: TbHash,
   },
   {
     name: "网易云音乐",

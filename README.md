@@ -13,7 +13,7 @@
 - 图片等宽线条重绘、智能抠图、敏感内容打码
 - 二维码生成与解析
 - ASCII 字符画生成
-- 颜色格式转换、IP 地址查询
+- 颜色格式转换、IP 地址查询、文件哈希计算（MD5 / SHA-1 / SHA-256 / SHA-512）
 - 网易云音乐无损解析（第三方）
 
 ## 项目结构
@@ -67,4 +67,4 @@ npx wrangler deploy --keep-vars
 
 ## 开源依赖
 
-项目使用的主要开源库包括 React、Next.js、vinext、figlet、Mediabunny、gifenc、QRCode 和 Transformers.js。完整版本信息见 `package.json`。
+项目使用的主要开源库包括 React、Next.js、vinext、figlet、Mediabunny、gifenc、QRCode、Transformers.js 和 hash-wasm。完整版本信息见 `package.json`。
