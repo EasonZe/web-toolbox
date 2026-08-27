@@ -12,6 +12,12 @@ import {
   FiX,
 } from "react-icons/fi";
 import { FileDropZone } from "./file-drop-zone";
+import {
+  compressionQualityPresets,
+  defaultCompressionQuality,
+  normalizeCompressionQuality,
+  pngColorTable,
+} from "../lib/image-compression-quality";
 
 type CompressionStatus = "ready" | "compressing" | "done" | "error";
 
@@ -114,29 +120,21 @@ function optimizePngPixels(
   height: number,
   quality: number,
 ) {
-  const colorStep = Math.max(1, Math.round(1 + (100 - quality) / 7));
-  if (colorStep === 1) return;
+  if (quality === 100) return;
+  const colors = pngColorTable(quality);
 
   const imageData = context.getImageData(0, 0, width, height);
   const pixels = imageData.data;
   for (let index = 0; index < pixels.length; index += 4) {
-    pixels[index] = Math.min(
-      255,
-      Math.round(pixels[index] / colorStep) * colorStep,
-    );
-    pixels[index + 1] = Math.min(
-      255,
-      Math.round(pixels[index + 1] / colorStep) * colorStep,
-    );
-    pixels[index + 2] = Math.min(
-      255,
-      Math.round(pixels[index + 2] / colorStep) * colorStep,
-    );
+    pixels[index] = colors[pixels[index]];
+    pixels[index + 1] = colors[pixels[index + 1]];
+    pixels[index + 2] = colors[pixels[index + 2]];
   }
   context.putImageData(imageData, 0, 0);
 }
 
 async function compressImage(file: File, quality: number): Promise<CompressedImage> {
+  quality = normalizeCompressionQuality(quality);
   const type = normalizeImageType(file);
   if (!type) throw new Error("仅支持JPG、PNG和WebP图片");
 
@@ -287,10 +285,14 @@ function triggerDownload(url: string, name: string) {
 export default function ImageCompressor() {
   const itemsRef = useRef<CompressionItem[]>([]);
   const [items, setItems] = useState<CompressionItem[]>([]);
-  const [quality, setQuality] = useState(80);
+  const [quality, setQuality] = useState(defaultCompressionQuality);
+  const [qualityInput, setQualityInput] = useState(String(defaultCompressionQuality));
   const [compressing, setCompressing] = useState(false);
   const [packing, setPacking] = useState(false);
   const [message, setMessage] = useState("");
+  const qualityInputValid = qualityInput.trim() !== ""
+    && Number.isInteger(Number(qualityInput))
+    && Number(qualityInput) >= 1 && Number(qualityInput) <= 100;
 
   useEffect(() => {
     itemsRef.current = items;
@@ -322,7 +324,11 @@ export default function ImageCompressor() {
     : 0;
 
   function resetResults(nextQuality: number) {
-    setQuality(nextQuality);
+    if (compressing || packing) return;
+    const normalized = normalizeCompressionQuality(nextQuality);
+    setQualityInput(String(normalized));
+    if (normalized === quality) return;
+    setQuality(normalized);
     setItems((current) =>
       current.map((item) => {
         if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
@@ -337,6 +343,20 @@ export default function ImageCompressor() {
       }),
     );
     setMessage("");
+  }
+
+  function editQuality(value: string) {
+    if (compressing || packing) return;
+    const number = Number(value);
+    if (value.trim() && Number.isInteger(number) && number >= 1 && number <= 100) {
+      resetResults(number);
+    }
+    setQualityInput(value);
+  }
+
+  function commitQuality() {
+    const number = Number(qualityInput);
+    resetResults(qualityInput.trim() && Number.isFinite(number) ? number : quality);
   }
 
   function handleFiles(files: File[]) {
@@ -390,6 +410,7 @@ export default function ImageCompressor() {
   }
 
   async function runCompression() {
+    if (compressing || packing || !qualityInputValid) return;
     if (!items.length) {
       setMessage("请先选择需要压缩的图片。");
       return;
@@ -416,6 +437,7 @@ export default function ImageCompressor() {
             return {
               ...item,
               ...result,
+              resultBlob: result.blob,
               resultUrl,
               status: "done",
               error: "",
@@ -517,23 +539,78 @@ export default function ImageCompressor() {
             ) : null}
           </div>
 
-          <label className="image-compressor-quality">
-            <span>
-              压缩质量
-              <strong>{quality}%</strong>
-            </span>
+          <div className="image-compressor-quality">
+            <div className="image-compressor-quality-heading">
+              <label htmlFor="image-quality-range">压缩质量</label>
+              <div className="image-compressor-quality-number">
+                <button
+                  type="button"
+                  aria-label="降低质量1%"
+                  disabled={compressing || packing || quality <= 1}
+                  onClick={() => resetResults(quality - 1)}
+                >−</button>
+                <input
+                  id="image-quality-number"
+                  type="number"
+                  inputMode="numeric"
+                  min="1"
+                  max="100"
+                  step="1"
+                  value={qualityInput}
+                  aria-label="压缩质量百分比"
+                  aria-describedby="image-quality-help"
+                  aria-invalid={!qualityInputValid}
+                  disabled={compressing || packing}
+                  onChange={(event) => editQuality(event.target.value)}
+                  onBlur={commitQuality}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      commitQuality();
+                    }
+                    if (event.key === "Escape") resetResults(quality);
+                  }}
+                />
+                <span aria-hidden="true">%</span>
+                <button
+                  type="button"
+                  aria-label="提高质量1%"
+                  disabled={compressing || packing || quality >= 100}
+                  onClick={() => resetResults(quality + 1)}
+                >+</button>
+              </div>
+            </div>
             <input
+              id="image-quality-range"
               type="range"
-              min="10"
+              min="1"
               max="100"
-              step="5"
+              step="1"
               value={quality}
+              aria-valuetext={`${quality}%`}
+              aria-describedby="image-quality-help"
               disabled={compressing || packing}
               onChange={(event) => resetResults(Number(event.target.value))}
             />
-          </label>
-          <p className="image-compressor-note">
-            JPG与WebP会调整编码质量；PNG会优化色彩精度，同时保留尺寸与透明区域。
+            <div className="image-compressor-quality-scale" aria-hidden="true">
+              <span>1% · 更小体积</span><span>100% · 更多细节</span>
+            </div>
+            <div className="image-compressor-quality-presets" role="group" aria-label="常用压缩质量">
+              {compressionQualityPresets.map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  aria-pressed={qualityInputValid && quality === preset}
+                  disabled={compressing || packing}
+                  onClick={() => resetResults(preset)}
+                >{preset}%</button>
+              ))}
+            </div>
+          </div>
+          <p id="image-quality-help" className="image-compressor-note">
+            {qualityInputValid ? "支持1%～100%，每次微调1%；也可直接输入数值。" : "请输入1～100的整数；离开输入框时会自动校正。"}
+            <br />
+            JPG/WebP调整编码质量，PNG调整色彩精度并保留透明度。质量百分比不等于体积压缩率，100%不保证无损。
           </p>
 
           <div className="image-compressor-main-actions">
@@ -541,7 +618,7 @@ export default function ImageCompressor() {
               className="convert-button image-compressor-run"
               type="button"
               onClick={runCompression}
-              disabled={!items.length || compressing || packing}
+              disabled={!items.length || compressing || packing || !qualityInputValid}
             >
               {compressing ? "正在逐张压缩…" : "开始压缩"}
             </button>
