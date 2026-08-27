@@ -4209,7 +4209,7 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
   gap: 7px;
 }
 
-.image-compressor-quality > span {
+.image-compressor-quality-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -4219,16 +4219,121 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
   font-weight: 700;
 }
 
-.image-compressor-quality strong {
-  color: var(--ui-accent);
-  font-size: 11px;
+.image-compressor-quality-heading label {
+  margin: 0;
 }
 
-.image-compressor-quality input {
+.image-compressor-quality input[type="range"] {
   width: 100%;
   min-height: 34px;
   accent-color: var(--ui-accent);
   cursor: pointer;
+}
+
+.image-compressor-quality-number {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.image-compressor-quality-number input {
+  width: 62px;
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 4px;
+  color: var(--text);
+  background: var(--surface);
+  font: inherit;
+  font-size: 14px;
+  text-align: center;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.image-compressor-quality-number input::-webkit-inner-spin-button,
+.image-compressor-quality-number input::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.image-compressor-quality-number button,
+.image-compressor-quality-presets button {
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  background: var(--surface);
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.image-compressor-quality-number button {
+  width: 36px;
+  padding: 0;
+  font-size: 18px;
+}
+
+.image-compressor-quality-scale {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.image-compressor-quality-presets {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 7px;
+}
+
+.image-compressor-quality-presets button {
+  min-width: 0;
+  padding: 6px 2px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.image-compressor-quality-presets button[aria-pressed="true"] {
+  border-color: var(--blue-hover);
+  background: var(--blue);
+  font-weight: 700;
+}
+
+@media (hover: hover) {
+  .image-compressor-quality-number button:hover:not(:disabled),
+  .image-compressor-quality-presets button:hover:not(:disabled) {
+    border-color: var(--blue-hover);
+    background: var(--blue-soft);
+  }
+}
+
+.image-compressor-quality :is(input, button):focus-visible {
+  outline: 2px solid var(--ui-accent);
+  outline-offset: 3px;
+}
+
+.image-compressor-quality :is(input, button):disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .image-compressor-quality-presets {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .image-compressor-quality-number input {
+    font-size: 16px;
+  }
+
+  .image-compressor-quality button {
+    min-height: 40px;
+  }
 }
 
 .image-compressor-note {
