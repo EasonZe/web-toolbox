@@ -9,6 +9,7 @@ import {
   TbBackground,
   TbColorSwatch,
   TbGif,
+  TbFileTypePdf,
   TbHash,
   TbMusicCog,
   TbMusicDown,
@@ -147,6 +148,7 @@ const tools = [
     href: "/file-hash",
     icon: TbHash,
   },
+  { name: "文档转换", title: "Word与PDF互转", href: "/document-converter", icon: TbFileTypePdf },
   {
     name: "网易云音乐",
     title: "网易云音乐无损解析（第三方）",
