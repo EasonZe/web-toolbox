@@ -6,13 +6,10 @@ import type { CSSProperties } from "react";
 import { useEffect, useRef, useState } from "react";
 import {
   FiCheck,
-  FiCpu,
   FiDownload,
   FiImage,
-  FiLayers,
   FiScissors,
   FiUploadCloud,
-  FiZap,
 } from "react-icons/fi";
 import { FileDropZone } from "./file-drop-zone";
 
@@ -347,69 +344,25 @@ export default function BackgroundRemover() {
               <fieldset className="background-remover-models">
                 <legend>AI 模型</legend>
                 <div>
-                  <button
-                    className={removalMode === "fp16" ? "is-selected" : ""}
-                    type="button"
-                    onClick={() => selectRemovalMode("fp16")}
-                    aria-pressed={removalMode === "fp16"}
-                    disabled={processing}
-                  >
-                    <FiCpu aria-hidden="true" />
-                    <span>
-                      <strong>{removerModels.fp16.label}</strong>
-                      <small className="background-remover-model-meta">
-                        <span>{removerModels.fp16.model}</span>
-                        <span>{removerModels.fp16.download}</span>
-                        <span
-                          data-level={removerModels.fp16.performanceLevel}
-                        >
-                          {removerModels.fp16.performance}
+                  {(Object.keys(removerModels) as RemovalMode[]).map((mode) => {
+                    const model = removerModels[mode];
+                    return (
+                      <button
+                        key={mode}
+                        className={removalMode === mode ? "is-selected" : ""}
+                        type="button"
+                        onClick={() => selectRemovalMode(mode)}
+                        aria-pressed={removalMode === mode}
+                        disabled={processing}
+                      >
+                        <span>
+                          <strong>{model.label}</strong>
+                          <small>{model.download} · {model.performance.replace("性能占用", "占用")}</small>
                         </span>
-                      </small>
-                    </span>
-                  </button>
-                  <button
-                    className={removalMode === "q8" ? "is-selected" : ""}
-                    type="button"
-                    onClick={() => selectRemovalMode("q8")}
-                    aria-pressed={removalMode === "q8"}
-                    disabled={processing}
-                  >
-                    <FiZap aria-hidden="true" />
-                    <span>
-                      <strong>{removerModels.q8.label}</strong>
-                      <small className="background-remover-model-meta">
-                        <span>{removerModels.q8.model}</span>
-                        <span>{removerModels.q8.download}</span>
-                        <span
-                          data-level={removerModels.q8.performanceLevel}
-                        >
-                          {removerModels.q8.performance}
-                        </span>
-                      </small>
-                    </span>
-                  </button>
-                  <button
-                    className={removalMode === "ben2" ? "is-selected" : ""}
-                    type="button"
-                    onClick={() => selectRemovalMode("ben2")}
-                    aria-pressed={removalMode === "ben2"}
-                    disabled={processing}
-                  >
-                    <FiLayers aria-hidden="true" />
-                    <span>
-                      <strong>{removerModels.ben2.label}</strong>
-                      <small className="background-remover-model-meta">
-                        <span>{removerModels.ben2.model}</span>
-                        <span>{removerModels.ben2.download}</span>
-                        <span
-                          data-level={removerModels.ben2.performanceLevel}
-                        >
-                          {removerModels.ben2.performance}
-                        </span>
-                      </small>
-                    </span>
-                  </button>
+                        {removalMode === mode && <FiCheck aria-hidden="true" />}
+                      </button>
+                    );
+                  })}
                 </div>
               </fieldset>
 

@@ -37,6 +37,7 @@ test("renders the Eason toolbox homepage with internal and third-party tools", a
   assert.match(html, /href="\/video-to-audio"/);
   assert.match(html, /href="\/video-compressor"/);
   assert.match(html, /href="\/audio-converter"/);
+  assert.match(html, /href="\/audio-compressor"/);
   assert.match(html, /href="\/image-watermark"/);
   assert.match(html, /href="\/image-converter"/);
   assert.match(html, /href="\/image-compressor"/);
@@ -76,6 +77,15 @@ test("renders the Eason toolbox homepage with internal and third-party tools", a
   assert.doesNotMatch(html, /更新日志|changelog/i);
   assert.match(html, /aria-label="打开设置"/);
   assert.match(html, /aria-label="爱发电支持作者"/);
+});
+
+test("音频压缩页面初始显示预览、设置和结果占位", async () => {
+  const response = await render("/audio-compressor");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  for (const text of ["音频压缩工具", "原音频", "压缩结果", "压缩设置", "MP3", "M4A", "OGG", "音频码率", "采样率", "声道", "预计大小", "等待压缩"]) assert.ok(html.includes(text), text);
+  assert.match(html, /disabled="">开始压缩/);
+  assert.doesNotMatch(html, /不会上传|浏览器本地运行/);
 });
 
 test("文件哈希页面初始显示算法、结果占位与比对输入", async () => {

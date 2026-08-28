@@ -11,6 +11,7 @@ import {
   TbGif,
   TbHash,
   TbMusicCog,
+  TbMusicDown,
   TbPhoto,
   TbPhotoDown,
   TbPhotoEdit,
@@ -73,6 +74,12 @@ const tools = [
     title: "音频格式转换",
     href: "/audio-converter",
     icon: TbMusicCog,
+  },
+  {
+    name: "音频压缩",
+    title: "音频压缩",
+    href: "/audio-compressor",
+    icon: TbMusicDown,
   },
   {
     name: "图片加水印",

@@ -6,6 +6,7 @@ const toolComponents = [
   "file-hash.tsx",
   "ascii-art-generator.tsx",
   "audio-converter.tsx",
+  "audio-compressor.tsx",
   "background-remover.tsx",
   "color-converter.tsx",
   "image-compressor.tsx",

@@ -7,6 +7,7 @@ const components = [
   "video-to-audio.tsx",
   "video-compressor.tsx",
   "audio-converter.tsx",
+  "audio-compressor.tsx",
   "image-watermark.tsx",
   "image-converter.tsx",
 ];
