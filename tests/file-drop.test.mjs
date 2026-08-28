@@ -11,6 +11,7 @@ const dropZoneSource = fs.readFileSync(
 );
 
 const filePickerComponents = [
+  "image-base64.tsx",
   "document-converter.tsx",
   "file-hash.tsx",
   "audio-converter.tsx",

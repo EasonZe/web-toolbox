@@ -56,9 +56,9 @@ const accentOptions: AccentOption[] = [
   {
     value: "purple",
     label: "紫色",
-    color: "#d9ccf4",
-    hover: "#c7b5ef",
-    strong: "#7658b5",
+    color: "#DAD7ED",
+    hover: "#c9c4e3",
+    strong: "#756c9c",
   },
   {
     value: "cyan",
@@ -119,14 +119,18 @@ export default function FloatingDock() {
   const pathname = usePathname();
   const isToolPage = pathname !== "/";
   const [theme, setTheme] = useState<ThemeMode>(() => {
-    if (typeof window === "undefined") return "system";
-    const savedTheme = window.localStorage.getItem(themeStorageKey);
-    return isThemeMode(savedTheme) ? savedTheme : "system";
+    if (typeof window === "undefined") return "light";
+    try {
+      const savedTheme = window.localStorage.getItem(themeStorageKey);
+      return isThemeMode(savedTheme) ? savedTheme : "light";
+    } catch { return "light"; }
   });
   const [accent, setAccent] = useState<AccentName>(() => {
     if (typeof window === "undefined") return "blue";
-    const savedAccent = window.localStorage.getItem(accentStorageKey);
-    return isAccentName(savedAccent) ? savedAccent : "blue";
+    try {
+      const savedAccent = window.localStorage.getItem(accentStorageKey);
+      return isAccentName(savedAccent) ? savedAccent : "blue";
+    } catch { return "blue"; }
   });
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -143,7 +147,7 @@ export default function FloatingDock() {
     };
 
     applyTheme();
-    window.localStorage.setItem(themeStorageKey, theme);
+    try { window.localStorage.setItem(themeStorageKey, theme); } catch { /* Private browsing can disable storage. */ }
 
     if (theme === "system") {
       mediaQuery.addEventListener("change", applyTheme);
@@ -160,7 +164,7 @@ export default function FloatingDock() {
     root.style.setProperty("--accent", selectedAccent.color);
     root.style.setProperty("--accent-hover", selectedAccent.hover);
     root.style.setProperty("--accent-strong", selectedAccent.strong);
-    window.localStorage.setItem(accentStorageKey, accent);
+    try { window.localStorage.setItem(accentStorageKey, accent); } catch { /* Keep the selected color usable without storage. */ }
   }, [accent]);
 
   useEffect(() => {
