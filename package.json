@@ -6,8 +6,8 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "dev": "vinext dev",
-    "build": "vinext build",
+    "dev": "node scripts/prepare-document-assets.mjs && vinext dev",
+    "build": "node scripts/prepare-document-assets.mjs && vinext build",
     "start": "vinext start",
     "test": "npm run build && node --test tests/*.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .wrangler"
@@ -15,12 +15,18 @@
   "dependencies": {
     "@huggingface/transformers": "^3.8.1",
     "@mediabunny/mp3-encoder": "^1.51.0",
+    "docx": "^9.7.1",
+    "dompurify": "^3.4.14",
     "figlet": "^1.11.4",
     "gifenc": "^1.0.3",
     "hash-wasm": "4.12.0",
+    "html-to-pdfmake": "^2.5.34",
     "jsqr": "^1.4.0",
+    "mammoth": "^1.12.1",
     "mediabunny": "^1.51.0",
     "next": "16.2.12",
+    "pdfjs-dist": "^6.2.108",
+    "pdfmake": "^0.3.11",
     "qrcode": "^1.5.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",
@@ -30,7 +36,9 @@
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.47.0",
     "@tailwindcss/postcss": "4.2.1",
+    "@types/html-to-pdfmake": "^2.4.5",
     "@types/node": "22.19.19",
+    "@types/pdfmake": "^0.3.3",
     "@types/qrcode": "^1.5.6",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",

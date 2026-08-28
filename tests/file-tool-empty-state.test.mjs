@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const components = [
+  "document-converter.tsx",
   "video-to-gif.tsx",
   "video-to-audio.tsx",
   "video-compressor.tsx",

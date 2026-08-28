@@ -50,6 +50,8 @@ test("renders the Eason toolbox homepage with internal and third-party tools", a
   assert.match(html, /href="\/qr-reader"/);
   assert.match(html, /href="\/file-hash"/);
   assert.match(html, /文件哈希计算/);
+  assert.ok(html.includes('href="/document-converter"'));
+  assert.ok(html.includes("Word与PDF互转"));
   assert.match(html, /href="https:\/\/wyapi\.toubiec\.cn\/"/);
   assert.match(html, /抖音视频解析/);
   assert.match(html, /B站视频解析/);
@@ -77,6 +79,15 @@ test("renders the Eason toolbox homepage with internal and third-party tools", a
   assert.doesNotMatch(html, /更新日志|changelog/i);
   assert.match(html, /aria-label="打开设置"/);
   assert.match(html, /aria-label="爱发电支持作者"/);
+});
+
+test("文档互转页面初始显示方向、预览、设置和兼容性说明", async () => {
+  const response = await render("/document-converter");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  for (const text of ["Word与PDF互转工具", "转换方向", "Word → PDF", "PDF → Word", "转换预览", "转换设置", "纸张大小", "页面方向", "等待转换", "最大20 MB", "DOCX"]) assert.ok(html.includes(text), text);
+  assert.match(html, /disabled="">开始转换/);
+  assert.doesNotMatch(html, /不会上传|浏览器本地运行/);
 });
 
 test("音频压缩页面初始显示预览、设置和结果占位", async () => {
