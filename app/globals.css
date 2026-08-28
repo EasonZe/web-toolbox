@@ -4753,6 +4753,48 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
   opacity: 0.45;
 }
 
+.audio-compressor-shell { width: min(1080px, calc(100% - 32px)); }
+.audio-compressor-header p { margin: 12px 0 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+.audio-compressor-workbench { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; margin-top: 20px; align-items: start; }
+.audio-compressor-previews { display: grid; gap: 20px; min-width: 0; }
+.audio-compressor-panel { min-width: 0; padding: 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.audio-compressor-panel h2 { margin: 0 0 18px; font-size: 14px; font-weight: 600; }
+.audio-compressor-panel audio { display: block; width: 100%; margin-top: 16px; }
+.audio-compressor-panel .gif-download-button { margin-top: 18px; width: 100%; }
+.audio-compressor-filename { display: block; overflow-wrap: anywhere; font-size: 14px; }
+.audio-compressor-meta { margin: 10px 0 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.audio-compressor-empty { min-height: 170px; }
+.audio-compressor-panel-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
+.audio-compressor-panel-title h2 { margin: 0; }
+.audio-compressor-reset { display: inline-flex; align-items: center; gap: 5px; background: transparent; color: var(--muted); border: 0; padding: 6px 0; font-size: 11px; cursor: pointer; }
+.audio-compressor-settings fieldset { min-width: 0; margin: 0 0 18px; padding: 0; border: 0; }
+.audio-compressor-settings legend, .audio-compressor-field > span { margin-bottom: 8px; font-size: 12px; color: var(--muted); }
+.audio-compressor-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.audio-compressor-options button, .audio-compressor-cancel { min-height: 40px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); color: var(--text); font-size: 12px; cursor: pointer; }
+.audio-compressor-options button[aria-pressed="true"] { border-color: var(--blue-hover); background: var(--blue-soft); }
+.audio-compressor-settings button:focus-visible, .audio-compressor-field select:focus-visible { outline: 2px solid var(--ui-accent); outline-offset: 2px; }
+.audio-compressor-settings button:disabled { opacity: .55; cursor: not-allowed; }
+.audio-compressor-field { display: grid; min-width: 0; margin-bottom: 16px; }
+.audio-compressor-field select { width: 100%; min-width: 0; min-height: 42px; border: 1px solid var(--line); border-radius: 9px; padding: 8px; background: var(--surface); color: var(--text); font: inherit; font-size: 12px; }
+.audio-compressor-field select:disabled { opacity: .6; }
+.audio-compressor-estimate { display: grid; grid-template-columns: 1fr auto; gap: 6px; margin: 18px 0; padding: 14px; background: var(--blue-soft); border-radius: 9px; font-size: 13px; }
+.audio-compressor-estimate small { grid-column: 1 / -1; color: var(--muted); font-size: 11px; }
+.audio-compressor-settings .convert-button { width: 100%; }
+.audio-compressor-cancel { width: 100%; margin-top: 10px; }
+.audio-compressor-progress { display: block; width: 100%; margin-top: 12px; accent-color: var(--ui-accent); height: 6px; }
+.audio-compressor-sizes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; font-size: 12px; color: var(--muted); }
+.audio-compressor-sizes strong { display: block; margin-top: 7px; font-size: 16px; color: var(--text); }
+.audio-compressor-error { color: #d55261; font-size: 13px; line-height: 1.6; margin: 18px 0 0; }
+.audio-compressor-status { font-size: 13px; line-height: 1.6; margin: 18px 0 0; }
+.audio-compressor-status:empty { display: none; }
+@media (max-width: 760px) {
+  .audio-compressor-workbench { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .audio-compressor-previews { gap: 14px; }
+  .audio-compressor-panel { padding: 16px; }
+  .audio-compressor-empty { min-height: 120px; }
+  .audio-compressor-sizes strong { font-size: 14px; }
+}
+
 .background-remover-models {
   display: grid;
   gap: 8px;
@@ -4776,9 +4818,10 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
 
 .background-remover-models button {
   min-width: 0;
-  min-height: 104px;
+  min-height: 64px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: space-between;
   gap: 10px;
   border: 1px solid var(--line);
   border-radius: 11px;
@@ -4804,7 +4847,7 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
   border-color: var(--blue-hover);
   color: var(--text);
   background: var(--blue-soft);
-  box-shadow: inset 3px 0 0 var(--ui-accent);
+  box-shadow: none;
 }
 
 .background-remover-models button:disabled {
@@ -4813,10 +4856,9 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
 }
 
 .background-remover-models button > svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   flex: 0 0 auto;
-  margin-top: 2px;
   color: var(--ui-accent);
 }
 
@@ -4828,37 +4870,13 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
 
 .background-remover-models button strong {
   color: var(--text);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .background-remover-models button small {
   color: var(--muted);
-  font-size: 9px;
-  line-height: 1.45;
-}
-
-.background-remover-models .background-remover-model-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 2px;
-}
-
-.background-remover-model-meta span {
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 3px 6px;
-  color: var(--text);
-  background: var(--blue-soft);
-  font-size: 8px;
-  font-weight: 650;
-  line-height: 1.2;
-  white-space: nowrap;
-}
-
-.background-remover-model-meta span[data-level="high"] {
-  border-color: var(--blue-hover);
-  box-shadow: inset 2px 0 0 var(--ui-accent);
+  font-size: 10px;
+  line-height: 1.5;
 }
 
 .background-remover-file {
