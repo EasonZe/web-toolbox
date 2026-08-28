@@ -13,6 +13,7 @@
 - 图片等宽线条重绘、智能抠图、敏感内容打码
 - 二维码生成与解析
 - ASCII 字符画生成
+- Word与PDF互转（DOCX转PDF；PDF提取文字或整页图片转DOCX）
 - 颜色格式转换、IP 地址查询、文件哈希计算（MD5 / SHA-1 / SHA-256 / SHA-512）
 - 网易云音乐无损解析（第三方）
 
@@ -67,4 +68,6 @@ npx wrangler deploy --keep-vars
 
 ## 开源依赖
 
-项目使用的主要开源库包括 React、Next.js、vinext、figlet、Mediabunny、gifenc、QRCode、Transformers.js 和 hash-wasm。完整版本信息见 `package.json`。
+项目使用的主要开源库包括 React、Next.js、vinext、figlet、Mediabunny、gifenc、QRCode、Transformers.js、hash-wasm、Mammoth、pdfmake、PDF.js、docx 和 DOMPurify。完整版本信息见 `package.json`。
+
+文档转换使用 Noto Sans SC 字体（SIL OFL 1.1），许可与来源见 `public/fonts/noto-sans-sc/`。构建时自动复制PDF.js的配套字体、CMap及解码器，不依赖外部CDN。Word转PDF重新排版正文，不保证复杂格式、页眉页脚、原字体和分页完全还原；PDF转Word的可编辑模式不含OCR及图片，保留版式模式为整页图片。
