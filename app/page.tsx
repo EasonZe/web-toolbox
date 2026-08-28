@@ -16,6 +16,7 @@ import {
   TbPhoto,
   TbPhotoDown,
   TbPhotoEdit,
+  TbPhotoCode,
   TbQrcode,
   TbScan,
   TbScribble,
@@ -100,6 +101,7 @@ const tools = [
     href: "/image-compressor",
     icon: TbPhotoDown,
   },
+  { name: "图片Base64", title: "图片与Base64互转", href: "/image-base64", icon: TbPhotoCode },
   {
     name: "等宽线条",
     title: "图片等宽线条重绘",

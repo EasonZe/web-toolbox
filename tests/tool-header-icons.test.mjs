@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const toolComponents = [
+  "image-base64.tsx",
   "document-converter.tsx",
   "file-hash.tsx",
   "ascii-art-generator.tsx",

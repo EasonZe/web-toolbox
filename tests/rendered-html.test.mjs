@@ -41,6 +41,8 @@ test("renders the Eason toolbox homepage with internal and third-party tools", a
   assert.match(html, /href="\/image-watermark"/);
   assert.match(html, /href="\/image-converter"/);
   assert.match(html, /href="\/image-compressor"/);
+  assert.match(html, /href="\/image-base64"/);
+  assert.match(html, /图片与Base64互转/);
   assert.match(html, /href="\/image-line-redraw"/);
   assert.match(html, /href="\/ascii-art"/);
   assert.match(html, /href="\/sensitive-redactor"/);
@@ -79,6 +81,16 @@ test("renders the Eason toolbox homepage with internal and third-party tools", a
   assert.doesNotMatch(html, /更新日志|changelog/i);
   assert.match(html, /aria-label="打开设置"/);
   assert.match(html, /aria-label="爱发电支持作者"/);
+});
+
+test("图片Base64页面初始显示双向转换、预览和输出格式", async () => {
+  const response = await render("/image-base64");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  for (const text of ["图片与Base64互转工具", "图片 → Base64", "Base64 → 图片", "图片预览", "Base64输出", "Data URL（含前缀）", "纯Base64", "复制完整编码", "下载TXT", "最大10 MB"]) assert.ok(html.includes(text), text);
+  assert.match(html, /aria-label="生成的Base64编码" readOnly=""/i);
+  assert.match(html, /class="convert-button" disabled=""/);
+  assert.doesNotMatch(html, /不会上传|浏览器本地运行/);
 });
 
 test("文档互转页面初始显示方向、预览、设置和兼容性说明", async () => {
