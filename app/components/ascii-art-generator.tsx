@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import figlet from "figlet";
 import ansiCompactFont from "figlet/fonts/ANSI Compact";
 import ansiRegularFont from "figlet/fonts/ANSI Regular";
@@ -44,6 +44,12 @@ type AsciiResult = {
   columns: number;
   rows: number;
   mode: "figlet" | "unicode";
+};
+
+type PreviewMetrics = {
+  height: number;
+  scale: number;
+  width: number;
 };
 
 function getResultSize(text: string) {
@@ -310,6 +316,9 @@ export default function AsciiArtGenerator() {
   const [result, setResult] = useState<AsciiResult | null>(null);
   const [generating, setGenerating] = useState(false);
   const [message, setMessage] = useState("");
+  const [previewMetrics, setPreviewMetrics] = useState<PreviewMetrics | null>(null);
+  const previewFrameRef = useRef<HTMLDivElement>(null);
+  const previewTextRef = useRef<HTMLPreElement>(null);
 
   const containsUnicode = useMemo(
     () => /[^\x00-\x7F]/u.test(sourceText),
@@ -356,6 +365,68 @@ export default function AsciiArtGenerator() {
       window.clearTimeout(timer);
     };
   }, [font, frameStyle, layout, sourceText, subtitle]);
+
+  useLayoutEffect(() => {
+    const frame = previewFrameRef.current;
+    const preview = previewTextRef.current;
+    if (!frame || !preview || !result) {
+      setPreviewMetrics(null);
+      return;
+    }
+
+    let animationFrame = 0;
+    let disposed = false;
+
+    const updatePreviewSize = () => {
+      const frameStyle = window.getComputedStyle(frame);
+      const availableWidth = Math.max(
+        1,
+        frame.clientWidth -
+          Number.parseFloat(frameStyle.paddingLeft) -
+          Number.parseFloat(frameStyle.paddingRight),
+      );
+      const availableHeight = Math.max(
+        1,
+        frame.clientHeight -
+          Number.parseFloat(frameStyle.paddingTop) -
+          Number.parseFloat(frameStyle.paddingBottom),
+      );
+      const naturalWidth = Math.max(1, preview.scrollWidth);
+      const naturalHeight = Math.max(1, preview.scrollHeight);
+      const scale = Math.min(
+        1,
+        availableWidth / naturalWidth,
+        availableHeight / naturalHeight,
+      );
+      const next = {
+        width: naturalWidth * scale,
+        height: naturalHeight * scale,
+        scale,
+      };
+
+      if (!disposed) {
+        setPreviewMetrics((current) =>
+          current &&
+          Math.abs(current.width - next.width) < 0.5 &&
+          Math.abs(current.height - next.height) < 0.5 &&
+          Math.abs(current.scale - next.scale) < 0.001
+            ? current
+            : next,
+        );
+      }
+    };
+
+    animationFrame = window.requestAnimationFrame(updatePreviewSize);
+    const observer = new ResizeObserver(updatePreviewSize);
+    observer.observe(frame);
+    document.fonts?.ready.then(updatePreviewSize).catch(() => undefined);
+
+    return () => {
+      disposed = true;
+      window.cancelAnimationFrame(animationFrame);
+      observer.disconnect();
+    };
+  }, [result]);
 
   function restoreDefaults() {
     setSubtitle("");
@@ -430,11 +501,32 @@ export default function AsciiArtGenerator() {
               </span>
             </div>
             <div
+              ref={previewFrameRef}
               className="ascii-output-frame"
               style={{ color: textColor, backgroundColor }}
             >
               {result ? (
-                <pre>{result.text}</pre>
+                <div
+                  className="ascii-output-fit"
+                  style={
+                    previewMetrics
+                      ? {
+                          width: `${previewMetrics.width}px`,
+                          height: `${previewMetrics.height}px`,
+                        }
+                      : undefined
+                  }
+                >
+                  <pre
+                    ref={previewTextRef}
+                    style={{
+                      visibility: previewMetrics ? "visible" : "hidden",
+                      transform: `scale(${previewMetrics?.scale ?? 1})`,
+                    }}
+                  >
+                    {result.text}
+                  </pre>
+                </div>
               ) : (
                 <span className="file-tool-empty ascii-empty">
                   <FiType aria-hidden="true" />

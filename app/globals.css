@@ -178,6 +178,10 @@ a {
   animation: enter-up 430ms ease-out var(--delay) both;
 }
 
+html[data-home-scroll-restored="true"] .tool-card {
+  animation: none;
+}
+
 .tool-card:hover {
   transform: translateY(-5px);
   border-color: var(--blue-hover);
@@ -6235,24 +6239,30 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
 .ascii-output-frame {
   min-height: 330px;
   max-height: 520px;
-  display: block;
-  overflow: auto;
-  scrollbar-gutter: stable;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--surface);
-}
-
-.ascii-output-frame pre {
-  width: max-content;
-  min-width: 100%;
-  min-height: 328px;
-  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 12px;
   padding: 28px;
+  background: var(--surface);
+}
+
+.ascii-output-fit {
+  position: relative;
+  flex: 0 0 auto;
+  width: 0;
+  height: 0;
+}
+
+.ascii-output-fit pre {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: max-content;
+  margin: 0;
+  padding: 0;
   font-family: "Cascadia Mono", Consolas, "DejaVu Sans Mono", "Liberation Mono", "Courier New", monospace;
   font-size: 16px;
   font-variant-ligatures: none;
@@ -6266,6 +6276,7 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
   text-rendering: geometricPrecision;
   tab-size: 1;
   white-space: pre;
+  transform-origin: top left;
 }
 
 .ascii-empty {
@@ -6474,11 +6485,10 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
   .ascii-output-frame {
     min-height: 280px;
     max-height: 430px;
+    padding: 20px;
   }
 
-  .ascii-output-frame pre {
-    min-height: 278px;
-    padding: 20px;
+  .ascii-output-fit pre {
     font-size: 11px;
     line-height: 11px;
   }

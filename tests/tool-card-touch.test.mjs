@@ -6,6 +6,11 @@ const component = await readFile(
   new URL("../app/components/tool-card-link.tsx", import.meta.url),
   "utf8",
 );
+const homeRestorer = await readFile(
+  new URL("../app/components/home-scroll-restorer.tsx", import.meta.url),
+  "utf8",
+);
+const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 
 test("plays entry feedback only for a short stationary touch", () => {
   assert.match(component, /const MOVE_TOLERANCE = 12;/);
@@ -59,4 +64,6 @@ test("saves the home scroll position before internal navigation", () => {
   assert.match(component, /sessionStorage\.setItem\([\s\S]*?top: window\.scrollY[\s\S]*?savedAt: Date\.now\(\)/);
   assert.match(component, /setIsTouchEntering\(true\);\s*rememberHomePosition\(\);/);
   assert.match(component, /if \(!external && isPlainLeftClick\) \{\s*rememberHomePosition\(\);\s*\}/);
+  assert.match(homeRestorer, /data-home-scroll-restored/);
+  assert.match(styles, /html\[data-home-scroll-restored="true"\] \.tool-card\s*\{\s*animation:\s*none;/);
 });
