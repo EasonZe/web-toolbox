@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 
 const HOME_SCROLL_KEY = "eason-toolbox-home-scroll";
 const MAX_SAVED_AGE = 30 * 60 * 1000;
 
 export function HomeScrollRestorer() {
-  useEffect(() => {
+  useLayoutEffect(() => {
     let stored: string | null = null;
     try {
       stored = window.sessionStorage.getItem(HOME_SCROLL_KEY);
@@ -26,6 +26,8 @@ export function HomeScrollRestorer() {
       return;
     }
     if (!Number.isFinite(top) || top < 0 || Date.now() - savedAt > MAX_SAVED_AGE) return;
+
+    document.documentElement.setAttribute("data-home-scroll-restored", "true");
 
     let frame = 0;
     const restore = () => window.scrollTo({ top, behavior: "auto" });
