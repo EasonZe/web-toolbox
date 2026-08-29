@@ -16,6 +16,7 @@ const MOVE_TOLERANCE = 12;
 const LONG_PRESS_DELAY = 460;
 const ENTER_DELAY = 220;
 const FEEDBACK_DURATION = 420;
+const HOME_SCROLL_KEY = "eason-toolbox-home-scroll";
 
 type TouchGesture = {
   pointerId: number;
@@ -49,6 +50,18 @@ export function ToolCardLink({
   const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isTouchEntering, setIsTouchEntering] = useState(false);
 
+  const rememberHomePosition = () => {
+    if (external) return;
+    try {
+      window.sessionStorage.setItem(
+        HOME_SCROLL_KEY,
+        JSON.stringify({ top: window.scrollY, savedAt: Date.now() }),
+      );
+    } catch {
+      // Navigation must still work when private browsing disables storage.
+    }
+  };
+
   useEffect(
     () => () => {
       if (navigationTimerRef.current) {
@@ -77,6 +90,7 @@ export function ToolCardLink({
 
     navigationPendingRef.current = true;
     setIsTouchEntering(true);
+    rememberHomePosition();
     navigationTimerRef.current = setTimeout(() => {
       navigationTimerRef.current = null;
       router.push(href);
@@ -162,14 +176,18 @@ export function ToolCardLink({
       return;
     }
 
-    if (
-      !shortTapRef.current ||
-      event.button !== 0 ||
-      event.metaKey ||
-      event.ctrlKey ||
-      event.shiftKey ||
-      event.altKey
-    ) {
+    const isPlainLeftClick =
+      event.button === 0 &&
+      !event.metaKey &&
+      !event.ctrlKey &&
+      !event.shiftKey &&
+      !event.altKey;
+
+    if (!external && isPlainLeftClick) {
+      rememberHomePosition();
+    }
+
+    if (!shortTapRef.current || !isPlainLeftClick) {
       return;
     }
 
