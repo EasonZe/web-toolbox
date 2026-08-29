@@ -51,3 +51,14 @@ test("ASCII generator supports real-time preview, copy, and TXT download", () =>
   assert.match(source, /下载TXT/);
   assert.match(source, /text\/plain;charset=utf-8/);
 });
+
+test("ASCII preview scales the complete banner into narrow mobile frames", () => {
+  assert.match(source, /className="ascii-output-fit"/);
+  assert.match(source, /previewFrameRef/);
+  assert.match(source, /previewTextRef/);
+  assert.match(source, /availableWidth \/ naturalWidth/);
+  assert.match(source, /availableHeight \/ naturalHeight/);
+  assert.match(source, /ResizeObserver/);
+  assert.match(styles, /\.ascii-output-frame\s*\{[\s\S]*?overflow:\s*hidden;/);
+  assert.match(styles, /\.ascii-output-fit pre\s*\{[\s\S]*?transform-origin:\s*top left;/);
+});
