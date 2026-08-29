@@ -29,6 +29,7 @@ import {
 } from "react-icons/tb";
 import { ToolCardLink } from "./components/tool-card-link";
 import { HomeScrollRestorer } from "./components/home-scroll-restorer";
+import { SiteVisitCount } from "./components/site-visit-count";
 
 const tools = [
   {
@@ -196,6 +197,12 @@ export default function Home() {
           );
         })}
       </nav>
+
+      <footer className="site-footer">
+        <p>
+          本站累计访问次数：<SiteVisitCount />
+        </p>
+      </footer>
     </main>
   );
 }
