@@ -53,3 +53,10 @@ test("keeps the arrow expanded while an internal route is loading", () => {
     /if \(isShortTap\) \{\s*setIsTouchEntering\(true\);\s*resetFeedbackLater\(\);/,
   );
 });
+
+test("saves the home scroll position before internal navigation", () => {
+  assert.match(component, /const HOME_SCROLL_KEY = "eason-toolbox-home-scroll"/);
+  assert.match(component, /sessionStorage\.setItem\([\s\S]*?top: window\.scrollY[\s\S]*?savedAt: Date\.now\(\)/);
+  assert.match(component, /setIsTouchEntering\(true\);\s*rememberHomePosition\(\);/);
+  assert.match(component, /if \(!external && isPlainLeftClick\) \{\s*rememberHomePosition\(\);\s*\}/);
+});
