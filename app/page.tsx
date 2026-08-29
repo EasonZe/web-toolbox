@@ -17,6 +17,7 @@ import {
   TbPhotoDown,
   TbPhotoEdit,
   TbPhotoCode,
+  TbPhotoVideo,
   TbQrcode,
   TbScan,
   TbScribble,
@@ -27,6 +28,7 @@ import {
   TbWorldSearch,
 } from "react-icons/tb";
 import { ToolCardLink } from "./components/tool-card-link";
+import { HomeScrollRestorer } from "./components/home-scroll-restorer";
 
 const tools = [
   {
@@ -102,6 +104,7 @@ const tools = [
     icon: TbPhotoDown,
   },
   { name: "图片Base64", title: "图片与Base64互转", href: "/image-base64", icon: TbPhotoCode },
+  { name: "图片合成GIF", title: "多张图片合成GIF", href: "/images-to-gif", icon: TbPhotoVideo },
   {
     name: "等宽线条",
     title: "图片等宽线条重绘",
@@ -163,6 +166,7 @@ const tools = [
 export default function Home() {
   return (
     <main className="home-shell">
+      <HomeScrollRestorer />
       <header className="home-header">
         <h1>Eason的工具箱</h1>
         <p>有问题意见反馈请加QQ2459366392。</p>

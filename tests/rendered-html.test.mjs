@@ -42,7 +42,9 @@ test("renders the Eason toolbox homepage with internal and third-party tools", a
   assert.match(html, /href="\/image-converter"/);
   assert.match(html, /href="\/image-compressor"/);
   assert.match(html, /href="\/image-base64"/);
+  assert.match(html, /href="\/images-to-gif"/);
   assert.match(html, /图片与Base64互转/);
+  assert.match(html, /多张图片合成GIF/);
   assert.match(html, /href="\/image-line-redraw"/);
   assert.match(html, /href="\/ascii-art"/);
   assert.match(html, /href="\/sensitive-redactor"/);
@@ -90,6 +92,16 @@ test("图片Base64页面初始显示双向转换、预览和输出格式", async
   for (const text of ["图片与Base64互转工具", "图片 → Base64", "Base64 → 图片", "图片预览", "Base64输出", "Data URL（含前缀）", "纯Base64", "复制完整编码", "下载TXT", "最大10 MB"]) assert.ok(html.includes(text), text);
   assert.match(html, /aria-label="生成的Base64编码" readOnly=""/i);
   assert.match(html, /class="convert-button" disabled=""/);
+  assert.doesNotMatch(html, /不会上传|浏览器本地运行/);
+});
+
+test("多张图片合成GIF页面初始显示排序、设置和预览", async () => {
+  const response = await render("/images-to-gif");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  for (const text of ["多张图片合成GIF工具", "图片顺序", "合成设置", "每帧停留时间", "最大输出宽度", "完整显示", "铺满裁剪", "循环播放", "开始合成GIF", "GIF预览", "至少选择2张图片"]) assert.ok(html.includes(text), text);
+  assert.match(html, /multiple=""/);
+  assert.match(html, /disabled="">开始合成GIF/);
   assert.doesNotMatch(html, /不会上传|浏览器本地运行/);
 });
 
