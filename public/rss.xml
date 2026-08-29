@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Eason的工具箱</title>
+    <link>https://tool.easonzhan.xyz/</link>
+    <description>视频解析、音视频处理、图片处理、二维码及常用在线工具。</description>
+    <language>zh-CN</language>
+    <item>
+      <title>Eason的工具箱</title>
+      <link>https://tool.easonzhan.xyz/</link>
+      <guid isPermaLink="true">https://tool.easonzhan.xyz/</guid>
+      <description>访问 Eason 的工具箱，使用视频、音频、图片、二维码及其他实用工具。</description>
+    </item>
+  </channel>
+</rss>

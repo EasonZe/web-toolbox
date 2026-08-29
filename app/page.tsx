@@ -202,6 +202,13 @@ export default function Home() {
         <p>
           本站累计访问次数：<SiteVisitCount />
         </p>
+        <p className="site-footer-meta">
+          <span>© 2026 Eason. All Rights Reserved.</span>
+          <span className="site-footer-separator" aria-hidden="true">/</span>
+          <a href="/rss.xml">RSS</a>
+          <span className="site-footer-separator" aria-hidden="true">/</span>
+          <a href="/sitemap.xml">Sitemap</a>
+        </p>
       </footer>
     </main>
   );
