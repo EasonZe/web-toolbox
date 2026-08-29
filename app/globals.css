@@ -172,6 +172,30 @@ a {
   margin: 0;
 }
 
+.site-footer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0 10px;
+  margin-top: 2px !important;
+}
+
+.site-footer-meta a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.site-footer-meta a:hover,
+.site-footer-meta a:focus-visible {
+  color: var(--ui-accent);
+}
+
+.site-footer-separator {
+  opacity: 0.58;
+}
+
 .site-visit-count {
   color: var(--ui-accent);
   font-variant-numeric: tabular-nums;
@@ -5668,6 +5692,11 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
   .site-footer {
     margin-top: 24px;
     padding-bottom: 18px;
+  }
+
+  .site-footer-meta {
+    gap: 0 8px;
+    font-size: 12px;
   }
 
   .tool-card {
