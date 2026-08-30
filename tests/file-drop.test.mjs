@@ -28,6 +28,7 @@ const filePickerComponents = [
   "qr-reader.tsx",
   "sensitive-redactor.tsx",
   "video-to-audio.tsx",
+  "video-converter.tsx",
   "video-compressor.tsx",
   "video-to-gif.tsx",
 ];

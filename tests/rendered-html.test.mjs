@@ -35,6 +35,7 @@ test("renders the Eason toolbox homepage with internal and third-party tools", a
   assert.match(html, /href="\/color"/);
   assert.match(html, /href="\/video-to-gif"/);
   assert.match(html, /href="\/video-to-audio"/);
+  assert.match(html, /href="\/video-converter"/);
   assert.match(html, /href="\/video-compressor"/);
   assert.match(html, /href="\/audio-converter"/);
   assert.match(html, /href="\/audio-compressor"/);
@@ -67,6 +68,7 @@ test("renders the Eason toolbox homepage with internal and third-party tools", a
   assert.match(html, /颜色格式转换/);
   assert.match(html, /视频转GIF/);
   assert.match(html, /视频提取音频/);
+  assert.match(html, /视频格式转换/);
   assert.match(html, /视频压缩/);
   assert.match(html, /音频格式转换/);
   assert.match(html, /图片加水印/);
@@ -264,6 +266,15 @@ test("renders the local video compressor", async () => {
   assert.match(html, /压缩后的视频会显示在这里/);
   assert.match(html, /Eason的工具箱/);
   assert.doesNotMatch(html, /在线工具/);
+});
+
+test("renders the local video format converter with all settings visible", async () => {
+  const response = await render("/video-converter");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  for (const text of ["视频格式转换工具", "转换视频格式并调整画面大小、帧率与画质", "选择视频", "原视频预览", "目标格式", "MP4", "WebM", "MOV", "MKV", "转换设置", "输出分辨率", "输出帧率", "输出画质", "保留视频声音", "转换结果", "转换后的视频会显示在这里", "最大500 MB"]) assert.ok(html.includes(text), text);
+  assert.match(html, /disabled="">.*转换为MP4/s);
+  assert.doesNotMatch(html, /浏览器本地处理|不会上传|在线工具/);
 });
 
 test("renders the local audio format converter", async () => {

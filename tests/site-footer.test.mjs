@@ -32,4 +32,5 @@ test("RSS 与 Sitemap 都是可用的 XML 文件", () => {
   assert.match(sitemap, /<loc>https:\/\/tool\.easonzhan\.xyz\/ascii-art<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/tool\.easonzhan\.xyz\/image-stitcher<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/tool\.easonzhan\.xyz\/image-cropper<\/loc>/);
+  assert.match(sitemap, /<loc>https:\/\/tool\.easonzhan\.xyz\/video-converter<\/loc>/);
 });

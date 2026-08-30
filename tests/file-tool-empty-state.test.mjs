@@ -10,6 +10,7 @@ const components = [
   "document-converter.tsx",
   "video-to-gif.tsx",
   "video-to-audio.tsx",
+  "video-converter.tsx",
   "video-compressor.tsx",
   "audio-converter.tsx",
   "audio-compressor.tsx",

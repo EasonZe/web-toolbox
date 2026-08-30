@@ -25,6 +25,7 @@ import {
   TbScribble,
   TbShieldLock,
   TbTypography,
+  TbTransform,
   TbVideo,
   TbWaveSine,
   TbWorldSearch,
@@ -68,6 +69,12 @@ const tools = [
     title: "视频提取音频",
     href: "/video-to-audio",
     icon: TbWaveSine,
+  },
+  {
+    name: "视频格式",
+    title: "视频格式转换",
+    href: "/video-converter",
+    icon: TbTransform,
   },
   {
     name: "视频压缩",
