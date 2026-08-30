@@ -227,16 +227,6 @@ a {
   height: 16px;
 }
 
-.tool-search-count {
-  width: min(560px, 100%);
-  min-height: 18px;
-  justify-self: center;
-  margin: 0 0 2px;
-  color: var(--muted);
-  font-size: 11px;
-  text-align: right;
-}
-
 .tool-grid.is-searching .tool-card {
   animation: none;
 }
