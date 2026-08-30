@@ -44,9 +44,11 @@ test("renders the Eason toolbox homepage with internal and third-party tools", a
   assert.match(html, /href="\/image-base64"/);
   assert.match(html, /href="\/images-to-gif"/);
   assert.match(html, /href="\/image-stitcher"/);
+  assert.match(html, /href="\/image-cropper"/);
   assert.match(html, /图片与Base64互转/);
   assert.match(html, /多张图片合成GIF/);
   assert.match(html, /图片拼接/);
+  assert.match(html, /图片裁剪/);
   assert.match(html, /href="\/image-line-redraw"/);
   assert.match(html, /href="\/ascii-art"/);
   assert.match(html, /href="\/sensitive-redactor"/);
@@ -115,6 +117,15 @@ test("图片拼接页面初始显示排序、完整设置和预览", async () =>
   for (const text of ["图片拼接工具", "图片顺序", "拼接设置", "纵向拼接", "横向拼接", "统一宽度", "保持原尺寸", "图片间距", "外边距", "图片对齐", "透明", "自定义颜色", "输出格式", "开始拼接", "拼接预览", "至少选择2张图片"]) assert.ok(html.includes(text), text);
   assert.match(html, /multiple=""/);
   assert.match(html, /disabled="">开始拼接/);
+  assert.doesNotMatch(html, /不会上传|浏览器本地运行/);
+});
+
+test("图片裁剪页面初始显示完整裁剪设置和结果占位", async () => {
+  const response = await render("/image-cropper");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  for (const text of ["图片裁剪工具", "选择图片", "裁剪预览", "裁剪设置", "裁剪比例", "自由", "1:1", "16:9", "精确裁剪区域", "旋转与翻转", "输出格式", "完成裁剪", "裁剪结果", "尚未选择图片"]) assert.ok(html.includes(text), text);
+  assert.match(html, /disabled="">完成裁剪/);
   assert.doesNotMatch(html, /不会上传|浏览器本地运行/);
 });
 

@@ -8,6 +8,7 @@ import {
 import {
   TbBackground,
   TbColorSwatch,
+  TbCrop,
   TbGif,
   TbFileTypePdf,
   TbHash,
@@ -107,6 +108,7 @@ const tools = [
   { name: "图片Base64", title: "图片与Base64互转", href: "/image-base64", icon: TbPhotoCode },
   { name: "图片合成GIF", title: "多张图片合成GIF", href: "/images-to-gif", icon: TbPhotoVideo },
   { name: "图片拼接", title: "图片拼接", href: "/image-stitcher", icon: TbLayoutCollage },
+  { name: "图片裁剪", title: "图片裁剪", href: "/image-cropper", icon: TbCrop },
   {
     name: "等宽线条",
     title: "图片等宽线条重绘",

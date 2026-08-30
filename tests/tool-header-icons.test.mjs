@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const toolComponents = [
+  "image-cropper.tsx",
   "image-stitcher.tsx",
   "images-to-gif.tsx",
   "image-base64.tsx",
