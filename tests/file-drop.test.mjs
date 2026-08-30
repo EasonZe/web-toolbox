@@ -11,6 +11,7 @@ const dropZoneSource = fs.readFileSync(
 );
 
 const filePickerComponents = [
+  "image-stitcher.tsx",
   "images-to-gif.tsx",
   "image-base64.tsx",
   "document-converter.tsx",

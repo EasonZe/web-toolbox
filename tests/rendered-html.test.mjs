@@ -43,8 +43,10 @@ test("renders the Eason toolbox homepage with internal and third-party tools", a
   assert.match(html, /href="\/image-compressor"/);
   assert.match(html, /href="\/image-base64"/);
   assert.match(html, /href="\/images-to-gif"/);
+  assert.match(html, /href="\/image-stitcher"/);
   assert.match(html, /图片与Base64互转/);
   assert.match(html, /多张图片合成GIF/);
+  assert.match(html, /图片拼接/);
   assert.match(html, /href="\/image-line-redraw"/);
   assert.match(html, /href="\/ascii-art"/);
   assert.match(html, /href="\/sensitive-redactor"/);
@@ -83,6 +85,7 @@ test("renders the Eason toolbox homepage with internal and third-party tools", a
   assert.doesNotMatch(html, /更新日志|changelog/i);
   assert.match(html, /aria-label="打开设置"/);
   assert.match(html, /aria-label="爱发电支持作者"/);
+  assert.doesNotMatch(html, /本站累计访问次数|访客计数/);
 });
 
 test("图片Base64页面初始显示双向转换、预览和输出格式", async () => {
@@ -102,6 +105,16 @@ test("多张图片合成GIF页面初始显示排序、设置和预览", async ()
   for (const text of ["多张图片合成GIF工具", "图片顺序", "合成设置", "每帧停留时间", "最大输出宽度", "完整显示", "铺满裁剪", "循环播放", "开始合成GIF", "GIF预览", "至少选择2张图片"]) assert.ok(html.includes(text), text);
   assert.match(html, /multiple=""/);
   assert.match(html, /disabled="">开始合成GIF/);
+  assert.doesNotMatch(html, /不会上传|浏览器本地运行/);
+});
+
+test("图片拼接页面初始显示排序、完整设置和预览", async () => {
+  const response = await render("/image-stitcher");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  for (const text of ["图片拼接工具", "图片顺序", "拼接设置", "纵向拼接", "横向拼接", "统一宽度", "保持原尺寸", "图片间距", "外边距", "图片对齐", "透明", "自定义颜色", "输出格式", "开始拼接", "拼接预览", "至少选择2张图片"]) assert.ok(html.includes(text), text);
+  assert.match(html, /multiple=""/);
+  assert.match(html, /disabled="">开始拼接/);
   assert.doesNotMatch(html, /不会上传|浏览器本地运行/);
 });
 

@@ -19,14 +19,6 @@
   "images": {
     "binding": "IMAGES"
   },
-  "d1_databases": [
-    {
-      "binding": "VISITS_DB",
-      "database_name": "eason-toolbox-stats",
-      "database_id": "23c36811-3f36-426f-a20e-41a6f319ccc9",
-      "migrations_dir": "migrations"
-    }
-  ],
   "observability": {
     "enabled": true,
     "head_sampling_rate": 1
