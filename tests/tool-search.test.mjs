@@ -11,11 +11,12 @@ const styles = await readFile(
   "utf8",
 );
 
-test("首页提供实时工具搜索、结果数量和清空操作", () => {
+test("首页提供简洁的实时工具搜索和清空操作", () => {
   assert.match(source, /type="search"/);
   assert.match(source, /aria-label="搜索工具"/);
+  assert.match(source, /placeholder="搜索工具"/);
   assert.match(source, /tools\.filter\(\(tool\) => toolMatchesSearch\(tool, query\)\)/);
-  assert.match(source, /找到\$\{filteredTools\.length\}个工具/);
+  assert.doesNotMatch(source, /共\$\{tools\.length\}个工具|找到\$\{filteredTools\.length\}个工具/);
   assert.match(source, /没有找到相关工具/);
   assert.match(source, /aria-label="清空搜索"/);
 });
