@@ -6,7 +6,7 @@ import ts from "typescript";
 
 const libSource = await readFile(new URL("../app/lib/image-stitching.ts", import.meta.url), "utf8");
 const component = await readFile(new URL("../app/components/image-stitcher.tsx", import.meta.url), "utf8");
-const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+const page = await readFile(new URL("../app/components/tool-search-grid.tsx", import.meta.url), "utf8");
 
 const compiled = ts.transpileModule(libSource, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
