@@ -18,6 +18,7 @@ import {
   TbPhotoEdit,
   TbPhotoCode,
   TbPhotoVideo,
+  TbLayoutCollage,
   TbQrcode,
   TbScan,
   TbScribble,
@@ -29,7 +30,6 @@ import {
 } from "react-icons/tb";
 import { ToolCardLink } from "./components/tool-card-link";
 import { HomeScrollRestorer } from "./components/home-scroll-restorer";
-import { SiteVisitCount } from "./components/site-visit-count";
 
 const tools = [
   {
@@ -106,6 +106,7 @@ const tools = [
   },
   { name: "图片Base64", title: "图片与Base64互转", href: "/image-base64", icon: TbPhotoCode },
   { name: "图片合成GIF", title: "多张图片合成GIF", href: "/images-to-gif", icon: TbPhotoVideo },
+  { name: "图片拼接", title: "图片拼接", href: "/image-stitcher", icon: TbLayoutCollage },
   {
     name: "等宽线条",
     title: "图片等宽线条重绘",
@@ -199,9 +200,6 @@ export default function Home() {
       </nav>
 
       <footer className="site-footer">
-        <p>
-          本站累计访问次数：<SiteVisitCount />
-        </p>
         <p className="site-footer-meta">
           <span>© 2026 Eason. All Rights Reserved.</span>
           <span className="site-footer-separator" aria-hidden="true">/</span>
