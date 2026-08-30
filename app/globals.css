@@ -5252,6 +5252,324 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
   }
 }
 
+.image-crop-shell {
+  width: min(1160px, calc(100% - 32px));
+}
+
+.image-crop-header p {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.image-crop-card {
+  display: grid;
+  gap: 18px;
+}
+
+.image-crop-error,
+.image-crop-status {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.image-crop-error {
+  color: #d55261;
+}
+
+.image-crop-status {
+  margin-bottom: 12px;
+  color: var(--ui-accent);
+  font-weight: 700;
+}
+
+.image-crop-workbench {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 16px;
+  align-items: start;
+}
+
+.image-crop-panel,
+.image-crop-result {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  padding: 16px;
+  background: var(--surface-subtle);
+}
+
+.image-crop-heading {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.image-crop-heading > div {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.image-crop-heading h2,
+.image-crop-settings > h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.image-crop-heading span {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.image-crop-heading button {
+  min-height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 0 10px;
+  color: var(--muted);
+  background: var(--surface);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.image-crop-canvas-frame {
+  min-height: 390px;
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  background-color: var(--surface);
+  background-image: conic-gradient(var(--blue-soft) 25%, transparent 0 50%, var(--blue-soft) 0 75%, transparent 0);
+  background-size: 18px 18px;
+}
+
+.image-crop-canvas-frame canvas {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 620px;
+  display: block;
+  box-shadow: 0 10px 28px rgb(27 51 63 / 18%);
+  cursor: crosshair;
+  touch-action: none;
+  user-select: none;
+}
+
+.image-crop-canvas-frame p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  text-align: center;
+}
+
+.image-crop-empty {
+  min-height: 390px;
+}
+
+.image-crop-settings {
+  display: grid;
+  gap: 15px;
+}
+
+.image-crop-settings fieldset {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.image-crop-settings legend,
+.image-crop-select > span,
+.image-crop-quality > span {
+  margin-bottom: 7px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.image-crop-ratios {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.image-crop-ratios button,
+.image-crop-transform button {
+  min-height: 39px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 7px;
+  color: var(--text);
+  background: var(--surface);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.image-crop-ratios button[aria-pressed="true"] {
+  border-color: var(--blue-hover);
+  background: var(--blue);
+  font-weight: 700;
+}
+
+.image-crop-coordinates,
+.image-crop-transform {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.image-crop-coordinates label {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.image-crop-coordinates input,
+.image-crop-select select {
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 0 9px;
+  color: var(--text);
+  background: var(--surface);
+  font-variant-numeric: tabular-nums;
+}
+
+.image-crop-transform button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.image-crop-transform svg {
+  flex: 0 0 auto;
+  font-size: 14px;
+}
+
+.image-crop-select,
+.image-crop-quality {
+  display: grid;
+}
+
+.image-crop-quality > span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.image-crop-quality output {
+  color: var(--ui-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.image-crop-quality input {
+  width: 100%;
+  accent-color: var(--ui-accent);
+}
+
+.image-crop-run {
+  width: 100%;
+  margin: 0;
+}
+
+.image-crop-settings :is(button, input, select):disabled,
+.image-crop-heading button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.image-crop-result .gif-download-button {
+  margin: 0;
+}
+
+.image-crop-result-frame {
+  min-height: 240px;
+  display: grid;
+  place-items: center;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 12px;
+  background-color: var(--surface);
+  background-image: conic-gradient(var(--blue-soft) 25%, transparent 0 50%, var(--blue-soft) 0 75%, transparent 0);
+  background-size: 18px 18px;
+}
+
+.image-crop-result-frame img {
+  max-width: 100%;
+  max-height: 620px;
+  display: block;
+  object-fit: contain;
+}
+
+.image-crop-result-empty {
+  min-height: 220px;
+}
+
+.image-crop-card :is(button, input, select, a):focus-visible {
+  outline: 2px solid var(--ui-accent);
+  outline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  .image-crop-workbench {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .image-crop-canvas-frame,
+  .image-crop-empty {
+    min-height: 280px;
+  }
+
+  .image-crop-result-empty {
+    min-height: 190px;
+  }
+}
+
+@media (max-width: 520px) {
+  .image-crop-shell {
+    width: min(100% - 20px, 1160px);
+  }
+
+  .image-crop-card,
+  .image-crop-panel,
+  .image-crop-result {
+    padding: 13px;
+  }
+
+  .image-crop-canvas-frame {
+    min-height: 250px;
+    padding: 8px;
+  }
+
+  .image-crop-ratios {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .image-crop-heading {
+    align-items: flex-start;
+  }
+}
+
 .document-shell { width: min(1120px, calc(100% - 32px)); }
 .document-header p { margin: 12px 0 0; color: var(--muted); font-size: 13px; line-height: 1.8; }
 .document-card fieldset { border: 0; padding: 0; margin: 0 0 20px; min-width: 0; }
