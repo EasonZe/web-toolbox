@@ -2,12 +2,10 @@
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
 import { handleYoutubeApi } from "./youtube-api";
-import { handleSiteVisits } from "./site-visits";
-import type { D1DatabaseBinding, FetcherBinding } from "./types";
+import type { FetcherBinding } from "./types";
 
 interface Env {
   ASSETS: FetcherBinding;
-  VISITS_DB: D1DatabaseBinding;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -42,10 +40,6 @@ const worker = {
       url.pathname === "/api/youtube/"
     ) {
       return handleYoutubeApi(request);
-    }
-
-    if (url.pathname === "/api/visits" || url.pathname === "/api/visits/") {
-      return handleSiteVisits(request, env);
     }
 
     if (url.pathname === "/_vinext/image") {
