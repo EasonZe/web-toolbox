@@ -4072,6 +4072,186 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
   opacity: 0.58;
 }
 
+.image-converter-list-panel {
+  align-content: start;
+}
+
+.image-converter-list {
+  max-height: 540px;
+  display: grid;
+  gap: 9px;
+  overflow: auto;
+  padding-right: 3px;
+}
+
+.image-converter-item {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 9px;
+  background: var(--surface);
+}
+
+.image-converter-thumb {
+  width: 62px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 8px;
+  background:
+    linear-gradient(45deg, var(--blue-soft) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--blue-soft) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--blue-soft) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--blue-soft) 75%),
+    var(--surface-subtle);
+  background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+  background-size: 12px 12px;
+}
+
+.image-converter-thumb img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.image-converter-item-info {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.image-converter-item-info > strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.image-converter-item-info > span {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.image-converter-status {
+  min-height: 15px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.image-converter-status svg {
+  width: 12px;
+  height: 12px;
+}
+
+.image-converter-status.is-done {
+  color: var(--ui-accent);
+}
+
+.image-converter-status.is-error {
+  color: #c24e5f;
+}
+
+.image-converter-item-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.image-converter-item-actions button,
+.image-converter-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--muted);
+  background: var(--surface-subtle);
+  cursor: pointer;
+}
+
+.image-converter-item-actions button {
+  width: 34px;
+  height: 34px;
+}
+
+.image-converter-item-actions button:hover,
+.image-converter-clear:hover {
+  border-color: var(--blue-hover);
+  color: var(--text);
+  background: var(--blue-soft);
+}
+
+.image-converter-item-actions button:disabled,
+.image-converter-clear:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.image-converter-item-actions svg,
+.image-converter-clear svg {
+  width: 15px;
+  height: 15px;
+}
+
+.image-converter-list-empty {
+  min-height: 280px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.image-converter-clear {
+  min-height: 38px;
+  gap: 6px;
+  padding: 0 14px;
+  justify-self: end;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.image-converter-main-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+.image-converter-download-all {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--text);
+  background: var(--surface);
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.image-converter-download-all:hover:not(:disabled) {
+  border-color: var(--blue-hover);
+  background: var(--blue-soft);
+}
+
+.image-converter-download-all:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.image-converter-download-all svg {
+  width: 15px;
+  height: 15px;
+}
+
 .image-line-shell {
   width: min(1120px, calc(100% - 32px));
 }
@@ -6956,6 +7136,35 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
 
   .image-converter-card {
     padding: 14px;
+  }
+
+  .image-converter-main-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .image-converter-item {
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+    gap: 9px;
+    padding: 8px;
+  }
+
+  .image-converter-thumb {
+    width: 52px;
+    height: 48px;
+  }
+
+  .image-converter-item-actions {
+    display: grid;
+    gap: 5px;
+  }
+
+  .image-converter-item-actions button {
+    width: 32px;
+    height: 32px;
+  }
+
+  .image-converter-list-empty {
+    min-height: 220px;
   }
 
   .image-line-card {
