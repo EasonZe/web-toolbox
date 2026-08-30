@@ -153,6 +153,136 @@ a {
   font-size: 14px;
 }
 
+.tool-browser {
+  display: grid;
+  gap: 10px;
+}
+
+.tool-search {
+  width: min(560px, 100%);
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  justify-self: center;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 0 8px 0 15px;
+  background: var(--surface-card);
+  box-shadow: 0 5px 20px rgba(54, 96, 120, 0.035);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.tool-search:focus-within {
+  border-color: var(--blue-hover);
+  box-shadow: 0 0 0 3px rgba(103, 163, 196, 0.12);
+}
+
+.tool-search > svg {
+  width: 18px;
+  height: 18px;
+  color: var(--ui-accent);
+}
+
+.tool-search input {
+  min-width: 0;
+  height: 46px;
+  border: 0;
+  outline: 0;
+  color: var(--text);
+  background: transparent;
+  font-size: 13px;
+}
+
+.tool-search input::placeholder {
+  color: var(--muted);
+}
+
+.tool-search input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.tool-search button {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 9px;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.tool-search button:hover {
+  color: var(--text);
+  background: var(--blue-soft);
+}
+
+.tool-search button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.tool-search-count {
+  width: min(560px, 100%);
+  min-height: 18px;
+  justify-self: center;
+  margin: 0 0 2px;
+  color: var(--muted);
+  font-size: 11px;
+  text-align: right;
+}
+
+.tool-grid.is-searching .tool-card {
+  animation: none;
+}
+
+.tool-search-empty {
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  color: var(--muted);
+  background: var(--surface-card);
+  text-align: center;
+}
+
+.tool-search-empty > svg {
+  width: 28px;
+  height: 28px;
+  color: var(--ui-accent);
+  opacity: 0.7;
+}
+
+.tool-search-empty strong {
+  color: var(--text);
+  font-size: 14px;
+}
+
+.tool-search-empty span {
+  font-size: 12px;
+}
+
+.tool-search-empty button {
+  min-height: 36px;
+  margin-top: 5px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 0 15px;
+  color: var(--text);
+  background: var(--blue-soft);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .tool-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

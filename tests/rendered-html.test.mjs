@@ -29,6 +29,9 @@ test("renders the Eason toolbox homepage with internal and third-party tools", a
 
   const html = await response.text();
   assert.match(html, /<title>Eason的工具箱<\/title>/i);
+  assert.match(html, /aria-label="搜索工具"/);
+  assert.match(html, /搜索工具，例如：图片压缩、二维码、视频/);
+  assert.match(html, /共27个工具/);
   assert.match(html, /href="\/douyin"/);
   assert.match(html, /href="\/bilibili"/);
   assert.match(html, /href="\/kuaishou"/);
