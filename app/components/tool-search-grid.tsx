@@ -93,7 +93,7 @@ export function ToolSearchGrid() {
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="搜索工具，例如：图片压缩、二维码、视频"
+          placeholder="搜索工具"
           aria-label="搜索工具"
           autoComplete="off"
           spellCheck={false}
@@ -104,10 +104,6 @@ export function ToolSearchGrid() {
           </button>
         ) : null}
       </div>
-
-      <p className="tool-search-count" aria-live="polite">
-        {searching ? `找到${filteredTools.length}个工具` : `共${tools.length}个工具`}
-      </p>
 
       {filteredTools.length ? (
         <nav className={`tool-grid${searching ? " is-searching" : ""}`} aria-label="工具列表">
