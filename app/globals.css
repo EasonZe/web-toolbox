@@ -7648,6 +7648,24 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
   gap: 12px;
 }
 
+.fancy-text-results-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.fancy-text-results-heading h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.fancy-text-results-heading span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .fancy-text-result {
   min-width: 0;
   display: grid;

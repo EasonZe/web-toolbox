@@ -17,8 +17,11 @@ test("双线体准确生成用户要求的花体字", () => {
   assert.equal(helpers.transformFancyText("Hi 中国!", style), "ℍ𝕚 中国!");
 });
 
-test("提供多种可复制的Unicode样式并保留中文", () => {
-  assert.ok(helpers.fancyTextStyles.length >= 8);
+test("提供丰富的可复制Unicode样式并保留中文", () => {
+  assert.ok(helpers.fancyTextStyles.length >= 24);
+  for (const id of ["italic", "sans", "fraktur", "squared", "small-caps", "strikethrough"]) {
+    assert.ok(helpers.fancyTextStyles.some((style) => style.id === id), `缺少 ${id} 样式`);
+  }
   for (const style of helpers.fancyTextStyles) {
     assert.match(helpers.transformFancyText("A1中文", style), /中文/);
   }
