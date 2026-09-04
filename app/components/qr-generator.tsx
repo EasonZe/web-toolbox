@@ -319,7 +319,7 @@ export default function QrGenerator() {
   return (
     <main className="tool-shell qr-generator-shell">
       <Link className="back-link" href="/">
-        <span aria-hidden="true">←</span> Eason的工具箱
+        <span aria-hidden="true">←</span> 多功能工具箱
       </Link>
 
       <header className="tool-header qr-generator-header">

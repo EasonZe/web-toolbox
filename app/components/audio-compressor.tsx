@@ -136,7 +136,7 @@ export default function AudioCompressor() {
 
   return (
     <main className="tool-shell audio-compressor-shell">
-      <Link className="back-link" href="/">← Eason的工具箱</Link>
+      <Link className="back-link" href="/">← 多功能工具箱</Link>
       <header className="tool-header audio-compressor-header">
         <h1>音频压缩工具</h1>
         <p>调节码率、采样率与声道，导出更小的MP3、M4A或OGG音频。</p>

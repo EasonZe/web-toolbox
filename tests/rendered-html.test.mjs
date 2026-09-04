@@ -22,13 +22,13 @@ async function render(path = "/") {
   );
 }
 
-test("renders the Eason toolbox homepage with internal and third-party tools", async () => {
+test("renders the multifunction toolbox homepage with internal and third-party tools", async () => {
   const response = await render("/");
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /<title>Eason的工具箱<\/title>/i);
+  assert.match(html, /<title>多功能工具箱<\/title>/i);
   assert.match(html, /aria-label="搜索工具"/);
   assert.match(html, /placeholder="搜索工具"/);
   assert.doesNotMatch(html, /共27个工具|找到\d+个工具/);
@@ -40,8 +40,10 @@ test("renders the Eason toolbox homepage with internal and third-party tools", a
   assert.match(html, /href="\/video-to-audio"/);
   assert.match(html, /href="\/video-converter"/);
   assert.match(html, /href="\/video-compressor"/);
+  assert.match(html, /href="\/video-reverser"/);
   assert.match(html, /href="\/audio-converter"/);
   assert.match(html, /href="\/audio-compressor"/);
+  assert.match(html, /href="\/audio-reverser"/);
   assert.match(html, /href="\/image-watermark"/);
   assert.match(html, /href="\/image-converter"/);
   assert.match(html, /href="\/image-compressor"/);
@@ -55,6 +57,7 @@ test("renders the Eason toolbox homepage with internal and third-party tools", a
   assert.match(html, /图片裁剪/);
   assert.match(html, /href="\/image-line-redraw"/);
   assert.match(html, /href="\/ascii-art"/);
+  assert.match(html, /href="\/fancy-text"/);
   assert.match(html, /href="\/sensitive-redactor"/);
   assert.match(html, /href="\/ip-lookup"/);
   assert.match(html, /href="\/background-remover"/);
@@ -73,12 +76,15 @@ test("renders the Eason toolbox homepage with internal and third-party tools", a
   assert.match(html, /视频提取音频/);
   assert.match(html, /视频格式转换/);
   assert.match(html, /视频压缩/);
+  assert.match(html, /视频倒放/);
   assert.match(html, /音频格式转换/);
+  assert.match(html, /音频倒放/);
   assert.match(html, /图片加水印/);
   assert.match(html, /图片格式转换/);
   assert.match(html, /图片压缩/);
   assert.match(html, /图片等宽线条重绘/);
   assert.match(html, /ASCII字符画生成/);
+  assert.match(html, /花体字转换器/);
   assert.match(html, /敏感内容打码/);
   assert.match(html, /IP地址查询/);
   assert.match(html, /智能抠图/);
@@ -193,7 +199,7 @@ for (const [path, title, apiHost, description] of toolPages) {
     assert.match(html, new RegExp(description));
     assert.match(html, /VRChat视频播放器可使用哦/);
     assert.match(html, new RegExp(`https://${apiHost}\\.easonzhan\\.xyz/\\?url=`));
-    assert.match(html, /Eason的工具箱/);
+    assert.match(html, /多功能工具箱/);
     assert.match(html, /class="share-field-label"/);
     assert.match(html, /aria-controls="share-text"/);
     assert.match(html, /粘贴[^"<>]*分享链接/);
@@ -214,7 +220,7 @@ test("renders the independent color conversion tool", async () => {
   assert.match(html, /CMYK/);
   assert.match(html, /输入格式/);
   assert.match(html, /HSV 同时支持 HSB 写法/);
-  assert.match(html, /Eason的工具箱/);
+  assert.match(html, /多功能工具箱/);
 });
 
 test("renders the local video to GIF tool", async () => {
@@ -230,7 +236,7 @@ test("renders the local video to GIF tool", async () => {
   assert.match(html, /转换为GIF/);
   assert.match(html, /GIF预览/);
   assert.match(html, /GIF会显示在这里/);
-  assert.match(html, /Eason的工具箱/);
+  assert.match(html, /多功能工具箱/);
   assert.doesNotMatch(html, /在线工具/);
 });
 
@@ -249,7 +255,7 @@ test("renders the local video audio extractor", async () => {
   assert.match(html, /音频会显示在这里/);
   assert.match(html, /最大300 MB/);
   assert.match(html, /WAV/);
-  assert.match(html, /Eason的工具箱/);
+  assert.match(html, /多功能工具箱/);
   assert.doesNotMatch(html, /在线工具/);
 });
 
@@ -267,7 +273,7 @@ test("renders the local video compressor", async () => {
   assert.match(html, /压缩质量/);
   assert.match(html, /压缩结果/);
   assert.match(html, /压缩后的视频会显示在这里/);
-  assert.match(html, /Eason的工具箱/);
+  assert.match(html, /多功能工具箱/);
   assert.doesNotMatch(html, /在线工具/);
 });
 
@@ -294,8 +300,29 @@ test("renders the local audio format converter", async () => {
   assert.match(html, /转换设置/);
   assert.match(html, /转换结果/);
   assert.match(html, /转换后的音频会显示在这里/);
-  assert.match(html, /Eason的工具箱/);
+  assert.match(html, /多功能工具箱/);
   assert.doesNotMatch(html, /在线工具/);
+});
+
+test("renders the audio and video reversal tools", async () => {
+  const audioResponse = await render("/audio-reverser");
+  assert.equal(audioResponse.status, 200);
+  const audioHtml = await audioResponse.text();
+  for (const text of ["音频倒放工具", "选择音频", "原音频", "倒放结果", "倒放后的音频", "开始音频倒放", "多功能工具箱"]) assert.ok(audioHtml.includes(text), text);
+  assert.match(audioHtml, /disabled="">.*开始音频倒放/s);
+
+  const videoResponse = await render("/video-reverser");
+  assert.equal(videoResponse.status, 200);
+  const videoHtml = await videoResponse.text();
+  for (const text of ["视频倒放工具", "选择视频", "原视频", "倒放结果", "倒放后的视频", "倒放设置", "输出清晰度", "输出帧率", "同时倒放声音", "开始视频倒放", "多功能工具箱"]) assert.ok(videoHtml.includes(text), text);
+  assert.match(videoHtml, /disabled="">.*开始视频倒放/s);
+});
+
+test("renders the fancy text converter with the requested double-struck style", async () => {
+  const response = await render("/fancy-text");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  for (const text of ["花体字转换器", "输入文字", "双线体", "𝔼𝕒𝕤𝕠𝕟", "数学粗体", "粗斜体", "无衬线粗体", "圆圈字", "复制", "多功能工具箱"]) assert.ok(html.includes(text), text);
 });
 
 test("renders the local image watermark tool", async () => {
@@ -311,7 +338,7 @@ test("renders the local image watermark tool", async () => {
   assert.match(html, /实时预览/);
   assert.match(html, /水印设置/);
   assert.match(html, /尚未选择图片/);
-  assert.match(html, /Eason的工具箱/);
+  assert.match(html, /多功能工具箱/);
   assert.doesNotMatch(html, /在线工具/);
 });
 
@@ -332,7 +359,7 @@ test("renders the local image format converter", async () => {
   assert.match(html, /开始批量转换/);
   assert.match(html, /下载全部/);
   assert.match(html, /尚未选择图片/);
-  assert.match(html, /Eason的工具箱/);
+  assert.match(html, /多功能工具箱/);
   assert.doesNotMatch(html, /在线工具/);
 });
 
@@ -347,7 +374,7 @@ test("renders the local batch image compressor", async () => {
   assert.match(html, /压缩质量/);
   assert.match(html, /下载全部/);
   assert.match(html, /单张最大25 MB/);
-  assert.match(html, /Eason的工具箱/);
+  assert.match(html, /多功能工具箱/);
   assert.doesNotMatch(html, /在线工具/);
 });
 
@@ -367,7 +394,7 @@ test("renders the local equal-width image line redraw tool", async () => {
   assert.match(html, /背景颜色/);
   assert.match(html, /尚未选择图片/);
   assert.match(html, /下载PNG线稿/);
-  assert.match(html, /Eason的工具箱/);
+  assert.match(html, /多功能工具箱/);
   assert.doesNotMatch(html, /在线工具/);
 });
 
@@ -386,7 +413,7 @@ test("renders the ASCII art generator", async () => {
   assert.match(html, /粗体方块/);
   assert.match(html, /副标题/);
   assert.match(html, /边框样式/);
-  assert.match(html, /Eason的工具箱/);
+  assert.match(html, /多功能工具箱/);
   assert.doesNotMatch(html, /在线工具/);
 });
 
@@ -404,7 +431,7 @@ test("renders the local sensitive content redactor", async () => {
   assert.match(html, /模糊/);
   assert.match(html, /遮挡/);
   assert.match(html, /下载已打码图片/);
-  assert.match(html, /Eason的工具箱/);
+  assert.match(html, /多功能工具箱/);
   assert.doesNotMatch(html, /在线工具/);
 });
 
@@ -419,7 +446,7 @@ test("renders the IP address lookup tool", async () => {
   assert.match(html, /刷新查询结果/);
   assert.match(html, /运营商/);
   assert.match(html, /经纬度/);
-  assert.match(html, /Eason的工具箱/);
+  assert.match(html, /多功能工具箱/);
 });
 
 test("renders the local smart background remover", async () => {
@@ -436,7 +463,7 @@ test("renders the local smart background remover", async () => {
   assert.match(html, /抠图设置/);
   assert.match(html, /尚未选择图片/);
   assert.match(html, /选择图片后在这里预览/);
-  assert.match(html, /Eason的工具箱/);
+  assert.match(html, /多功能工具箱/);
   assert.doesNotMatch(html, /提供IS-Net FP16、QInt8与BEN2 FP16三种本地AI模型/);
   assert.doesNotMatch(html, /本地高精度AI处理/);
   assert.doesNotMatch(html, /在线工具/);
@@ -460,7 +487,7 @@ test("renders the local QR code generator", async () => {
   assert.match(html, /上传 Logo/);
   assert.match(html, /上传背景/);
   assert.match(html, /下载PNG/);
-  assert.match(html, /Eason的工具箱/);
+  assert.match(html, /多功能工具箱/);
   assert.doesNotMatch(html, /在线工具/);
 });
 
@@ -475,6 +502,6 @@ test("renders the local QR code reader", async () => {
   assert.match(html, /图片预览/);
   assert.match(html, /解析结果/);
   assert.match(html, /支持上传、拖放或粘贴截图，并可复制解析结果/);
-  assert.match(html, /Eason的工具箱/);
+  assert.match(html, /多功能工具箱/);
   assert.doesNotMatch(html, /在线工具/);
 });

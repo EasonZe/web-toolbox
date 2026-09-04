@@ -104,7 +104,7 @@ export default function ImageWatermark() {
   const [watermarkImage, setWatermarkImage] =
     useState<HTMLImageElement | null>(null);
   const [mode, setMode] = useState<WatermarkMode>("text");
-  const [text, setText] = useState("Eason的工具箱");
+  const [text, setText] = useState("多功能工具箱");
   const [color, setColor] = useState("#ffffff");
   const [opacity, setOpacity] = useState(55);
   const [size, setSize] = useState(9);
@@ -374,7 +374,7 @@ export default function ImageWatermark() {
   return (
     <main className="tool-shell image-watermark-shell">
       <Link className="back-link" href="/">
-        <span aria-hidden="true">←</span> Eason的工具箱
+        <span aria-hidden="true">←</span> 多功能工具箱
       </Link>
 
       <header className="tool-header image-watermark-header">

@@ -29,28 +29,21 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     metadataBase,
-    title: "Eason的工具箱",
+    title: "多功能工具箱",
     description,
     icons: {
       icon: "/favicon.svg",
       shortcut: "/favicon.svg",
     },
     openGraph: {
-      title: "Eason的工具箱",
+      title: "多功能工具箱",
       description,
       type: "website",
-      images: [
-        {
-          url: new URL("/og-tools-v12.png", metadataBase).toString(),
-          alt: "Eason的工具箱：视频解析、音视频处理、图片转换与压缩、二维码和颜色工具",
-        },
-      ],
     },
     twitter: {
-      card: "summary_large_image",
-      title: "Eason的工具箱",
+      card: "summary",
+      title: "多功能工具箱",
       description,
-      images: [new URL("/og-tools-v12.png", metadataBase).toString()],
     },
   };
 }

@@ -280,7 +280,7 @@ export default function ImageStitcher() {
 
   return (
     <main className="tool-shell image-stitch-shell">
-      <Link className="back-link" href="/"><span aria-hidden="true">←</span> Eason的工具箱</Link>
+      <Link className="back-link" href="/"><span aria-hidden="true">←</span> 多功能工具箱</Link>
       <header className="tool-header image-stitch-header">
         <h1>图片拼接工具</h1>
         <p>将多张图片按指定顺序横向或纵向拼接。</p>
