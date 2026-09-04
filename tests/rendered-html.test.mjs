@@ -322,7 +322,8 @@ test("renders the fancy text converter with the requested double-struck style", 
   const response = await render("/fancy-text");
   assert.equal(response.status, 200);
   const html = await response.text();
-  for (const text of ["花体字转换器", "输入文字", "双线体", "𝔼𝕒𝕤𝕠𝕟", "数学粗体", "粗斜体", "无衬线粗体", "圆圈字", "复制", "多功能工具箱"]) assert.ok(html.includes(text), text);
+  for (const text of ["花体字转换器", "输入文字", "双线体", "𝔼𝕒𝕤𝕠𝕟", "数学斜体", "无衬线体", "哥特体", "方框字", "小型大写", "删除线", "种样式", "复制", "多功能工具箱"]) assert.ok(html.includes(text), text);
+  assert.match(html, /共\s*(?:<!-- -->)?26/);
 });
 
 test("renders the local image watermark tool", async () => {
