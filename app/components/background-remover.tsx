@@ -263,7 +263,7 @@ export default function BackgroundRemover() {
   return (
     <main className="tool-shell background-remover-shell">
       <Link className="back-link" href="/">
-        <span aria-hidden="true">←</span> Eason的工具箱
+        <span aria-hidden="true">←</span> 多功能工具箱
       </Link>
 
       <header className="tool-header background-remover-header">

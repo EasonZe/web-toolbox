@@ -233,7 +233,7 @@ export default function ImageConverter() {
 
   return (
     <main className="tool-shell image-converter-shell">
-      <Link className="back-link" href="/"><span aria-hidden="true">←</span> Eason的工具箱</Link>
+      <Link className="back-link" href="/"><span aria-hidden="true">←</span> 多功能工具箱</Link>
       <header className="tool-header image-converter-header">
         <h1>图片格式转换工具</h1>
         <p>支持批量转换PNG、JPG和WebP格式。</p>

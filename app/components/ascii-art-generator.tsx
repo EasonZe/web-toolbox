@@ -463,7 +463,7 @@ export default function AsciiArtGenerator() {
   return (
     <main className="tool-shell ascii-shell">
       <Link className="back-link" href="/">
-        <span aria-hidden="true">←</span> Eason的工具箱
+        <span aria-hidden="true">←</span> 多功能工具箱
       </Link>
 
       <header className="tool-header ascii-header">

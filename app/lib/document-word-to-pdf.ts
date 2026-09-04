@@ -70,7 +70,7 @@ export async function wordToPdf(file: File, settings: DocumentSettings, signal: 
   const blob = await makePdf({
     content, pageSize: settings.paper, pageOrientation: settings.landscape ? "landscape" : "portrait",
     pageMargins: [44, 44, 44, 44], defaultStyle: { font: "NotoSC", fontSize: 11, lineHeight: 1.25 },
-    info: { title: file.name.replace(/\.docx$/i, ""), creator: "Eason的工具箱" },
+    info: { title: file.name.replace(/\.docx$/i, ""), creator: "多功能工具箱" },
   }, signal, progress);
   signal.throwIfAborted();
   progress(90, "生成PDF首页预览…");

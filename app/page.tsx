@@ -6,7 +6,7 @@ export default function Home() {
     <main className="home-shell">
       <HomeScrollRestorer />
       <header className="home-header">
-        <h1>Eason的工具箱</h1>
+        <h1>多功能工具箱</h1>
         <p>有问题意见反馈请加QQ2459366392。</p>
       </header>
 

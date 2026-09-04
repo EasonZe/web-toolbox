@@ -90,7 +90,7 @@ export default function DocumentConverter() {
   }
 
   return <main className="tool-shell document-shell">
-    <Link className="back-link" href="/">← Eason的工具箱</Link>
+    <Link className="back-link" href="/">← 多功能工具箱</Link>
     <header className="tool-header document-header">
       <h1>Word与PDF互转工具</h1>
       <p>Word文档转PDF，或将PDF转换为可编辑文字、保留版式的Word文档。</p>

@@ -57,7 +57,7 @@ export async function pdfToWord(file: File, settings: DocumentSettings, signal: 
     if (settings.mode === "text" && !textCharacters) throw new Error("没有检测到可提取文字。扫描件或图片PDF请改选“保留版式”，当前不提供OCR识别。");
     signal.throwIfAborted();
     progress(90, "正在打包Word文档…");
-    const document = new docx.Document({ sections, creator: "Eason的工具箱", title: file.name.replace(/\.pdf$/i, ""),
+    const document = new docx.Document({ sections, creator: "多功能工具箱", title: file.name.replace(/\.pdf$/i, ""),
       styles: { default: { document: { run: { font: "Microsoft YaHei", size: 22 } } } } });
     const blob = await docx.Packer.toBlob(document);
     signal.throwIfAborted();

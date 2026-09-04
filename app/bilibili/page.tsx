@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import VideoTool from "../components/video-tool";
 
 export const metadata: Metadata = {
-  title: "B站视频解析 | Eason的工具箱",
+  title: "B站视频解析 | 多功能工具箱",
   description:
     "将B站分享链接转换成可直接播放或下载的视频链接，VRChat视频播放器可使用。",
 };

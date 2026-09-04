@@ -96,7 +96,7 @@ export default function ImageBase64() {
   }
 
   return <main className="tool-shell image-base64-shell">
-    <Link className="back-link" href="/">← Eason的工具箱</Link>
+    <Link className="back-link" href="/">← 多功能工具箱</Link>
     <header className="tool-header image-base64-header">
       <h1>图片与Base64互转工具</h1>
       <p>将图片转换为Base64编码，或将Base64还原为图片。</p>
