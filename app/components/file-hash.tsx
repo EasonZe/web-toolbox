@@ -124,7 +124,7 @@ export default function FileHash() {
 
   return (
     <main className="tool-shell file-hash-shell">
-      <Link className="back-link" href="/"><span aria-hidden="true">←</span> Eason的工具箱</Link>
+      <Link className="back-link" href="/"><span aria-hidden="true">←</span> 多功能工具箱</Link>
       <header className="tool-header file-hash-header">
         <h1>文件哈希计算工具</h1>
         <p>计算文件哈希值，快速核对文件是否一致。</p>

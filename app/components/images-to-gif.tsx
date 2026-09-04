@@ -133,7 +133,7 @@ export default function ImagesToGif() {
   }
 
   return <main className="tool-shell images-gif-shell">
-    <Link className="back-link" href="/"><span aria-hidden="true">←</span> Eason的工具箱</Link>
+    <Link className="back-link" href="/"><span aria-hidden="true">←</span> 多功能工具箱</Link>
     <header className="tool-header images-gif-header"><h1>多张图片合成GIF工具</h1><p>按顺序将多张图片合成为GIF动画。</p></header>
     <section className="converter-card images-gif-card" aria-label="多张图片合成GIF" aria-busy={working}>
       <FileDropZone className="image-compressor-picker" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,image/avif,.png,.jpg,.jpeg,.webp,.gif,.bmp,.avif" multiple disabled={busy} onFiles={addFiles} ariaLabel="选择或拖入多张图片">

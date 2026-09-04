@@ -401,7 +401,7 @@ export default function ImageCropper() {
 
   return (
     <main className="tool-shell image-crop-shell">
-      <Link className="back-link" href="/"><span aria-hidden="true">←</span> Eason的工具箱</Link>
+      <Link className="back-link" href="/"><span aria-hidden="true">←</span> 多功能工具箱</Link>
       <header className="tool-header image-crop-header">
         <h1>图片裁剪工具</h1>
         <p>拖动裁剪框，保留图片中需要的区域。</p>

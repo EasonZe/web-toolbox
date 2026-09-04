@@ -415,7 +415,7 @@ export default function SensitiveRedactor() {
   return (
     <main className="tool-shell sensitive-redactor-shell">
       <Link className="back-link" href="/">
-        <span aria-hidden="true">←</span> Eason的工具箱
+        <span aria-hidden="true">←</span> 多功能工具箱
       </Link>
 
       <header className="tool-header sensitive-redactor-header">

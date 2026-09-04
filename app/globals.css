@@ -7425,6 +7425,309 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
 
 }
 
+.reverse-tool-shell,
+.video-reverser-shell,
+.fancy-text-shell {
+  width: min(1040px, calc(100% - 32px));
+}
+
+.reverse-tool-card,
+.video-reverser-card,
+.fancy-text-card {
+  display: grid;
+  gap: 20px;
+}
+
+.reverse-tool-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.reverse-tool-panel,
+.video-reverser-settings {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface-subtle);
+}
+
+.reverse-tool-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.reverse-tool-heading h2 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.reverse-tool-heading span,
+.fancy-text-tip {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.reverse-tool-panel > audio,
+.reverse-tool-panel > video {
+  width: 100%;
+  display: block;
+  margin-top: 14px;
+}
+
+.reverse-tool-panel > video {
+  aspect-ratio: 16 / 10;
+  border-radius: 12px;
+  background: #050607;
+  object-fit: contain;
+}
+
+.reverse-tool-panel .file-tool-empty {
+  min-height: 210px;
+}
+
+.reverse-tool-filename {
+  display: block;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reverse-tool-panel .gif-download-button {
+  width: 100%;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.reverse-tool-card > .convert-button,
+.video-reverser-card > .convert-button {
+  margin-top: 0;
+  gap: 8px;
+}
+
+.reverse-tool-cancel {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--text);
+  background: var(--surface);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.reverse-tool-progress {
+  width: 100%;
+  height: 8px;
+  accent-color: var(--ui-accent);
+}
+
+.reverse-tool-error,
+.reverse-tool-status {
+  margin: -4px 0 0;
+  font-size: 13px;
+  text-align: center;
+}
+
+.reverse-tool-error {
+  color: #b45e68;
+}
+
+.reverse-tool-status {
+  color: var(--ui-accent);
+}
+
+.video-reverser-settings {
+  display: grid;
+  gap: 16px;
+}
+
+.video-reverser-settings .reverse-tool-heading {
+  margin-bottom: 0;
+}
+
+.video-reverser-setting-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.video-reverser-setting-grid label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.video-reverser-setting-grid select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0 12px;
+  color: var(--text);
+  background: var(--surface);
+}
+
+.video-reverser-audio {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.video-reverser-audio input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--ui-accent);
+}
+
+.fancy-text-input-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.fancy-text-input-heading > label {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.fancy-text-input-heading > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fancy-text-input-heading span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.fancy-text-input-heading button,
+.fancy-text-result button {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 0 10px;
+  color: var(--text);
+  background: var(--surface);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.fancy-text-card > textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.fancy-text-tip {
+  margin: -12px 0 0;
+}
+
+.fancy-text-results {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.fancy-text-result {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface-subtle);
+}
+
+.fancy-text-result > div {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.fancy-text-result > div strong {
+  font-size: 13px;
+}
+
+.fancy-text-result > div span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.fancy-text-result output {
+  min-width: 0;
+  grid-column: 1 / -1;
+  overflow-wrap: anywhere;
+  color: var(--text);
+  font-family: "Segoe UI Symbol", "Noto Sans Symbols 2", var(--font-sans);
+  font-size: clamp(21px, 3vw, 30px);
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.fancy-text-result > button {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.fancy-text-result button:disabled {
+  opacity: 0.48;
+  cursor: default;
+}
+
+@media (max-width: 720px) {
+  .reverse-tool-grid,
+  .fancy-text-results {
+    grid-template-columns: 1fr;
+  }
+
+  .reverse-tool-panel .file-tool-empty {
+    min-height: 180px;
+  }
+}
+
+@media (max-width: 520px) {
+  .reverse-tool-panel,
+  .video-reverser-settings {
+    padding: 14px;
+  }
+
+  .video-reverser-setting-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fancy-text-input-heading {
+    align-items: flex-start;
+  }
+
+  .fancy-text-input-heading > div {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

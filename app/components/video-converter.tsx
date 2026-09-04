@@ -317,7 +317,7 @@ export default function VideoConverter() {
 
   return (
     <main className="tool-shell video-converter-shell">
-      <Link className="back-link" href="/"><span aria-hidden="true">←</span> Eason的工具箱</Link>
+      <Link className="back-link" href="/"><span aria-hidden="true">←</span> 多功能工具箱</Link>
       <header className="tool-header video-converter-header">
         <h1>视频格式转换工具</h1>
         <p>转换视频格式并调整画面大小、帧率与画质。</p>
