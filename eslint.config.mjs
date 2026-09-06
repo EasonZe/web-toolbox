@@ -13,6 +13,8 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     "public/pdfjs/**", // Version-matched generated PDF.js assets, not application source.
+    "types/cloudflare-env.d.ts", // Generated Worker runtime declarations.
+    "work/**", // Local browser QA fixtures and scripts.
   ]),
 ]);
 

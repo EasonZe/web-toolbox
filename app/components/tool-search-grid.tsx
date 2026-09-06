@@ -11,6 +11,9 @@ import {
 } from "react-icons/si";
 import {
   TbBackground,
+  TbCalculator,
+  TbWheel,
+  TbLink,
   TbColorSwatch,
   TbCrop,
   TbFileTypePdf,
@@ -47,6 +50,7 @@ const tools = [
   { name: "视频格式", title: "视频格式转换", href: "/video-converter", icon: TbTransform, keywords: "mp4 webm mov mkv 转码" },
   { name: "视频压缩", title: "视频压缩", href: "/video-compressor", icon: TbVideo, keywords: "减小体积 画质 码率" },
   { name: "视频倒放", title: "视频倒放", href: "/video-reverser", icon: TbRewindBackward10, keywords: "反向 逆向 倒序 webm" },
+  { name: "视频水印", title: "视频加水印", href: "/video-watermark", icon: TbPhotoEdit, keywords: "文字 图片 logo 标记 透明度" },
   { name: "音频格式", title: "音频格式转换", href: "/audio-converter", icon: TbMusicCog, keywords: "mp3 wav m4a ogg 转码" },
   { name: "音频压缩", title: "音频压缩", href: "/audio-compressor", icon: TbMusicDown, keywords: "减小体积 码率" },
   { name: "音频倒放", title: "音频倒放", href: "/audio-reverser", icon: TbRewindBackward10, keywords: "声音 反向 逆向 倒序 wav" },
@@ -60,6 +64,9 @@ const tools = [
   { name: "等宽线条", title: "图片等宽线条重绘", href: "/image-line-redraw", icon: TbScribble, keywords: "图像 轮廓 描边 线稿" },
   { name: "ASCII字符画", title: "ASCII字符画生成", href: "/ascii-art", icon: TbTypography, keywords: "文字 字符 figlet 艺术字" },
   { name: "花体字", title: "花体字转换器", href: "/fancy-text", icon: TbTypography, keywords: "文字 字体 unicode 双线体 艺术字 英文" },
+  { name: "抽签大转盘", title: "抽签大转盘", href: "/lottery-wheel", icon: TbWheel, keywords: "抽奖 名单 导入 随机 选择 csv excel" },
+  { name: "短链接", title: "短链接生成", href: "/short-link", icon: TbLink, keywords: "网址 缩短 链接 分享 url" },
+  { name: "计算器", title: "计算器", href: "/calculator", icon: TbCalculator, keywords: "数学 科学 运算 加减乘除 百分比" },
   { name: "敏感内容打码", title: "敏感内容打码", href: "/sensitive-redactor", icon: TbShieldLock, keywords: "图片 图像 模糊 马赛克 隐私 遮挡" },
   { name: "IP地址查询", title: "IP地址查询", href: "/ip-lookup", icon: TbWorldSearch, keywords: "网络 地区 位置 运营商" },
   { name: "智能抠图", title: "智能抠图", href: "/background-remover", icon: TbBackground, keywords: "图片 图像 去除背景 透明 ai" },

@@ -20,7 +20,8 @@ test("页脚显示版权、RSS 与 Sitemap 链接", () => {
 
 test("网站不再记录或提供访客计数接口", () => {
   assert.doesNotMatch(worker, /api\/visits|handleSiteVisits|VISITS_DB/);
-  assert.ok(!("d1_databases" in config));
+  // 短链接可以使用D1，但不能重新启用已经移除的访客统计数据库。
+  assert.ok(!(config.d1_databases ?? []).some((db) => db.binding === "VISITS_DB" || db.database_name === "eason-toolbox-stats"));
 });
 
 test("RSS 与 Sitemap 都是可用的 XML 文件", () => {
