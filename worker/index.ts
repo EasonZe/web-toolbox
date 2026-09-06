@@ -3,8 +3,12 @@ import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } fr
 import handler from "vinext/server/app-router-entry";
 import { handleYoutubeApi } from "./youtube-api";
 import type { FetcherBinding } from "./types";
+import { handleShortLinks } from "./short-links";
+import type { Cloudflare } from "../types/cloudflare-env";
 
 interface Env {
+  SHORT_LINKS: Cloudflare.Env["SHORT_LINKS"];
+  LINK_LIMITER: Cloudflare.Env["LINK_LIMITER"];
   ASSETS: FetcherBinding;
   IMAGES: {
     input(stream: ReadableStream): {
@@ -29,6 +33,9 @@ interface ExecutionContext {
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+    if (url.pathname === "/api/short-links" || url.pathname.startsWith("/s/")) {
+      return handleShortLinks(request, env);
+    }
 
     const isYoutubeApiRoot =
       url.hostname.toLowerCase() === "youtube-api.easonzhan.xyz" &&
