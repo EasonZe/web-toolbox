@@ -23,21 +23,26 @@
     "html-to-pdfmake": "^2.5.34",
     "jsqr": "^1.4.0",
     "mammoth": "^1.12.1",
+    "mathjs": "^15.2.0",
     "mediabunny": "^1.51.0",
     "next": "16.2.12",
+    "papaparse": "^5.7.0",
     "pdfjs-dist": "^6.2.108",
     "pdfmake": "^0.3.11",
     "qrcode": "^1.5.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-icons": "^5.7.0",
+    "read-excel-file": "^9.3.10",
+    "spin-wheel": "^5.0.2",
     "youtubei.js": "^17.2.0"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.47.0",
+    "@cloudflare/vite-plugin": "^1.54.4",
     "@tailwindcss/postcss": "4.2.1",
     "@types/html-to-pdfmake": "^2.4.5",
     "@types/node": "22.19.19",
+    "@types/papaparse": "^5.5.2",
     "@types/pdfmake": "^0.3.3",
     "@types/qrcode": "^1.5.6",
     "@types/react": "19.2.14",
@@ -51,9 +56,12 @@
     "typescript": "5.9.3",
     "vinext": "0.0.50",
     "vite": "8.1.5",
-    "wrangler": "4.114.0"
+    "wrangler": "^4.129.0"
   },
   "overrides": {
+    "spin-wheel": {
+      "canvas": "3.2.3"
+    },
     "@babel/core": "7.29.7",
     "esbuild": "0.28.1",
     "fast-uri": "3.1.4",

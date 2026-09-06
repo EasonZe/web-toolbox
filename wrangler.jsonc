@@ -19,6 +19,17 @@
   "images": {
     "binding": "IMAGES"
   },
+  "d1_databases": [
+    {
+      "binding": "SHORT_LINKS",
+      "database_name": "eason-toolbox-links",
+      "database_id": "81371505-e3b4-41a5-9484-01eff3c466c7",
+      "migrations_dir": "migrations/short-links"
+    }
+  ],
+  "ratelimits": [
+    { "name": "LINK_LIMITER", "namespace_id": "1001", "simple": { "limit": 20, "period": 60 } }
+  ],
   "observability": {
     "enabled": true,
     "head_sampling_rate": 1
