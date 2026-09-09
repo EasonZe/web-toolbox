@@ -1,8 +1,8 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useEffect, useMemo, useState } from "react";
-import { FiEdit3, FiFileText, FiMic, FiSearch, FiStar, FiX } from "react-icons/fi";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { FiChevronRight, FiEdit3, FiFileText, FiMic, FiSearch, FiStar, FiX } from "react-icons/fi";
 import type { IconType } from "react-icons";
 import { SiBilibili, SiKuaishou, SiNeteasecloudmusic, SiTiktok } from "react-icons/si";
 import {
@@ -116,18 +116,24 @@ function readFavorites() {
 }
 
 export function ToolSearchGrid() {
+  const browserRef = useRef<HTMLElement>(null);
   const [query, setQuery] = useState("");
   const [view, setView] = useState<ToolViewMode>("cards");
   const [favorites, setFavorites] = useState<Set<string>>(() => new Set());
   const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<"全部" | ToolCategory>("全部");
   const [expandedCategories, setExpandedCategories] = useState<Set<ToolCategory>>(() => new Set([categoryOrder[0]]));
   const filteredTools = useMemo(
     () => tools.filter((tool) => toolMatchesSearch(tool, query)),
     [query],
   );
+  const categoryTools = useMemo(
+    () => activeCategory === "全部" ? filteredTools : filteredTools.filter((tool) => tool.category === activeCategory),
+    [activeCategory, filteredTools],
+  );
   const visibleTools = useMemo(
-    () => favoritesOnly ? filteredTools.filter((tool) => favorites.has(tool.href)) : filteredTools,
-    [favorites, favoritesOnly, filteredTools],
+    () => favoritesOnly ? categoryTools.filter((tool) => favorites.has(tool.href)) : categoryTools,
+    [categoryTools, favorites, favoritesOnly],
   );
   const searching = normalizeSearch(query).length > 0;
 
@@ -140,24 +146,72 @@ export function ToolSearchGrid() {
       const value = (event as CustomEvent<string>).detail;
       if (isToolViewMode(value)) setView(value);
     };
+    const scrollToBrowser = () => {
+      window.requestAnimationFrame(() => browserRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    };
     const showFavorites = () => {
       setFavoritesOnly(true);
-      window.requestAnimationFrame(() => document.querySelector(".tool-browser")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+      scrollToBrowser();
+    };
+    const toggleFavorites = () => {
+      setFavoritesOnly((current) => {
+        const next = !current;
+        if (next) scrollToBrowser();
+        return next;
+      });
     };
     const handleHash = () => {
       if (window.location.hash === "#favorites") showFavorites();
     };
     window.addEventListener(toolViewChangeEvent, handleViewChange);
-    window.addEventListener(openFavoritesEvent, showFavorites);
+    window.addEventListener(openFavoritesEvent, toggleFavorites);
     window.addEventListener("hashchange", handleHash);
     handleHash();
     return () => {
       window.cancelAnimationFrame(restoreFrame);
       window.removeEventListener(toolViewChangeEvent, handleViewChange);
-      window.removeEventListener(openFavoritesEvent, showFavorites);
+      window.removeEventListener(openFavoritesEvent, toggleFavorites);
       window.removeEventListener("hashchange", handleHash);
     };
   }, []);
+
+  useEffect(() => {
+    const browser = browserRef.current;
+    if (!browser) return;
+
+    let observer: IntersectionObserver | undefined;
+    const frame = window.requestAnimationFrame(() => {
+      const selector = view === "groups"
+        ? ".tool-category-collapsible"
+        : ".tool-category-heading, .tool-card-shell";
+      const items = Array.from(browser.querySelectorAll<HTMLElement>(selector));
+      items.forEach((item, index) => {
+        item.classList.remove("is-revealed");
+        item.classList.add("is-reveal-pending");
+        item.style.setProperty("--reveal-delay", `${Math.min(index % 4, 3) * 45}ms`);
+      });
+
+      if (!("IntersectionObserver" in window)) {
+        items.forEach((item) => item.classList.add("is-revealed"));
+        return;
+      }
+
+      observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const item = entry.target as HTMLElement;
+          item.classList.add("is-revealed");
+          observer?.unobserve(item);
+        });
+      }, { rootMargin: "0px 0px -7% 0px", threshold: 0.08 });
+      items.forEach((item) => observer?.observe(item));
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer?.disconnect();
+    };
+  }, [activeCategory, favoritesOnly, searching, view, visibleTools.length]);
 
   function toggleFavorite(href: string) {
     setFavorites((current) => {
@@ -179,7 +233,7 @@ export function ToolSearchGrid() {
             <strong>{tool.title}</strong>
           </span>
           <span className="tool-card-category">{tool.category}</span>
-          <span className="tool-action" aria-hidden="true"><span className="tool-arrow">→</span></span>
+          <span className="tool-action" aria-hidden="true"><span className="tool-arrow">→</span><FiChevronRight className="tool-table-chevron" /></span>
         </ToolCardLink>
         <button className="tool-favorite-button" type="button" onClick={() => toggleFavorite(tool.href)} aria-label={favorite ? `取消收藏${tool.title}` : `收藏${tool.title}`} aria-pressed={favorite} title={favorite ? "取消收藏" : "加入收藏夹"}>
           <FiStar aria-hidden="true" />
@@ -203,7 +257,7 @@ export function ToolSearchGrid() {
   }
 
   return (
-    <section className="tool-browser" id="favorites" aria-label="工具搜索与列表">
+    <section className="tool-browser" id="favorites" aria-label="工具搜索与列表" ref={browserRef}>
       <div className="tool-browser-toolbar">
         <div className="tool-search">
           <FiSearch aria-hidden="true" />
@@ -214,6 +268,13 @@ export function ToolSearchGrid() {
           <FiStar aria-hidden="true" />{favoritesOnly ? "查看全部" : "收藏夹"}
         </button>
       </div>
+
+      <nav className="tool-category-tabs" aria-label="工具分类">
+        <button className={activeCategory === "全部" ? "is-active" : ""} type="button" onClick={() => setActiveCategory("全部")} aria-pressed={activeCategory === "全部"}>全部</button>
+        {categoryOrder.map((category) => (
+          <button className={activeCategory === category ? "is-active" : ""} type="button" key={category} onClick={() => setActiveCategory(category)} aria-pressed={activeCategory === category}>{category}</button>
+        ))}
+      </nav>
 
       {favoritesOnly ? (
         <div className="favorites-heading">

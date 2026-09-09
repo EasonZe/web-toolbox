@@ -35,7 +35,7 @@ type AccentName =
   | "orange"
   | "pink"
   | "red"
-  | "coral";
+  | "custom";
 
 type ThemeOption = {
   value: ThemeMode;
@@ -54,7 +54,6 @@ type AccentOption = {
 type ToolViewOption = {
   value: ToolViewMode;
   label: string;
-  description: string;
   icon: ComponentType;
 };
 
@@ -114,31 +113,52 @@ const accentOptions: AccentOption[] = [
     hover: "#eba7ad",
     strong: "#9b4f57",
   },
-  {
-    value: "coral",
-    label: "珊瑚",
-    color: "#f6cdbd",
-    hover: "#efb29b",
-    strong: "#9c5a43",
-  },
 ];
 
 const toolViewOptions: ToolViewOption[] = [
-  { value: "groups", label: "折叠分组", description: "按分类展开或收起", icon: FiLayers },
-  { value: "table", label: "紧凑表格", description: "一屏浏览更多工具", icon: FiList },
-  { value: "minimal", label: "极简分割线", description: "只保留必要信息", icon: FiMenu },
-  { value: "cards", label: "卡片网格", description: "当前的大卡片布局", icon: FiGrid },
+  { value: "groups", label: "折叠分组", icon: FiLayers },
+  { value: "table", label: "紧凑表格", icon: FiList },
+  { value: "minimal", label: "极简分割线", icon: FiMenu },
+  { value: "cards", label: "卡片网格", icon: FiGrid },
 ];
 
 const themeStorageKey = "eason-toolbox-theme";
 const accentStorageKey = "eason-toolbox-accent";
+const customAccentStorageKey = "eason-toolbox-custom-accent";
+const defaultCustomAccent = "#756c9c";
 
 function isThemeMode(value: string | null): value is ThemeMode {
   return value === "light" || value === "dark" || value === "system";
 }
 
 function isAccentName(value: string | null): value is AccentName {
-  return accentOptions.some((option) => option.value === value);
+  return value === "custom" || accentOptions.some((option) => option.value === value);
+}
+
+function normalizeHexColor(value: string | null) {
+  return value && /^#[0-9a-f]{6}$/i.test(value) ? value.toLowerCase() : defaultCustomAccent;
+}
+
+function mixHexColor(source: string, target: string, targetRatio: number) {
+  const sourceValue = Number.parseInt(source.slice(1), 16);
+  const targetValue = Number.parseInt(target.slice(1), 16);
+  const mixChannel = (shift: number) => Math.round(
+    ((sourceValue >> shift) & 255) * (1 - targetRatio) + ((targetValue >> shift) & 255) * targetRatio,
+  );
+  return `#${[16, 8, 0].map((shift) => mixChannel(shift).toString(16).padStart(2, "0")).join("")}`;
+}
+
+function customAccentPalette(color: string): AccentOption {
+  const value = normalizeHexColor(color);
+  const rgb = [1, 3, 5].map((index) => Number.parseInt(value.slice(index, index + 2), 16));
+  const luminance = (rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722) / 255;
+  return {
+    value: "custom",
+    label: "自定义颜色",
+    color: mixHexColor(value, "#ffffff", 0.72),
+    hover: mixHexColor(value, "#ffffff", 0.56),
+    strong: luminance > 0.62 ? mixHexColor(value, "#17242d", 0.48) : value,
+  };
 }
 
 export default function FloatingDock() {
@@ -157,6 +177,11 @@ export default function FloatingDock() {
       const savedAccent = window.localStorage.getItem(accentStorageKey);
       return isAccentName(savedAccent) ? savedAccent : "blue";
     } catch { return "blue"; }
+  });
+  const [customAccent, setCustomAccent] = useState(() => {
+    if (typeof window === "undefined") return defaultCustomAccent;
+    try { return normalizeHexColor(window.localStorage.getItem(customAccentStorageKey)); }
+    catch { return defaultCustomAccent; }
   });
   const [toolView, setToolView] = useState<ToolViewMode>(() => {
     if (typeof window === "undefined") return "cards";
@@ -189,16 +214,17 @@ export default function FloatingDock() {
   }, [theme]);
 
   useEffect(() => {
-    const selectedAccent =
-      accentOptions.find((option) => option.value === accent) ??
-      accentOptions[0];
+    const selectedAccent = accent === "custom"
+      ? customAccentPalette(customAccent)
+      : accentOptions.find((option) => option.value === accent) ?? accentOptions[0];
     const root = document.documentElement;
 
     root.style.setProperty("--accent", selectedAccent.color);
     root.style.setProperty("--accent-hover", selectedAccent.hover);
     root.style.setProperty("--accent-strong", selectedAccent.strong);
     try { window.localStorage.setItem(accentStorageKey, accent); } catch { /* Keep the selected color usable without storage. */ }
-  }, [accent]);
+    try { window.localStorage.setItem(customAccentStorageKey, customAccent); } catch { /* Keep the selected color usable without storage. */ }
+  }, [accent, customAccent]);
 
   useEffect(() => {
     document.documentElement.dataset.toolView = toolView;
@@ -272,6 +298,11 @@ export default function FloatingDock() {
     if (typeof window.CustomEvent === "function") {
       window.dispatchEvent(new window.CustomEvent(openFavoritesEvent));
     }
+  }
+
+  function selectToolView(value: ToolViewMode) {
+    setToolView(value);
+    setSettingsOpen(false);
   }
 
   return (
@@ -388,11 +419,11 @@ export default function FloatingDock() {
                       className={`tool-view-button${selected ? " is-selected" : ""}`}
                       type="button"
                       key={option.value}
-                      onClick={() => setToolView(option.value)}
+                      onClick={() => selectToolView(option.value)}
                       aria-pressed={selected}
                     >
                       <ViewIcon aria-hidden="true" />
-                      <span><strong>{option.label}</strong><small>{option.description}</small></span>
+                      <strong>{option.label}</strong>
                       {selected ? <FiCheck aria-hidden="true" /> : null}
                     </button>
                   );
@@ -431,6 +462,23 @@ export default function FloatingDock() {
                     </button>
                   );
                 })}
+                <label
+                  className={`accent-button accent-custom-button${accent === "custom" ? " is-selected" : ""}`}
+                  aria-label="自定义主题颜色"
+                  title="自定义颜色"
+                  style={{ "--swatch-color": customAccent, "--swatch-strong": customAccent } as CSSProperties}
+                >
+                  <input
+                    type="color"
+                    value={customAccent}
+                    onChange={(event) => {
+                      setCustomAccent(normalizeHexColor(event.target.value));
+                      setAccent("custom");
+                    }}
+                    aria-label="选择自定义主题颜色"
+                  />
+                  {accent === "custom" ? <FiCheck aria-hidden="true" /> : <span aria-hidden="true">+</span>}
+                </label>
               </div>
             </div>
           </div>
