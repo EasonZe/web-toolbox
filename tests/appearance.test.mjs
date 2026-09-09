@@ -25,6 +25,12 @@ function renderDock({ savedTheme, savedAccent, osDark = true, storageBlocked = f
       if (name === "react/jsx-runtime") return { jsx, jsxs: jsx };
       if (name === "next/navigation") return { usePathname: () => "/" };
       if (name === "react-icons/fi") return {};
+      if (name === "../lib/home-preferences") return {
+        isToolViewMode: (value) => ["groups", "table", "minimal", "cards"].includes(value),
+        openFavoritesEvent: "eason-toolbox-open-favorites",
+        toolViewChangeEvent: "eason-toolbox-tool-view-change",
+        toolViewStorageKey: "eason-toolbox-tool-view",
+      };
       throw new Error(name);
     },
   });
