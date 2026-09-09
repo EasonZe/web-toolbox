@@ -44,7 +44,25 @@ test("renders the multifunction toolbox homepage with internal and third-party t
   assert.match(html, /href="\/audio-converter"/);
   assert.match(html, /href="\/audio-compressor"/);
   assert.match(html, /href="\/audio-reverser"/);
+  assert.match(html, /href="\/audio-speed-pitch"/);
+  assert.match(html, /href="\/microphone-recorder"/);
   assert.match(html, /href="\/image-watermark"/);
+  assert.match(html, /href="\/image-text"/);
+  assert.match(html, /href="\/bead-pattern"/);
+  assert.match(html, /href="\/pixel-art"/);
+  assert.match(html, /href="\/image-palette"/);
+  assert.match(html, /我的卡片/);
+  assert.match(html, /一个零手工纯AI开发小白/);
+  assert.match(html, /href="https:\/\/easonzhan\.xyz\/"/);
+  assert.match(html, /href="\/base-converter"/);
+  assert.match(html, /href="\/function-plotter"/);
+  assert.match(html, /href="\/morse-code"/);
+  assert.match(html, /href="\/screen-test"/);
+  assert.match(html, /href="\/keyboard-test"/);
+  assert.match(html, /href="\/date-calculator"/);
+  assert.match(html, /href="\/countdown"/);
+  assert.match(html, /href="\/currency-converter"/);
+  assert.match(html, /href="\/world-clock"/);
   assert.match(html, /href="\/image-converter"/);
   assert.match(html, /href="\/image-compressor"/);
   assert.match(html, /href="\/image-base64"/);
@@ -58,6 +76,7 @@ test("renders the multifunction toolbox homepage with internal and third-party t
   assert.match(html, /href="\/image-line-redraw"/);
   assert.match(html, /href="\/ascii-art"/);
   assert.match(html, /href="\/fancy-text"/);
+  assert.match(html, /href="\/word-counter"/);
   assert.match(html, /href="\/sensitive-redactor"/);
   assert.match(html, /href="\/ip-lookup"/);
   assert.match(html, /href="\/background-remover"/);
@@ -79,12 +98,28 @@ test("renders the multifunction toolbox homepage with internal and third-party t
   assert.match(html, /视频倒放/);
   assert.match(html, /音频格式转换/);
   assert.match(html, /音频倒放/);
+  assert.match(html, /音频变速与变调/);
+  assert.match(html, /麦克风测试与录音/);
   assert.match(html, /图片加水印/);
+  assert.match(html, /图片加文字与对话框/);
+  assert.match(html, /拼豆图纸生成/);
+  assert.match(html, /图片转像素画/);
+  assert.match(html, /图片取色与配色提取/);
+  assert.match(html, /进制转换器/);
+  assert.match(html, /函数图像绘制/);
+  assert.match(html, /摩斯电码转换/);
+  assert.match(html, /屏幕纯色测试/);
+  assert.match(html, /键盘按键测试/);
+  assert.match(html, /日期计算器/);
+  assert.match(html, /倒计时器/);
+  assert.match(html, /实时汇率转换/);
+  assert.match(html, /全球实时时间/);
   assert.match(html, /图片格式转换/);
   assert.match(html, /图片压缩/);
   assert.match(html, /图片等宽线条重绘/);
   assert.match(html, /ASCII字符画生成/);
   assert.match(html, /花体字转换器/);
+  assert.match(html, /字数统计/);
   assert.match(html, /敏感内容打码/);
   assert.match(html, /IP地址查询/);
   assert.match(html, /智能抠图/);
@@ -99,6 +134,103 @@ test("renders the multifunction toolbox homepage with internal and third-party t
   assert.match(html, /aria-label="打开设置"/);
   assert.match(html, /aria-label="爱发电支持作者"/);
   assert.doesNotMatch(html, /本站累计访问次数|访客计数/);
+});
+
+test("图片文字工具初始显示预览、多种字体、对话框和导出设置", async () => {
+  const response = await render("/image-text");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  for (const text of ["图片加文字与对话框工具", "选择图片 / 拖入文件", "实时预览", "文字内容", "楷体", "仿宋", "圆体", "Arial", "Georgia", "无对话框", "圆角框", "左尾气泡", "右尾气泡", "思考气泡", "字幕框", "水平位置", "垂直位置", "导出格式", "下载图片", "最大 25 MB"]) assert.ok(html.includes(text), text);
+  assert.doesNotMatch(html, /描边/);
+  assert.match(html, /disabled="">.*下载图片/s);
+  assert.doesNotMatch(html, /不会上传|浏览器本地运行|在线工具/);
+});
+
+test("字数统计工具初始显示完整统计项与编辑操作", async () => {
+  const response = await render("/word-counter");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  for (const text of ["字数统计工具", "输入文字", "粘贴", "复制", "清空", "字符（含空格）", "字符（不含空格）", "中文字符", "总词数", "英文 / 数字词", "段落", "行数", "句数", "UTF-8", "预计阅读时长"]) assert.ok(html.includes(text), text);
+  assert.match(html, /aria-label="需要统计的文字"/);
+  assert.doesNotMatch(html, /不会上传|浏览器本地运行|在线工具/);
+});
+
+test("麦克风工具初始显示设备、波形、输入处理和录音结果", async () => {
+  const response = await render("/microphone-recorder");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  for (const text of ["麦克风测试与录音工具", "输入设备", "麦克风实时波形", "开始测试", "回声消除", "噪声抑制", "自动增益", "开始录音", "录音结果", "完成录音后可在这里试听和下载"]) assert.ok(html.includes(text), text);
+  assert.doesNotMatch(html, /不会上传|浏览器本地运行|在线工具/);
+});
+
+test("拼豆图纸页面初始显示图纸、设置和用量统计", async () => {
+  const response = await render("/bead-pattern");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  for (const text of ["拼豆图纸生成工具", "图纸预览", "横向豆数", "最多颜色", "显示格线", "显示编号", "生成拼豆图纸", "颜色与用量", "下载 PNG 图纸"]) assert.ok(html.includes(text), text);
+  assert.match(html, /disabled="">.*下载 PNG 图纸/s);
+});
+
+test("像素画页面初始显示量化、抖动和导出设置", async () => {
+  const response = await render("/pixel-art");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  for (const text of ["图片转像素画工具", "像素画设置", "像素宽度", "颜色数量", "不抖动，边缘清晰", "Floyd–Steinberg", "Atkinson", "导出放大倍数", "像素画预览", "下载像素画 PNG"]) assert.ok(html.includes(text), text);
+});
+
+test("图片配色页面初始显示取色、主色提取和 CSS 导出", async () => {
+  const response = await render("/image-palette");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  for (const text of ["图片取色与配色提取工具", "图片取色", "点击图片选取颜色", "提取数量", "忽略近白色背景", "重新提取配色", "复制 CSS", "下载 CSS", "提取的配色"]) assert.ok(html.includes(text), text);
+});
+
+test("六个通用工具页面显示完整初始操作", async () => {
+  const cases = [
+    ["/base-converter", ["进制转换器", "原始进制", "目标进制", "常用进制", "复制转换结果"]],
+    ["/function-plotter", ["函数图像绘制", "函数设置", "图像预览", "绘制函数图像", "下载 SVG"]],
+    ["/morse-code", ["摩斯电码转换", "文字 → 摩斯", "摩斯 → 文字", "播放电码", "字符集"]],
+    ["/screen-test", ["屏幕纯色测试", "测试颜色", "开始全屏测试", "坏点", "Esc"]],
+    ["/keyboard-test", ["键盘按键测试", "开始键盘测试", "最大同时按下", "虚拟键盘", "最近按键事件"]],
+    ["/date-calculator", ["日期计算器", "日期间隔", "日期加减", "工作日", "目标日期"]],
+  ];
+  for (const [path, texts] of cases) {
+    const response = await render(path);
+    assert.equal(response.status, 200, path);
+    const html = await response.text();
+    for (const text of texts) assert.ok(html.includes(text), `${path}: ${text}`);
+  }
+});
+
+test("四个新增工具页面显示完整初始操作", async () => {
+  const cases = [
+    ["/audio-speed-pitch", ["音频变速与变调", "播放速度", "音高", "开始处理音频", "处理完成后可试听和下载"]],
+    ["/countdown", ["倒计时器", "按时长", "到指定时间", "开始倒计时", "全屏显示", "结束时播放提示音"]],
+    ["/currency-converter", ["实时汇率转换", "交换货币", "刷新最新汇率", "参考汇率日期", "Frankfurter"]],
+    ["/world-clock", ["全球实时时间", "选择时区", "添加时钟", "重新校准", "全屏"]],
+  ];
+  for (const [path, texts] of cases) {
+    const response = await render(path);
+    assert.equal(response.status, 200, path);
+    const html = await response.text();
+    for (const text of texts) assert.ok(html.includes(text), `${path}: ${text}`);
+  }
+});
+
+test("3D模型预览页显示导入、预览与转台导出设置", async () => {
+  const response = await render("/model-turntable");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  for (const text of ["3D模型预览与转台动画", "选择或拖入3D模型", "自动转台旋转", "灯光强度", "导出PNG截图", "导出360°转台动画", "方形 720×720", "文件只在本地处理"]) assert.ok(html.includes(text), text);
+  assert.match(html, /<canvas/);
+});
+
+test("抽签工具提供三种抽奖方式，摩斯提供原生音频回退", async () => {
+  const lottery = await (await render("/lottery-wheel")).text();
+  for (const text of ["抽签与随机选择", "大转盘", "翻牌抽签", "名单滚动"]) assert.ok(lottery.includes(text), text);
+  const morse = await (await render("/morse-code")).text();
+  for (const text of ["播放电码", "原生播放器"]) assert.ok(morse.includes(text), text);
+  assert.match(morse, /<audio/);
 });
 
 test("图片Base64页面初始显示双向转换、预览和输出格式", async () => {
@@ -336,6 +468,7 @@ test("renders the local image watermark tool", async () => {
   assert.match(html, /选择原图/);
   assert.match(html, /最大25 MB/);
   assert.match(html, /支持单点水印、平铺水印与网格水印/);
+  for (const text of ["平铺水印", "网格水印", "透明度", "水印效果", "水印间距"]) assert.ok(html.includes(text), text);
   assert.match(html, /实时预览/);
   assert.match(html, /水印设置/);
   assert.match(html, /尚未选择图片/);

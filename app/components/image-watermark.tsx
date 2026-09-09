@@ -27,14 +27,15 @@ const maxImagePixels = 24_000_000;
 const positionOptions: Array<{
   value: WatermarkPosition;
   label: string;
+  description: string;
 }> = [
-  { value: "grid", label: "网格" },
-  { value: "tile", label: "平铺" },
-  { value: "top-left", label: "左上角" },
-  { value: "top-right", label: "右上角" },
-  { value: "center", label: "居中" },
-  { value: "bottom-left", label: "左下角" },
-  { value: "bottom-right", label: "右下角" },
+  { value: "tile", label: "平铺水印", description: "错位重复" },
+  { value: "grid", label: "网格水印", description: "整齐排列" },
+  { value: "top-left", label: "左上角", description: "单点" },
+  { value: "top-right", label: "右上角", description: "单点" },
+  { value: "center", label: "居中", description: "单点" },
+  { value: "bottom-left", label: "左下角", description: "单点" },
+  { value: "bottom-right", label: "右下角", description: "单点" },
 ];
 
 function formatFileSize(bytes: number) {
@@ -106,9 +107,10 @@ export default function ImageWatermark() {
   const [mode, setMode] = useState<WatermarkMode>("text");
   const [text, setText] = useState("多功能工具箱");
   const [color, setColor] = useState("#ffffff");
-  const [opacity, setOpacity] = useState(55);
+  const [opacity, setOpacity] = useState(65);
   const [size, setSize] = useState(9);
   const [position, setPosition] = useState<WatermarkPosition>("grid");
+  const [spacing, setSpacing] = useState(70);
   const [rotation, setRotation] = useState(0);
   const [outputFormat, setOutputFormat] =
     useState<OutputFormat>("image/png");
@@ -176,8 +178,9 @@ export default function ImageWatermark() {
       };
 
       if (position === "tile" || position === "grid") {
-        const stepX = Math.max(textWidth + fontSize * 2.8, fontSize * 7);
-        const stepY = Math.max(textHeight + fontSize * 2.4, fontSize * 4);
+        const spacingRatio = spacing / 100;
+        const stepX = Math.max(textWidth + fontSize * 1.5, textWidth * (1 + spacingRatio));
+        const stepY = Math.max(textHeight + fontSize, textHeight * (1 + spacingRatio * 1.4));
         let row = 0;
         for (let y = -stepY; y < height + stepY; y += stepY, row += 1) {
           const rowOffset =
@@ -219,8 +222,9 @@ export default function ImageWatermark() {
       };
 
       if (position === "tile" || position === "grid") {
-        const stepX = watermarkWidth * 1.65;
-        const stepY = watermarkHeight * 1.75;
+        const spacingRatio = spacing / 100;
+        const stepX = watermarkWidth * (1 + spacingRatio);
+        const stepY = watermarkHeight * (1 + spacingRatio);
         let row = 0;
         for (let y = -stepY; y < height + stepY; y += stepY, row += 1) {
           const rowOffset =
@@ -249,6 +253,7 @@ export default function ImageWatermark() {
     position,
     rotation,
     size,
+    spacing,
     sourceImage,
     text,
     watermarkImage,
@@ -504,34 +509,60 @@ export default function ImageWatermark() {
                   </label>
                 ) : null}
 
-                <label>
+                <div className="watermark-layout-control">
                   <span>布局方式</span>
-                  <select
-                    value={position}
-                    onChange={(event) =>
-                      setPosition(event.target.value as WatermarkPosition)
-                    }
-                  >
+                  <div className="watermark-layout-options" role="group" aria-label="水印布局方式">
                     {positionOptions.map((option) => (
-                      <option value={option.value} key={option.value}>
-                        {option.label}
-                      </option>
+                      <button
+                        type="button"
+                        className={position === option.value ? "is-selected" : ""}
+                        aria-pressed={position === option.value}
+                        onClick={() => setPosition(option.value)}
+                        key={option.value}
+                      >
+                        <strong>{option.label}</strong>
+                        <small>{option.description}</small>
+                      </button>
                     ))}
-                  </select>
-                </label>
+                  </div>
+                </div>
 
-                <label>
-                  <span>
+                <div className="watermark-opacity-control">
+                  <span id="watermark-opacity-label">
                     透明度 <strong>{opacity}%</strong>
                   </span>
                   <input
                     type="range"
-                    min="10"
+                    aria-labelledby="watermark-opacity-label"
+                    min="0"
                     max="100"
+                    step="5"
                     value={opacity}
                     onChange={(event) => setOpacity(Number(event.target.value))}
                   />
-                </label>
+                  <div className="watermark-opacity-preview" aria-hidden="true">
+                    <i style={{ opacity: opacity / 100 }}>水印效果</i>
+                  </div>
+                  <div className="watermark-opacity-presets" aria-label="透明度快捷设置">
+                    {[20, 50, 80, 100].map((value) => <button type="button" className={opacity === value ? "is-selected" : ""} onClick={() => setOpacity(value)} key={value}>{value}%</button>)}
+                  </div>
+                </div>
+
+                {position === "tile" || position === "grid" ? (
+                  <label>
+                    <span>
+                      水印间距 <strong>{spacing}%</strong>
+                    </span>
+                    <input
+                      type="range"
+                      min="20"
+                      max="180"
+                      step="5"
+                      value={spacing}
+                      onChange={(event) => setSpacing(Number(event.target.value))}
+                    />
+                  </label>
+                ) : null}
 
                 <label>
                   <span>

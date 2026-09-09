@@ -8,12 +8,16 @@ import { FileDropZone } from "./file-drop-zone";
 import { UtilityShell } from "./utility-shell";
 
 const example = "小明\n小红\n小张\n小李\n小王\n小陈";
+type DrawMode = "wheel" | "cards" | "ticker";
+
 export default function LotteryWheel() {
   const [text, setText] = useState(example);
   const [exclude, setExclude] = useState(true);
   const [removed, setRemoved] = useState<number[]>([]);
   const [history, setHistory] = useState<string[]>([]);
   const [winner, setWinner] = useState("");
+  const [drawMode, setDrawMode] = useState<DrawMode>("wheel");
+  const [slotPreview, setSlotPreview] = useState("");
   const [busy, setBusy] = useState(false);
   const [reading, setReading] = useState(false);
   const [ready, setReady] = useState(false);
@@ -25,6 +29,8 @@ export default function LotteryWheel() {
   const wheel = useRef<Wheel | null>(null);
   const running = useRef(false);
   const importJob = useRef(0);
+  const animationTimer = useRef<number | null>(null);
+  const tickerTimer = useRef<number | null>(null);
   const selection = useRef<{ name: string; index: number; exclude: boolean } | null>(null);
   const parsed = useMemo(() => {
     try { return { names: parseNames(text), error: "" }; }
@@ -32,6 +38,7 @@ export default function LotteryWheel() {
   }, [text]);
   // Keep the wheel fixed after a draw so the pointer continues to show the winning name.
   useEffect(() => {
+    if (drawMode !== "wheel") return;
     let disposed = false;
     void import("spin-wheel").then(({ Wheel }) => {
       if (disposed || !holder.current) return;
@@ -53,21 +60,46 @@ export default function LotteryWheel() {
       setReady(true);
     }).catch(() => { if (!disposed) setError("转盘加载失败，请刷新重试。"); });
     return () => { disposed = true; wheel.current?.remove(); wheel.current = null; };
-  }, [parsed.names]);
-  useEffect(() => () => { importJob.current++; running.current = false; }, []);
+  }, [parsed.names, drawMode]);
+  useEffect(() => () => {
+    importJob.current++; running.current = false;
+    if (animationTimer.current) window.clearTimeout(animationTimer.current);
+    if (tickerTimer.current) window.clearInterval(tickerTimer.current);
+  }, []);
 
   function updateNames(next: string) {
     if (next !== text) setReady(false);
     setText(next); setRemoved([]); setHistory([]); setWinner(""); setError("");
   }
-  function spin() {
-    if (running.current || !wheel.current) return;
+  function candidates() { return parsed.names.map((name, index) => ({ name, index })).filter((value) => !exclude || !removed.includes(value.index)); }
+  function choose() { const values = candidates(); return values[randomWinner(values.length)]; }
+  function completeDraw(drawn: { name: string; index: number; exclude: boolean }) {
+    running.current = false; setBusy(false); setWinner(drawn.name); setSlotPreview(drawn.name);
+    setHistory((value) => [drawn.name, ...value].slice(0, 500));
+    if (drawn.exclude) setRemoved((value) => [...value, drawn.index]);
+  }
+  function draw() {
+    if (running.current) return;
     try {
-      const candidates = parsed.names.map((name, index) => ({ name, index })).filter((v) => !exclude || !removed.includes(v.index));
-      const selected = candidates[randomWinner(candidates.length)];
-      selection.current = { ...selected, exclude };
+      const selected = choose();
+      const drawn = { ...selected, exclude };
+      selection.current = drawn;
       running.current = true; setBusy(true); setWinner(""); setError("");
-      wheel.current.spinToItem(selected.index, matchMedia("(prefers-reduced-motion: reduce)").matches ? 100 : 4500, true, 5, 1);
+      if (drawMode === "wheel") {
+        if (!wheel.current) throw new Error("转盘尚未加载完成");
+        wheel.current.spinToItem(selected.index, matchMedia("(prefers-reduced-motion: reduce)").matches ? 100 : 4500, true, 5, 1);
+        return;
+      }
+      const duration = matchMedia("(prefers-reduced-motion: reduce)").matches ? 80 : drawMode === "cards" ? 1100 : 1800;
+      if (drawMode === "ticker") {
+        const values = candidates();
+        tickerTimer.current = window.setInterval(() => setSlotPreview(values[randomWinner(values.length)].name), 75);
+      }
+      animationTimer.current = window.setTimeout(() => {
+        if (tickerTimer.current) window.clearInterval(tickerTimer.current);
+        tickerTimer.current = null; animationTimer.current = null;
+        completeDraw(drawn);
+      }, duration);
     } catch (e) { running.current = false; setBusy(false); setError((e as Error).message); }
   }
   async function importFile(file: File) {
@@ -109,12 +141,19 @@ export default function LotteryWheel() {
     const a = document.createElement("a"); a.href = url; a.download = "抽签记录.txt"; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
   const remaining = parsed.names.length - (exclude ? removed.length : 0);
-  return <UtilityShell title="抽签大转盘" description="导入名单或手动填写，转动大转盘抽取幸运选项。">
+  return <UtilityShell title="抽签与随机选择" description="支持大转盘、翻牌抽签和名单滚动三种抽奖方式，可导入名单并导出记录。">
+    <div className="draw-mode-tabs" role="tablist" aria-label="抽奖方式">
+      <button type="button" role="tab" aria-selected={drawMode === "wheel"} onClick={() => { if (!busy) { setReady(false); setDrawMode("wheel"); setWinner(""); } }}>大转盘</button>
+      <button type="button" role="tab" aria-selected={drawMode === "cards"} onClick={() => { if (!busy) { setDrawMode("cards"); setWinner(""); } }}>翻牌抽签</button>
+      <button type="button" role="tab" aria-selected={drawMode === "ticker"} onClick={() => { if (!busy) { setDrawMode("ticker"); setWinner(""); } }}>名单滚动</button>
+    </div>
     <div className="utility-columns">
       <div className="utility-panel wheel-panel">
-        <div className="wheel-frame"><div className="wheel-pointer" aria-hidden="true" /><div ref={holder} className="wheel-canvas" role="img" aria-label={`抽签转盘，共${parsed.names.length}项`} /></div>
-        <div className="wheel-result" role="status">{busy ? "转盘正在转动…" : winner ? `抽中了：${winner}` : "好运即将揭晓"}</div>
-        <button className="primary-button" type="button" disabled={busy || reading || !ready || remaining < 1 || !!parsed.error} onClick={spin}>{busy ? "正在抽取…" : "开始抽签"}</button>
+        {drawMode === "wheel" ? <div className="wheel-frame"><div className="wheel-pointer" aria-hidden="true" /><div ref={holder} className="wheel-canvas" role="img" aria-label={`抽签转盘，共${parsed.names.length}项`} /></div> : null}
+        {drawMode === "cards" ? <div className={`lottery-card-stage${busy ? " is-shuffling" : ""}`} aria-label="翻牌抽签"><div className="lottery-card-grid">{Array.from({ length: Math.min(12, Math.max(6, parsed.names.length)) }, (_, index) => <i key={index}>?</i>)}</div>{winner ? <strong>{winner}</strong> : <span>{busy ? "正在洗牌…" : "点击开始后翻开幸运卡片"}</span>}</div> : null}
+        {drawMode === "ticker" ? <div className={`lottery-ticker${busy ? " is-running" : ""}`} aria-label="名单滚动抽签"><span>{winner || slotPreview || "准备滚动名单"}</span><small>{busy ? "正在随机滚动…" : "名单会快速滚动并停在结果上"}</small></div> : null}
+        <div className="wheel-result" role="status">{busy ? drawMode === "wheel" ? "转盘正在转动…" : drawMode === "cards" ? "正在洗牌翻卡…" : "名单正在滚动…" : winner ? `抽中了：${winner}` : "好运即将揭晓"}</div>
+        <button className="primary-button" type="button" disabled={busy || reading || (drawMode === "wheel" && !ready) || remaining < 1 || !!parsed.error} onClick={draw}>{busy ? "正在抽取…" : `开始${drawMode === "wheel" ? "转盘" : drawMode === "cards" ? "翻牌" : "滚动"}抽签`}</button>
         <p className="utility-muted">{exclude ? `剩余 ${remaining} / ${parsed.names.length} 项可抽取` : `共 ${parsed.names.length} 项，可重复抽取`}</p>
       </div>
       <div className="utility-panel utility-controls">

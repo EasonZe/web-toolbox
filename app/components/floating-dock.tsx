@@ -8,11 +8,23 @@ import {
   FiArrowUp,
   FiCheck,
   FiHeart,
+  FiGrid,
+  FiLayers,
+  FiList,
+  FiMenu,
   FiMonitor,
   FiMoon,
   FiSettings,
+  FiStar,
   FiSun,
 } from "react-icons/fi";
+import {
+  isToolViewMode,
+  openFavoritesEvent,
+  toolViewChangeEvent,
+  toolViewStorageKey,
+  type ToolViewMode,
+} from "../lib/home-preferences";
 
 type ThemeMode = "light" | "dark" | "system";
 type AccentName =
@@ -37,6 +49,13 @@ type AccentOption = {
   color: string;
   hover: string;
   strong: string;
+};
+
+type ToolViewOption = {
+  value: ToolViewMode;
+  label: string;
+  description: string;
+  icon: ComponentType;
 };
 
 const themeOptions: ThemeOption[] = [
@@ -104,6 +123,13 @@ const accentOptions: AccentOption[] = [
   },
 ];
 
+const toolViewOptions: ToolViewOption[] = [
+  { value: "groups", label: "折叠分组", description: "按分类展开或收起", icon: FiLayers },
+  { value: "table", label: "紧凑表格", description: "一屏浏览更多工具", icon: FiList },
+  { value: "minimal", label: "极简分割线", description: "只保留必要信息", icon: FiMenu },
+  { value: "cards", label: "卡片网格", description: "当前的大卡片布局", icon: FiGrid },
+];
+
 const themeStorageKey = "eason-toolbox-theme";
 const accentStorageKey = "eason-toolbox-accent";
 
@@ -131,6 +157,13 @@ export default function FloatingDock() {
       const savedAccent = window.localStorage.getItem(accentStorageKey);
       return isAccentName(savedAccent) ? savedAccent : "blue";
     } catch { return "blue"; }
+  });
+  const [toolView, setToolView] = useState<ToolViewMode>(() => {
+    if (typeof window === "undefined") return "cards";
+    try {
+      const savedView = window.localStorage.getItem(toolViewStorageKey);
+      return isToolViewMode(savedView) ? savedView : "cards";
+    } catch { return "cards"; }
   });
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -166,6 +199,14 @@ export default function FloatingDock() {
     root.style.setProperty("--accent-strong", selectedAccent.strong);
     try { window.localStorage.setItem(accentStorageKey, accent); } catch { /* Keep the selected color usable without storage. */ }
   }, [accent]);
+
+  useEffect(() => {
+    document.documentElement.dataset.toolView = toolView;
+    try { window.localStorage.setItem(toolViewStorageKey, toolView); } catch { /* Keep the view usable without storage. */ }
+    if (typeof window.CustomEvent === "function") {
+      window.dispatchEvent(new window.CustomEvent(toolViewChangeEvent, { detail: toolView }));
+    }
+  }, [toolView]);
 
   useEffect(() => {
     const updateScrollButton = () => setShowScrollTop(window.scrollY > 32);
@@ -223,6 +264,16 @@ export default function FloatingDock() {
     setSettingsOpen(true);
   }
 
+  function openFavorites() {
+    if (pathname !== "/") {
+      window.location.assign("/#favorites");
+      return;
+    }
+    if (typeof window.CustomEvent === "function") {
+      window.dispatchEvent(new window.CustomEvent(openFavoritesEvent));
+    }
+  }
+
   return (
     <>
       <aside
@@ -240,6 +291,15 @@ export default function FloatingDock() {
         >
           <FiHeart aria-hidden="true" />
         </a>
+        <button
+          className="dock-button"
+          type="button"
+          onClick={openFavorites}
+          aria-label="打开收藏夹"
+          title="收藏夹"
+        >
+          <FiStar aria-hidden="true" />
+        </button>
         <button
           className={`dock-button${settingsOpen ? " is-active" : ""}`}
           type="button"
@@ -310,6 +370,34 @@ export default function FloatingDock() {
                   </button>
                 );
               })}
+            </div>
+
+            <div className="settings-divider" />
+
+            <div className="tool-view-settings">
+              <div>
+                <h3>工具列表</h3>
+                <p>选择首页工具的排列方式，偏好会自动保存在当前浏览器。</p>
+              </div>
+              <div className="tool-view-grid" aria-label="工具列表排列方式">
+                {toolViewOptions.map((option) => {
+                  const ViewIcon = option.icon;
+                  const selected = toolView === option.value;
+                  return (
+                    <button
+                      className={`tool-view-button${selected ? " is-selected" : ""}`}
+                      type="button"
+                      key={option.value}
+                      onClick={() => setToolView(option.value)}
+                      aria-pressed={selected}
+                    >
+                      <ViewIcon aria-hidden="true" />
+                      <span><strong>{option.label}</strong><small>{option.description}</small></span>
+                      {selected ? <FiCheck aria-hidden="true" /> : null}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <div className="settings-divider" />

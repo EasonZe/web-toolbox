@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { HomeScrollRestorer } from "./components/home-scroll-restorer";
 import { ToolSearchGrid } from "./components/tool-search-grid";
 
@@ -11,6 +12,26 @@ export default function Home() {
       </header>
 
       <ToolSearchGrid />
+
+      <section className="author-card" aria-label="关于 Eason">
+        <Image
+          src="https://user15484.cn.imgto.link/public/20260824/03-default-no-bg-2.avif"
+          alt="Eason 的头像"
+          width={76}
+          height={76}
+          unoptimized
+          loading="lazy"
+          referrerPolicy="no-referrer"
+        />
+        <div className="author-card-copy">
+          <span>我的卡片</span>
+          <h2>Eason</h2>
+          <p>一个零手工纯AI开发小白</p>
+        </div>
+        <a href="https://easonzhan.xyz/" target="_blank" rel="noopener noreferrer">
+          我的博客 <span aria-hidden="true">↗</span>
+        </a>
+      </section>
 
       <footer className="site-footer">
         <p className="site-footer-meta">
