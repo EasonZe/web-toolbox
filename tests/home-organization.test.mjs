@@ -41,3 +41,29 @@ test("收藏入口、列表设置、个人卡片和默认参考网格均已接�
   assert.match(model, /useState\(true\).*?showGrid|\[showGrid, setShowGrid\] = useState\(true\)/s);
   assert.match(model, /grid\.visible = true/);
 });
+
+test("首页分类标签、滚动渐入和收藏夹切换均已接入", async () => {
+  const [source, styles] = await Promise.all([
+    read("../app/components/tool-search-grid.tsx"),
+    read("../app/globals.css"),
+  ]);
+  assert.match(source, /className="tool-category-tabs" aria-label="工具分类"/);
+  assert.match(source, /activeCategory === "全部"/);
+  assert.match(source, /new IntersectionObserver/);
+  assert.match(source, /setFavoritesOnly\(\(current\) =>/);
+  assert.match(styles, /\.tool-card-shell\.is-reveal-pending\.is-revealed/);
+  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
+});
+
+test("设置中的列表选项保持简洁并支持自定义主题颜色", async () => {
+  const [dock, styles] = await Promise.all([
+    read("../app/components/floating-dock.tsx"),
+    read("../app/globals.css"),
+  ]);
+  assert.doesNotMatch(dock, /description: "按分类展开或收起"/);
+  assert.match(dock, /setToolView\(value\);\s*setSettingsOpen\(false\);/);
+  assert.match(dock, /type="color"/);
+  assert.match(dock, /eason-toolbox-custom-accent/);
+  assert.match(styles, /\.theme-mode-grid \{\s*grid-template-columns: repeat\(3/);
+  assert.match(styles, /\.is-table \.tool-table-chevron/);
+});
