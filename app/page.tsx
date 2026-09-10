@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { AiOutlineGithub, AiOutlineQq } from "react-icons/ai";
+import { FiGlobe } from "react-icons/fi";
 import { HomeScrollRestorer } from "./components/home-scroll-restorer";
 import { ToolSearchGrid } from "./components/tool-search-grid";
 
@@ -14,23 +16,30 @@ export default function Home() {
       <ToolSearchGrid />
 
       <section className="author-card" aria-label="关于 Eason">
-        <Image
-          src="https://user15484.cn.imgto.link/public/20260824/03-default-no-bg-2.avif"
-          alt="Eason 的头像"
-          width={76}
-          height={76}
-          unoptimized
-          loading="lazy"
-          referrerPolicy="no-referrer"
-        />
-        <div className="author-card-copy">
-          <span>我的卡片</span>
-          <h2>Eason</h2>
-          <p>一个零手工纯AI开发小白</p>
+        <div className="author-profile">
+          <Image
+            src="/images/eason-avatar.png"
+            alt="Eason 的头像"
+            width={72}
+            height={72}
+            unoptimized
+            loading="lazy"
+          />
+          <div className="author-card-copy">
+            <h2>Eason</h2>
+          </div>
         </div>
-        <a href="https://easonzhan.xyz/" target="_blank" rel="noopener noreferrer">
-          我的博客 <span aria-hidden="true">↗</span>
-        </a>
+        <nav className="author-links" aria-label="Eason 的个人主页">
+          <a href="https://github.com/EasonZe" target="_blank" rel="noopener noreferrer" aria-label="Eason 的 GitHub 主页" title="EasonZe">
+            <AiOutlineGithub aria-hidden="true" /><span>GitHub</span>
+          </a>
+          <a href="https://qm.qq.com/q/7dNxa3Hgt2" target="_blank" rel="noopener noreferrer" aria-label="通过 QQ 联系 Eason" title="24125567">
+            <AiOutlineQq aria-hidden="true" /><span>QQ</span>
+          </a>
+          <a href="https://easonzhan.xyz/" target="_blank" rel="noopener noreferrer" aria-label="Eason 的博客" title="Blog">
+            <FiGlobe aria-hidden="true" /><span>Blog</span>
+          </a>
+        </nav>
       </section>
 
       <footer className="site-footer">

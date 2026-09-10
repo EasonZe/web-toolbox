@@ -7,9 +7,10 @@ import ts from "typescript";
 const source = ts.transpileModule(await readFile(new URL("../app/components/floating-dock.tsx", import.meta.url), "utf8"), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX },
 }).outputText;
-function renderDock({ savedTheme, savedAccent, osDark = true, storageBlocked = false } = {}) {
+function renderDock({ savedTheme, savedAccent, savedCustomAccent, osDark = true, storageBlocked = false } = {}) {
   const effects = [], states = [], properties = {}, dataset = {}, storage = new Map([
     ["eason-toolbox-theme", savedTheme], ["eason-toolbox-accent", savedAccent],
+    ["eason-toolbox-custom-accent", savedCustomAccent],
   ]);
   const exports = {}, jsx = (type, props) => ({ type, props });
   vm.runInNewContext(source, {
@@ -55,4 +56,11 @@ test("第二个主题颜色为DAD7ED，保存的紫色偏好使用更新后的�
   assert.equal(ui.properties["--accent"], "#DAD7ED");
   assert.equal(ui.properties["--accent-hover"], "#c9c4e3");
   assert.equal(ui.storage.get("eason-toolbox-accent"), "purple");
+});
+test("自定义主题颜色生成清晰的浅色、悬浮色和强调色", () => {
+  const ui = renderDock({ savedAccent: "custom", savedCustomAccent: "#00a86b" });
+  assert.equal(ui.properties["--accent"], "#9edec7");
+  assert.equal(ui.properties["--accent-hover"], "#6bcda9");
+  assert.equal(ui.properties["--accent-strong"], "#00a86b");
+  assert.equal(ui.storage.get("eason-toolbox-accent"), "custom");
 });
