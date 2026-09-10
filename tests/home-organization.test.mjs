@@ -37,7 +37,8 @@ test("收藏入口、列表设置、个人卡片和默认参考网格均已接�
     read("../app/components/model-turntable.tsx"),
   ]);
   for (const text of ["打开收藏夹", "折叠分组", "紧凑表格", "极简分割线", "卡片网格", "toolViewStorageKey"]) assert.ok(dock.includes(text), text);
-  for (const text of ["Eason", "一个零手工纯AI开发小白", "https://easonzhan.xyz/", "03-default-no-bg-2.avif"]) assert.ok(home.includes(text), text);
+  for (const text of ["Eason", "https://github.com/EasonZe", "https://qm.qq.com/q/7dNxa3Hgt2", "https://easonzhan.xyz/", "/images/eason-avatar.png"]) assert.ok(home.includes(text), text);
+  assert.ok(!home.includes("一个零手工纯AI开发小白"));
   assert.match(model, /useState\(true\).*?showGrid|\[showGrid, setShowGrid\] = useState\(true\)/s);
   assert.match(model, /grid\.visible = true/);
 });
@@ -47,9 +48,15 @@ test("首页分类标签、滚动渐入和收藏夹切换均已接入", async ()
     read("../app/components/tool-search-grid.tsx"),
     read("../app/globals.css"),
   ]);
-  assert.match(source, /className="tool-category-tabs" aria-label="工具分类"/);
+  assert.match(source, /tool-category-tabs-desktop" aria-label="工具分类"/);
   assert.match(source, /activeCategory === "全部"/);
+  assert.match(source, /aria-controls="more-tool-categories"/);
+  assert.match(source, />\{mobileCategoriesOpen \? "收起" : "更多"\}<\/button>/);
+  assert.doesNotMatch(source, /常用工具集中在这里/);
+  assert.match(source, /matchMedia\("\(max-width: 680px\)"\)\.matches \? "table" : "cards"/);
   assert.match(source, /new IntersectionObserver/);
+  assert.match(source, /threshold: \[0, 0\.5\]/);
+  assert.match(source, /tool-card-shell is-reveal-pending/);
   assert.match(source, /setFavoritesOnly\(\(current\) =>/);
   assert.match(styles, /\.tool-card-shell\.is-reveal-pending\.is-revealed/);
   assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
@@ -61,8 +68,11 @@ test("设置中的列表选项保持简洁并支持自定义主题颜色", async
     read("../app/globals.css"),
   ]);
   assert.doesNotMatch(dock, /description: "按分类展开或收起"/);
+  assert.match(dock, /localStorage\.setItem\(toolViewStorageKey, value\)/);
   assert.match(dock, /setToolView\(value\);\s*setSettingsOpen\(false\);/);
+  assert.doesNotMatch(dock, /selectToolView[\s\S]*?window\.location\.assign\("\/"\);/);
   assert.match(dock, /type="color"/);
+  assert.match(dock, /<strong>自定义<\/strong>/);
   assert.match(dock, /eason-toolbox-custom-accent/);
   assert.match(styles, /\.theme-mode-grid \{\s*grid-template-columns: repeat\(3/);
   assert.match(styles, /\.is-table \.tool-table-chevron/);
