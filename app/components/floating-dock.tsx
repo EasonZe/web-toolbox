@@ -155,8 +155,8 @@ function customAccentPalette(color: string): AccentOption {
   return {
     value: "custom",
     label: "自定义颜色",
-    color: mixHexColor(value, "#ffffff", 0.72),
-    hover: mixHexColor(value, "#ffffff", 0.56),
+    color: mixHexColor(value, "#ffffff", 0.62),
+    hover: mixHexColor(value, "#ffffff", 0.42),
     strong: luminance > 0.62 ? mixHexColor(value, "#17242d", 0.48) : value,
   };
 }
@@ -187,8 +187,9 @@ export default function FloatingDock() {
     if (typeof window === "undefined") return "cards";
     try {
       const savedView = window.localStorage.getItem(toolViewStorageKey);
-      return isToolViewMode(savedView) ? savedView : "cards";
-    } catch { return "cards"; }
+      if (isToolViewMode(savedView)) return savedView;
+    } catch { /* Fall through to the viewport default. */ }
+    return window.matchMedia("(max-width: 680px)").matches ? "table" : "cards";
   });
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -301,6 +302,7 @@ export default function FloatingDock() {
   }
 
   function selectToolView(value: ToolViewMode) {
+    try { window.localStorage.setItem(toolViewStorageKey, value); } catch { /* Keep the view usable for this session. */ }
     setToolView(value);
     setSettingsOpen(false);
   }
@@ -477,7 +479,9 @@ export default function FloatingDock() {
                     }}
                     aria-label="选择自定义主题颜色"
                   />
-                  {accent === "custom" ? <FiCheck aria-hidden="true" /> : <span aria-hidden="true">+</span>}
+                  <span className="accent-custom-swatch" aria-hidden="true" />
+                  <strong>自定义</strong>
+                  {accent === "custom" ? <FiCheck aria-hidden="true" /> : null}
                 </label>
               </div>
             </div>

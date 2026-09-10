@@ -51,8 +51,13 @@ test("renders the multifunction toolbox homepage with internal and third-party t
   assert.match(html, /href="\/bead-pattern"/);
   assert.match(html, /href="\/pixel-art"/);
   assert.match(html, /href="\/image-palette"/);
-  assert.match(html, /我的卡片/);
-  assert.match(html, /一个零手工纯AI开发小白/);
+  assert.match(html, /关于 Eason/);
+  assert.doesNotMatch(html, /一个零手工纯AI开发小白/);
+  assert.match(html, /href="https:\/\/github\.com\/EasonZe"/);
+  assert.match(html, /title="EasonZe"/);
+  assert.match(html, /href="https:\/\/qm\.qq\.com\/q\/7dNxa3Hgt2"/);
+  assert.match(html, /title="24125567"/);
+  assert.match(html, /src="\/images\/eason-avatar\.png"/);
   assert.match(html, /href="https:\/\/easonzhan\.xyz\/"/);
   assert.match(html, /href="\/base-converter"/);
   assert.match(html, /href="\/function-plotter"/);

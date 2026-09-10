@@ -29,6 +29,8 @@ const categoryOrder = [
   "视频工具", "音频工具", "图片与设计", "文字与文档", "编码与开发",
   "计算与换算", "时间与生活", "设备与网络", "其他服务",
 ] as const;
+const primaryMobileCategories = categoryOrder.slice(0, 3);
+const secondaryMobileCategories = categoryOrder.slice(3);
 
 type ToolCategory = (typeof categoryOrder)[number];
 type Tool = {
@@ -105,8 +107,9 @@ function readViewPreference(): ToolViewMode {
   if (typeof window === "undefined") return "cards";
   try {
     const value = window.localStorage.getItem(toolViewStorageKey);
-    return isToolViewMode(value) ? value : "cards";
-  } catch { return "cards"; }
+    if (isToolViewMode(value)) return value;
+  } catch { /* Fall through to the viewport default. */ }
+  return window.matchMedia("(max-width: 680px)").matches ? "table" : "cards";
 }
 
 function readFavorites() {
@@ -122,7 +125,9 @@ export function ToolSearchGrid() {
   const [favorites, setFavorites] = useState<Set<string>>(() => new Set());
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [activeCategory, setActiveCategory] = useState<"全部" | ToolCategory>("全部");
+  const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Set<ToolCategory>>(() => new Set([categoryOrder[0]]));
+  const [revealCycle, setRevealCycle] = useState(0);
   const filteredTools = useMemo(
     () => tools.filter((tool) => toolMatchesSearch(tool, query)),
     [query],
@@ -144,7 +149,10 @@ export function ToolSearchGrid() {
     });
     const handleViewChange = (event: Event) => {
       const value = (event as CustomEvent<string>).detail;
-      if (isToolViewMode(value)) setView(value);
+      if (isToolViewMode(value)) {
+        setView(value);
+        setRevealCycle((current) => current + 1);
+      }
     };
     const scrollToBrowser = () => {
       window.requestAnimationFrame(() => browserRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
@@ -187,7 +195,6 @@ export function ToolSearchGrid() {
       const items = Array.from(browser.querySelectorAll<HTMLElement>(selector));
       items.forEach((item, index) => {
         item.classList.remove("is-revealed");
-        item.classList.add("is-reveal-pending");
         item.style.setProperty("--reveal-delay", `${Math.min(index % 4, 3) * 45}ms`);
       });
 
@@ -200,10 +207,14 @@ export function ToolSearchGrid() {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
           const item = entry.target as HTMLElement;
+          const viewportHalf = window.innerHeight * 0.5;
+          const visibleEnough = entry.intersectionRatio >= 0.5
+            || (entry.boundingClientRect.height > window.innerHeight && entry.intersectionRect.height >= viewportHalf);
+          if (!visibleEnough) return;
           item.classList.add("is-revealed");
           observer?.unobserve(item);
         });
-      }, { rootMargin: "0px 0px -7% 0px", threshold: 0.08 });
+      }, { rootMargin: "0px", threshold: [0, 0.5] });
       items.forEach((item) => observer?.observe(item));
     });
 
@@ -211,7 +222,7 @@ export function ToolSearchGrid() {
       window.cancelAnimationFrame(frame);
       observer?.disconnect();
     };
-  }, [activeCategory, favoritesOnly, searching, view, visibleTools.length]);
+  }, [activeCategory, favoritesOnly, revealCycle, searching, view, visibleTools.length]);
 
   function toggleFavorite(href: string) {
     setFavorites((current) => {
@@ -226,7 +237,7 @@ export function ToolSearchGrid() {
     const ToolIcon = tool.icon;
     const favorite = favorites.has(tool.href);
     return (
-      <div className={`tool-card-shell${favorite ? " is-favorite" : ""}`} key={tool.href}>
+      <div className={`tool-card-shell is-reveal-pending${favorite ? " is-favorite" : ""}`} key={tool.href}>
         <ToolCardLink external={tool.external} href={tool.href} style={{ "--delay": `${index * 35 + 80}ms` } as CSSProperties}>
           <span className="tool-copy">
             <span className="tool-icon" aria-hidden="true"><ToolIcon /></span>
@@ -264,21 +275,37 @@ export function ToolSearchGrid() {
           <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索工具" aria-label="搜索工具" autoComplete="off" spellCheck={false} />
           {query ? <button type="button" onClick={() => setQuery("")} aria-label="清空搜索"><FiX aria-hidden="true" /></button> : null}
         </div>
-        <button className={`favorites-filter${favoritesOnly ? " is-active" : ""}`} type="button" onClick={() => setFavoritesOnly((value) => !value)} aria-pressed={favoritesOnly}>
-          <FiStar aria-hidden="true" />{favoritesOnly ? "查看全部" : "收藏夹"}
+        <button className={`favorites-filter${favoritesOnly ? " is-active" : ""}`} type="button" onClick={() => setFavoritesOnly((value) => !value)} aria-label={favoritesOnly ? "关闭收藏夹" : "打开收藏夹"} aria-pressed={favoritesOnly}>
+          <FiStar aria-hidden="true" /><span className="favorites-filter-label">{favoritesOnly ? "查看全部" : "收藏夹"}</span>
         </button>
       </div>
 
-      <nav className="tool-category-tabs" aria-label="工具分类">
+      <nav className="tool-category-tabs tool-category-tabs-desktop" aria-label="工具分类">
         <button className={activeCategory === "全部" ? "is-active" : ""} type="button" onClick={() => setActiveCategory("全部")} aria-pressed={activeCategory === "全部"}>全部</button>
         {categoryOrder.map((category) => (
           <button className={activeCategory === category ? "is-active" : ""} type="button" key={category} onClick={() => setActiveCategory(category)} aria-pressed={activeCategory === category}>{category}</button>
         ))}
       </nav>
+      <div className={`tool-category-mobile${mobileCategoriesOpen ? " is-open" : ""}`}>
+        <nav className="tool-category-tabs tool-category-tabs-mobile" aria-label="手机端工具分类">
+          <button className={activeCategory === "全部" ? "is-active" : ""} type="button" onClick={() => setActiveCategory("全部")} aria-pressed={activeCategory === "全部"}>全部</button>
+          {primaryMobileCategories.map((category) => (
+            <button className={activeCategory === category ? "is-active" : ""} type="button" key={category} onClick={() => setActiveCategory(category)} aria-pressed={activeCategory === category}>{category}</button>
+          ))}
+          <button className={secondaryMobileCategories.includes(activeCategory as ToolCategory) ? "is-active" : ""} type="button" onClick={() => setMobileCategoriesOpen((value) => !value)} aria-expanded={mobileCategoriesOpen} aria-controls="more-tool-categories">{mobileCategoriesOpen ? "收起" : "更多"}</button>
+        </nav>
+        {mobileCategoriesOpen ? (
+          <nav className="tool-category-more" id="more-tool-categories" aria-label="更多工具分类">
+            {secondaryMobileCategories.map((category) => (
+              <button className={activeCategory === category ? "is-active" : ""} type="button" key={category} onClick={() => setActiveCategory(category)} aria-pressed={activeCategory === category}>{category}</button>
+            ))}
+          </nav>
+        ) : null}
+      </div>
 
       {favoritesOnly ? (
         <div className="favorites-heading">
-          <div><FiStar aria-hidden="true" /><span><strong>收藏夹</strong><span className="favorites-subtitle">常用工具集中在这里</span></span></div>
+          <div><FiStar aria-hidden="true" /><strong>收藏夹</strong></div>
           <button type="button" onClick={() => setFavoritesOnly(false)}>返回全部工具</button>
         </div>
       ) : null}
@@ -292,7 +319,7 @@ export function ToolSearchGrid() {
             </>
           ) : groupedTools.map((group, categoryIndex) => view === "groups" ? (
             <details
-              className="tool-category tool-category-collapsible"
+              className="tool-category tool-category-collapsible is-reveal-pending"
               key={group.category}
               open={searching || expandedCategories.has(group.category)}
               onToggle={(event) => { if (!searching) setCategoryExpanded(group.category, event.currentTarget.open); }}
@@ -302,7 +329,7 @@ export function ToolSearchGrid() {
             </details>
           ) : (
             <section className="tool-category" key={group.category} aria-labelledby={`category-${categoryIndex}`}>
-              <div className="tool-category-heading"><h2 id={`category-${categoryIndex}`}>{group.category}</h2><span>{group.tools.length} 项</span></div>
+              <div className="tool-category-heading is-reveal-pending"><h2 id={`category-${categoryIndex}`}>{group.category}</h2><span>{group.tools.length} 项</span></div>
               <nav className={`tool-grid${searching ? " is-searching" : ""}`} aria-label={`${group.category}工具`}>{group.tools.map((tool, index) => renderTool(tool, index))}</nav>
             </section>
           ))}
