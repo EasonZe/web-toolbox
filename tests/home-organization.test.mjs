@@ -56,7 +56,11 @@ test("首页分类标签、滚动渐入和收藏夹切换均已接入", async ()
   assert.match(source, /matchMedia\("\(max-width: 680px\)"\)\.matches \? "table" : "cards"/);
   assert.match(source, /new IntersectionObserver/);
   assert.match(source, /threshold: \[0, 0\.5\]/);
-  assert.match(source, /tool-card-shell is-reveal-pending/);
+  assert.match(source, /view === "groups" \? "" : " is-reveal-pending"/);
+  assert.match(source, /expandFilteredGroups = searching \|\| favoritesOnly \|\| activeCategory !== "全部"/);
+  assert.match(source, /const restorePreferences = \(\) => \{\s*setView\(readViewPreference\(\)\);\s*setFavorites\(readFavorites\(\)\);/);
+  assert.doesNotMatch(source, /requestAnimationFrame\(\(\) => \{\s*setView\(readViewPreference\(\)\)/);
+  assert.match(source, /addEventListener\("storage", handleStorage\)/);
   assert.match(source, /setFavoritesOnly\(\(current\) =>/);
   assert.match(styles, /\.tool-card-shell\.is-reveal-pending\.is-revealed/);
   assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
@@ -72,8 +76,13 @@ test("设置中的列表选项保持简洁并支持自定义主题颜色", async
   assert.match(dock, /setToolView\(value\);\s*setSettingsOpen\(false\);/);
   assert.doesNotMatch(dock, /selectToolView[\s\S]*?window\.location\.assign\("\/"\);/);
   assert.match(dock, /type="color"/);
-  assert.match(dock, /<strong>自定义<\/strong>/);
+  assert.doesNotMatch(dock, />自定义<\/strong>/);
+  assert.match(dock, /accentOptions\.map[\s\S]*?accent-custom-button/);
+  assert.doesNotMatch(dock, /accent-settings-heading/);
   assert.match(dock, /eason-toolbox-custom-accent/);
   assert.match(styles, /\.theme-mode-grid \{\s*grid-template-columns: repeat\(3/);
   assert.match(styles, /\.is-table \.tool-table-chevron/);
+  assert.match(styles, /\.author-card \{ width: 100%/);
+  assert.match(styles, /\.favorites-heading \{ min-height: 62px; display: flex; align-items: center/);
+  assert.match(styles, /conic-gradient\(from 30deg/);
 });
