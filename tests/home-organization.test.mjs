@@ -83,6 +83,8 @@ test("设置中的列表选项保持简洁并支持自定义主题颜色", async
   assert.match(styles, /\.theme-mode-grid \{\s*grid-template-columns: repeat\(3/);
   assert.match(styles, /\.is-table \.tool-table-chevron/);
   assert.match(styles, /\.author-card \{ width: 100%/);
+  assert.match(styles, /@media \(max-width: 520px\)[\s\S]*?\.author-profile \{ grid-column: 1 \/ -1; display: grid; grid-template-columns: 52px minmax\(0, 1fr\)/);
+  assert.match(styles, /@media \(max-width: 520px\)[\s\S]*?\.author-links \{ grid-column: 2;[\s\S]*?justify-content: start/);
   assert.match(styles, /\.favorites-heading \{ min-height: 62px; display: flex; align-items: center/);
   assert.match(styles, /conic-gradient\(from 30deg/);
 });
