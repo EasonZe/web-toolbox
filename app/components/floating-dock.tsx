@@ -436,7 +436,7 @@ export default function FloatingDock() {
             <div className="settings-divider" />
 
             <div className="accent-settings">
-              <div>
+              <div className="accent-settings-copy">
                 <h3>主题颜色</h3>
                 <p>选择应用的主题强调色，按钮、链接和动画将会同步变化。</p>
               </div>
@@ -468,7 +468,6 @@ export default function FloatingDock() {
                   className={`accent-button accent-custom-button${accent === "custom" ? " is-selected" : ""}`}
                   aria-label="自定义主题颜色"
                   title="自定义颜色"
-                  style={{ "--swatch-color": customAccent, "--swatch-strong": customAccent } as CSSProperties}
                 >
                   <input
                     type="color"
@@ -480,7 +479,6 @@ export default function FloatingDock() {
                     aria-label="选择自定义主题颜色"
                   />
                   <span className="accent-custom-swatch" aria-hidden="true" />
-                  <strong>自定义</strong>
                   {accent === "custom" ? <FiCheck aria-hidden="true" /> : null}
                 </label>
               </div>
