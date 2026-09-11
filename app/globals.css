@@ -8998,11 +8998,12 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
   .is-table .tool-card { grid-template-columns: minmax(0, 1fr) 34px; padding-right: 8px; }
   .is-table .tool-card-category { display: none; }
   .is-table .tool-favorite-button { right: 45px; }
-  .author-card { gap: 10px; padding: 14px 64px 14px 14px; }
-  .author-profile { gap: 10px; }
+  .author-card { grid-template-columns: 52px minmax(0, 1fr); column-gap: 10px; row-gap: 7px; padding: 14px 64px 14px 14px; }
+  .author-profile { grid-column: 1 / -1; display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 10px; }
   .author-profile > img { width: 52px; height: 52px; }
+  .author-card-copy { align-self: center; }
   .author-card-copy h2 { font-size: 17px; }
-  .author-links { grid-template-columns: repeat(3, 40px); gap: 3px; }
+  .author-links { grid-column: 2; grid-template-columns: repeat(3, 40px); justify-content: start; gap: 3px; }
   .author-links a { width: 40px; min-height: 40px; border-radius: 10px; }
   .author-links svg { width: 23px; height: 23px; }
 }
