@@ -143,10 +143,10 @@ export function ToolSearchGrid() {
   const searching = normalizeSearch(query).length > 0;
 
   useEffect(() => {
-    const restoreFrame = window.requestAnimationFrame(() => {
+    const restorePreferences = () => {
       setView(readViewPreference());
       setFavorites(readFavorites());
-    });
+    };
     const handleViewChange = (event: Event) => {
       const value = (event as CustomEvent<string>).detail;
       if (isToolViewMode(value)) {
@@ -171,15 +171,24 @@ export function ToolSearchGrid() {
     const handleHash = () => {
       if (window.location.hash === "#favorites") showFavorites();
     };
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === favoritesStorageKey) setFavorites(parseFavoriteHrefs(event.newValue));
+      if (event.key === toolViewStorageKey) {
+        const value = event.newValue;
+        if (isToolViewMode(value)) setView(value);
+      }
+    };
     window.addEventListener(toolViewChangeEvent, handleViewChange);
     window.addEventListener(openFavoritesEvent, toggleFavorites);
     window.addEventListener("hashchange", handleHash);
+    window.addEventListener("storage", handleStorage);
+    restorePreferences();
     handleHash();
     return () => {
-      window.cancelAnimationFrame(restoreFrame);
       window.removeEventListener(toolViewChangeEvent, handleViewChange);
       window.removeEventListener(openFavoritesEvent, toggleFavorites);
       window.removeEventListener("hashchange", handleHash);
+      window.removeEventListener("storage", handleStorage);
     };
   }, []);
 
@@ -237,7 +246,7 @@ export function ToolSearchGrid() {
     const ToolIcon = tool.icon;
     const favorite = favorites.has(tool.href);
     return (
-      <div className={`tool-card-shell is-reveal-pending${favorite ? " is-favorite" : ""}`} key={tool.href}>
+      <div className={`tool-card-shell${view === "groups" ? "" : " is-reveal-pending"}${favorite ? " is-favorite" : ""}`} key={tool.href}>
         <ToolCardLink external={tool.external} href={tool.href} style={{ "--delay": `${index * 35 + 80}ms` } as CSSProperties}>
           <span className="tool-copy">
             <span className="tool-icon" aria-hidden="true"><ToolIcon /></span>
@@ -257,6 +266,7 @@ export function ToolSearchGrid() {
     .map((category) => ({ category, tools: visibleTools.filter((tool) => tool.category === category) }))
     .filter((group) => group.tools.length > 0);
   const orderedVisibleTools = groupedTools.flatMap((group) => group.tools);
+  const expandFilteredGroups = searching || favoritesOnly || activeCategory !== "全部";
 
   function setCategoryExpanded(category: ToolCategory, expanded: boolean) {
     setExpandedCategories((current) => {
@@ -321,8 +331,8 @@ export function ToolSearchGrid() {
             <details
               className="tool-category tool-category-collapsible is-reveal-pending"
               key={group.category}
-              open={searching || expandedCategories.has(group.category)}
-              onToggle={(event) => { if (!searching) setCategoryExpanded(group.category, event.currentTarget.open); }}
+              open={expandFilteredGroups || expandedCategories.has(group.category)}
+              onToggle={(event) => { if (!expandFilteredGroups) setCategoryExpanded(group.category, event.currentTarget.open); }}
             >
               <summary><span>{group.category}</span><span className="tool-category-count">{group.tools.length} 项</span></summary>
               <nav className={`tool-grid${searching ? " is-searching" : ""}`} aria-label={`${group.category}工具`}>{group.tools.map((tool, index) => renderTool(tool, index))}</nav>
