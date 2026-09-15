@@ -27,6 +27,7 @@ export default function Home() {
           />
           <div className="author-card-copy">
             <h2>Eason</h2>
+            <p>生活明朗万物可爱</p>
           </div>
         </div>
         <nav className="author-links" aria-label="Eason 的个人主页">

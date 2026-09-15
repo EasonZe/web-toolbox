@@ -52,6 +52,7 @@ test("renders the multifunction toolbox homepage with internal and third-party t
   assert.match(html, /href="\/pixel-art"/);
   assert.match(html, /href="\/image-palette"/);
   assert.match(html, /关于 Eason/);
+  assert.match(html, /生活明朗万物可爱/);
   assert.doesNotMatch(html, /一个零手工纯AI开发小白/);
   assert.match(html, /href="https:\/\/github\.com\/EasonZe"/);
   assert.match(html, /title="EasonZe"/);
