@@ -246,7 +246,7 @@ export function ToolSearchGrid() {
     const ToolIcon = tool.icon;
     const favorite = favorites.has(tool.href);
     return (
-      <div className={`tool-card-shell${view === "groups" ? "" : " is-reveal-pending"}${favorite ? " is-favorite" : ""}`} key={tool.href}>
+      <div className={`tool-card-shell${view === "groups" ? "" : " is-reveal-pending"}`} key={tool.href}>
         <ToolCardLink external={tool.external} href={tool.href} style={{ "--delay": `${index * 35 + 80}ms` } as CSSProperties}>
           <span className="tool-copy">
             <span className="tool-icon" aria-hidden="true"><ToolIcon /></span>

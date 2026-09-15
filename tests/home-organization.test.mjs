@@ -62,6 +62,8 @@ test("首页分类标签、滚动渐入和收藏夹切换均已接入", async ()
   assert.doesNotMatch(source, /requestAnimationFrame\(\(\) => \{\s*setView\(readViewPreference\(\)\)/);
   assert.match(source, /addEventListener\("storage", handleStorage\)/);
   assert.match(source, /setFavoritesOnly\(\(current\) =>/);
+  assert.doesNotMatch(source, /favorite \? " is-favorite"/);
+  assert.match(source, /<div className=\{`tool-card-shell\$\{view === "groups" \? "" : " is-reveal-pending"\}`\} key=\{tool\.href\}>/);
   assert.match(styles, /\.tool-card-shell\.is-reveal-pending\.is-revealed/);
   assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
 });
