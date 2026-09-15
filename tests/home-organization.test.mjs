@@ -37,7 +37,7 @@ test("收藏入口、列表设置、个人卡片和默认参考网格均已接�
     read("../app/components/model-turntable.tsx"),
   ]);
   for (const text of ["打开收藏夹", "折叠分组", "紧凑表格", "极简分割线", "卡片网格", "toolViewStorageKey"]) assert.ok(dock.includes(text), text);
-  for (const text of ["Eason", "https://github.com/EasonZe", "https://qm.qq.com/q/7dNxa3Hgt2", "https://easonzhan.xyz/", "/images/eason-avatar.png"]) assert.ok(home.includes(text), text);
+  for (const text of ["Eason", "生活明朗万物可爱", "https://github.com/EasonZe", "https://qm.qq.com/q/7dNxa3Hgt2", "https://easonzhan.xyz/", "/images/eason-avatar.png"]) assert.ok(home.includes(text), text);
   assert.ok(!home.includes("一个零手工纯AI开发小白"));
   assert.match(model, /useState\(true\).*?showGrid|\[showGrid, setShowGrid\] = useState\(true\)/s);
   assert.match(model, /grid\.visible = true/);
@@ -84,7 +84,7 @@ test("设置中的列表选项保持简洁并支持自定义主题颜色", async
   assert.match(styles, /\.is-table \.tool-table-chevron/);
   assert.match(styles, /\.author-card \{ width: 100%/);
   assert.match(styles, /@media \(max-width: 520px\)[\s\S]*?\.author-profile \{ grid-column: 1 \/ -1; display: grid; grid-template-columns: 52px minmax\(0, 1fr\)/);
-  assert.match(styles, /@media \(max-width: 520px\)[\s\S]*?\.author-links \{ grid-column: 2;[\s\S]*?justify-content: start/);
+  assert.match(styles, /@media \(max-width: 520px\)[\s\S]*?\.author-links \{ grid-column: 1 \/ -1;[\s\S]*?justify-content: start; gap: 14px; padding-left: 6px/);
   assert.match(styles, /\.favorites-heading \{ min-height: 62px; display: flex; align-items: center/);
   assert.match(styles, /conic-gradient\(from 30deg/);
 });
