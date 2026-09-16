@@ -48,8 +48,11 @@ test("转换计划包含画质码率、声音和预计体积", () => {
   assert.equal(helpers.createConvertedVideoName("demo.source.mp4", "mkv"), "demo.source-converted.mkv");
 });
 
-test("视频转换组件进行真实转码并提供四种格式和取消操作", () => {
-  assert.match(component, /<FileDropZone/);
+test("视频转换组件支持批量导入、顺序转码、逐项下载和取消操作", () => {
+  assert.match(component, /<FileDropZone[\s\S]*?multiple[\s\S]*?onFiles=\{addFiles\}/);
+  assert.match(component, /items\.map\(\(item\) =>/);
+  assert.match(component, /for \(let index = 0; index < resetTargets\.length; index \+= 1\)/);
+  assert.match(component, /await convertQueueItem\(resetTargets\[index\], index, resetTargets\.length\)/);
   assert.match(component, /new media\.Mp4OutputFormat/);
   assert.match(component, /new media\.MovOutputFormat/);
   assert.match(component, /new media\.MkvOutputFormat/);
@@ -59,8 +62,9 @@ test("视频转换组件进行真实转码并提供四种格式和取消操作",
   assert.match(component, /conversion\.onProgress/);
   assert.match(component, /await conversion\.execute\(\)/);
   assert.match(component, /cancelConversion/);
+  assert.match(component, /download=\{item\.result\.name\}/);
   assert.match(component, /download=\{result\.name\}/);
-  assert.match(component, /转换完成/);
+  assert.match(component, /批量转换/);
   assert.doesNotMatch(component, /fetch\(|FormData|XMLHttpRequest/);
   assert.match(page, /href: "\/video-converter"/);
 });
