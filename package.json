@@ -28,8 +28,8 @@
     "dev": "node scripts/prepare-document-assets.mjs && vinext dev",
     "build": "node scripts/prepare-document-assets.mjs && vinext build",
     "start": "vinext start",
-    "test": "npm run build && node --test tests/*.test.mjs",
-    "test:unit": "node --test tests/*.test.mjs",
+    "test": "npm run build && node --experimental-strip-types --test tests/*.test.mjs",
+    "test:unit": "node --experimental-strip-types --test tests/*.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .wrangler --ignore-pattern public/soundtouch",
     "typecheck": "tsc --noEmit",
     "check": "npm run lint && npm run typecheck && npm test"
