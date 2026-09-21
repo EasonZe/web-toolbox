@@ -10,7 +10,8 @@ const worker = await readFile(new URL("../worker/index.ts", import.meta.url), "u
 const config = JSON.parse(await readFile(new URL("../wrangler.jsonc", import.meta.url), "utf8"));
 
 test("页脚显示版权、RSS 与 Sitemap 链接", () => {
-  assert.match(page, /© 2026 Eason\. All Rights Reserved\./);
+  assert.match(page, /© 2026 Eason · MIT License/);
+  assert.doesNotMatch(page, /All Rights Reserved/i);
   assert.match(page, /href="\/rss\.xml">RSS<\/a>/);
   assert.match(page, /href="\/sitemap\.xml">Sitemap<\/a>/);
   assert.match(styles, /\.site-footer-meta\s*\{[^}]*display:\s*flex;/s);

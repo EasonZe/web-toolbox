@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 安全漏洞报告
+    url: https://github.com/EasonZe/web-toolbox/security/policy
+    about: 请私下报告安全漏洞，不要创建公开 Issue。
+  - name: 在线工具箱
+    url: https://tool.easonzhan.xyz/
+    about: 打开当前生产版本。

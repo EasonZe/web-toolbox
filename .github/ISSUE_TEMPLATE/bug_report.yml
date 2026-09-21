@@ -1,0 +1,52 @@
+name: 缺陷报告
+description: 报告可以稳定复现的问题
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: 感谢反馈。安全问题请勿在此提交，请查看 SECURITY.md。
+  - type: textarea
+    id: summary
+    attributes:
+      label: 问题描述
+      description: 实际发生了什么？预期结果是什么？
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 打开……
+        2. 选择……
+        3. 看到……
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: 页面地址
+      placeholder: https://tool.easonzhan.xyz/...
+  - type: input
+    id: environment
+    attributes:
+      label: 环境
+      description: 操作系统、浏览器及版本、设备类型。
+      placeholder: iOS 18 / Safari / iPhone
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 截图或日志
+      description: 请先删除个人信息、链接参数和敏感文件内容。
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 提交前确认
+      options:
+        - label: 我已搜索现有 Issue，未发现相同问题。
+          required: true
+        - label: 此报告不包含密钥或其他敏感信息。
+          required: true

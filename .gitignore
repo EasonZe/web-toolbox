@@ -30,6 +30,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -48,3 +49,10 @@ next-env.d.ts
 /qa-*.png
 /qa-audit-*/
 /design-qa.md
+
+# editor and operating-system state
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+Thumbs.db

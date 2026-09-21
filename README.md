@@ -1,74 +1,105 @@
-# 多功能工具箱
+# Web Toolbox
 
-一个简洁的在线媒体与实用工具集合，使用 Next.js、vinext 和 Cloudflare Workers 构建。
+[![CI](https://github.com/EasonZe/web-toolbox/actions/workflows/ci.yml/badge.svg)](https://github.com/EasonZe/web-toolbox/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Live site](https://img.shields.io/badge/Live-tool.easonzhan.xyz-2ea8e5)](https://tool.easonzhan.xyz/)
 
-线上地址：<https://tool.easonzhan.xyz>
+一个面向生产环境的多功能在线工具箱。项目基于 Next.js、vinext 与 Cloudflare Workers，包含 50 余个视频、音频、图片、文档、开发和生活类工具；大部分媒体处理在浏览器本地完成。
 
-## 已包含的工具
+线上站点：<https://tool.easonzhan.xyz/>
 
-- 抖音、B站、快手视频解析
-- 视频转 GIF、视频提取音频、视频压缩、视频倒放
-- 音频格式转换、音频压缩、音频倒放
-- 图片加水印、图片格式转换、批量图片压缩、多张图片合成GIF
-- 图片与Base64互转（Data URL / 纯Base64，编码复制与TXT下载、图片还原）
-- 图片等宽线条重绘、智能抠图、敏感内容打码
-- 二维码生成与解析
-- ASCII 字符画生成、Unicode 花体字转换
-- Word与PDF互转（DOCX转PDF；PDF提取文字或整页图片转DOCX）
-- 颜色格式转换、IP 地址查询、文件哈希计算（MD5 / SHA-1 / SHA-256 / SHA-512）
-- 网易云音乐无损解析（第三方）
+## 特性
+
+- 视频：链接解析、格式转换、压缩、倒放、转 GIF、提取音频和水印。
+- 音频：格式转换、压缩、倒放、变速变调、麦克风测试与录音。
+- 图片与设计：格式转换、压缩、裁剪、拼接、水印、取色、像素画、拼豆图纸、智能抠图、二维码和 3D 模型预览。
+- 文字与文档：纯文本编辑、格式转换、字数统计、ASCII 字符画、花体字以及 Word/PDF 转换。
+- 开发与生活：文件哈希、进制转换、函数绘图、摩斯电码、短链接、汇率、全球时间、日期计算、倒计时和设备测试。
+- 首页支持搜索、分类、收藏、四种列表布局、浅色/深色主题和自定义主题色。
+- 响应式设计，支持桌面、平板和手机。
+
+## 技术栈
+
+- React 19、Next.js 16、TypeScript
+- vinext、Vite、Cloudflare Workers
+- Cloudflare D1、Images、Rate Limiting
+- Node.js 原生测试运行器、ESLint
+
+## 快速开始
+
+### 环境要求
+
+- Node.js `>= 22.13.0`
+- npm `>= 10`
+
+### 安装与启动
+
+```bash
+git clone https://github.com/EasonZe/web-toolbox.git
+cd web-toolbox
+npm ci
+npm run dev
+```
+
+开发服务器启动后，打开终端中显示的本地地址。
+
+### 质量检查
+
+```bash
+npm run check
+```
+
+该命令依次运行 ESLint、TypeScript 检查、生产构建和全部自动化测试。也可以单独执行：
+
+```bash
+npm run lint
+npm run typecheck
+npm test
+```
 
 ## 项目结构
 
 ```text
-app/                 页面、组件与接口
-public/              静态资源和本地 AI 模型
-tests/               自动化测试
-types/               第三方库类型声明
-worker/              Cloudflare Worker 入口及服务端逻辑
-wrangler.jsonc       Cloudflare 部署配置
-vite.config.ts       vinext 与 Cloudflare 构建配置
+app/                         页面、组件和浏览器端工具逻辑
+migrations/short-links/      D1 数据库迁移
+public/                      静态资源、字体许可证和生成型运行时资源
+scripts/                     构建前资源准备脚本
+tests/                       自动化回归测试
+types/                       Cloudflare 与第三方类型声明
+worker/                      主站 Cloudflare Worker 入口
+workers/eason-bilibili-api/  独立的 Bilibili 解析 Worker
+docs/                        架构与部署文档
+wrangler.jsonc               主站生产部署配置
 ```
 
-## 本地运行
+## 部署
 
-需要 Node.js 22.13 或更高版本。
-
-```bash
-npm install
-npm run dev
-```
-
-开发服务器启动后，在浏览器打开终端显示的本地地址。
-
-## 检查与构建
+项目面向 Cloudflare Workers 部署。主站需要 Assets、Images、D1 与 Rate Limiting 绑定；Bilibili 解析服务是独立 Worker。完整步骤、绑定说明与自定义域名配置见 [部署文档](docs/deployment.md)。
 
 ```bash
-npm run lint
-npm test
-```
-
-`npm test` 会先执行生产构建，再运行全部自动化测试。
-
-## 部署到 Cloudflare
-
-先登录 Cloudflare，然后执行：
-
-```bash
-npx wrangler login
-npm run build
+npm ci
+npm run check
 npx wrangler deploy --dry-run
 npx wrangler deploy --keep-vars
 ```
 
-自定义域名和 Worker 名称位于 `wrangler.jsonc`。
+`wrangler.jsonc` 中的生产域名和资源 ID 属于当前部署。Fork 后请替换为你自己的 Cloudflare 资源，不要直接复用生产绑定。
 
-## 隐私说明
+## 隐私与安全
 
-图片、视频和音频处理工具优先在浏览器本地执行。视频解析和 IP 查询等需要联网的功能会访问对应的服务端接口。
+- 图片、视频、音频和文本工具优先在浏览器本地处理。
+- 视频解析、实时汇率、IP 查询、短链接等功能需要访问网络服务。
+- 不要向公共 Issue 提交密钥、个人文件或敏感链接。
+- 安全问题请按照 [安全政策](SECURITY.md) 私下报告。
 
-## 开源依赖
+视频解析功能仅应用于你拥有权利或已获授权的内容，并应遵守目标平台条款及当地法律。上游接口变化可能导致解析功能暂时不可用。
 
-项目使用的主要开源库包括 React、Next.js、vinext、figlet、Mediabunny、gifenc、QRCode、Transformers.js、hash-wasm、Mammoth、pdfmake、PDF.js、docx 和 DOMPurify。完整版本信息见 `package.json`。
+## 参与贡献
 
-文档转换使用 Noto Sans SC 字体（SIL OFL 1.1），许可与来源见 `public/fonts/noto-sans-sc/`。构建时自动复制PDF.js的配套字体、CMap及解码器，不依赖外部CDN。Word转PDF重新排版正文，不保证复杂格式、页眉页脚、原字体和分页完全还原；PDF转Word的可编辑模式不含OCR及图片，保留版式模式为整页图片。
+欢迎提交 Issue 和 Pull Request。开始前请阅读 [贡献指南](CONTRIBUTING.md) 与 [行为准则](CODE_OF_CONDUCT.md)。
+
+第三方依赖及其许可证说明见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。锁定版本以 `package-lock.json` 为准。
+
+## 许可证
+
+项目使用 [MIT License](LICENSE)。第三方组件、字体和随包资源仍遵循各自许可证。

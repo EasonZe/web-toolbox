@@ -22,13 +22,14 @@ function renderDock({ savedTheme, savedAccent, savedCustomAccent, osDark = true,
     },
     document: { documentElement: { dataset, style: { setProperty(key, value) { properties[key] = value; } } } },
     require(name) {
-      if (name === "react") return { useState(initial) { const value = typeof initial === "function" ? initial() : initial; states.push(value); return [value, () => {}]; }, useRef: (current) => ({ current }), useEffect(callback) { effects.push(callback); } };
+      if (name === "react") return { useState(initial) { const value = typeof initial === "function" ? initial() : initial; states.push(value); return [value, () => {}]; }, useRef: (current) => ({ current }), useEffect(callback) { effects.push(callback); }, useCallback: (callback) => callback };
       if (name === "react/jsx-runtime") return { jsx, jsxs: jsx };
       if (name === "next/navigation") return { usePathname: () => "/" };
       if (name === "react-icons/fi") return {};
       if (name === "../lib/home-preferences") return {
         isToolViewMode: (value) => ["groups", "table", "minimal", "cards"].includes(value),
         openFavoritesEvent: "eason-toolbox-open-favorites",
+        replayToolAnimationEvent: "eason-toolbox-replay-animation",
         toolViewChangeEvent: "eason-toolbox-tool-view-change",
         toolViewStorageKey: "eason-toolbox-tool-view",
       };

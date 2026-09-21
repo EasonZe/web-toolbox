@@ -25,6 +25,7 @@ export default function VideoTool({ config }: { config: VideoToolConfig }) {
   const [result, setResult] = useState("");
   const [downloading, setDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState<number | null>(null);
+  const [previewError, setPreviewError] = useState(false);
   const [toast, setToast] = useState("");
   const [pasting, setPasting] = useState(false);
   const shareInput = useRef<HTMLTextAreaElement>(null);
@@ -45,6 +46,7 @@ export default function VideoTool({ config }: { config: VideoToolConfig }) {
     setMessage("");
     setResult("");
     setDownloadProgress(null);
+    setPreviewError(false);
     setToast("");
   }
 
@@ -107,6 +109,7 @@ export default function VideoTool({ config }: { config: VideoToolConfig }) {
 
     setMessage("");
     setDownloadProgress(null);
+    setPreviewError(false);
     setResult(buildApiUrl(config.apiPrefix, source));
     showToast("转换完成");
   }
@@ -264,33 +267,50 @@ export default function VideoTool({ config }: { config: VideoToolConfig }) {
           </p>
         ) : null}
 
-        {result ? (
-          <section className="result" aria-labelledby="result-title">
+        <section className={`result${result ? "" : " is-empty"}`} aria-labelledby="result-title">
             <label id="result-title">转换结果</label>
-            <div className="link-row">
-              <code>{result}</code>
-              <button
-                className="copy-button"
-                type="button"
-                onClick={() => copyText(result)}
-              >
-                复制
-              </button>
+            {result ? (
+              <div className="link-row">
+                <code>{result}</code>
+                <button
+                  className="copy-button"
+                  type="button"
+                  onClick={() => copyText(result)}
+                >
+                  复制
+                </button>
+              </div>
+            ) : (
+              <div className="video-result-empty">转换后的视频链接和预览会显示在这里</div>
+            )}
+            <div className="video-result-preview">
+              {result ? <video
+                  key={result}
+                  src={result}
+                  controls
+                  playsInline
+                  preload="metadata"
+                  onLoadedData={() => setPreviewError(false)}
+                  onError={() => setPreviewError(true)}
+                /> : <div className="video-preview-empty">转换后可直接在这里预览视频</div>}
+              {result && previewError ? (
+                <p>当前浏览器未能直接载入预览，可尝试“打开视频”或“下载视频”。</p>
+              ) : null}
             </div>
             <div className="video-result-actions">
-              <a
+              {result ? <a
                 className="open-button"
                 href={result}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 打开视频
-              </a>
+              </a> : <button className="open-button" type="button" disabled>打开视频</button>}
               <button
                 className="open-button download-video-button"
                 type="button"
                 onClick={() => void downloadVideo()}
-                disabled={downloading}
+                disabled={!result || downloading}
               >
                 <FiDownload aria-hidden="true" />
                 {downloading
@@ -301,7 +321,6 @@ export default function VideoTool({ config }: { config: VideoToolConfig }) {
               </button>
             </div>
           </section>
-        ) : null}
       </section>
 
       {toast ? (

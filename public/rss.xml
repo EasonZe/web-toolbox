@@ -3,13 +3,13 @@
   <channel>
     <title>多功能工具箱</title>
     <link>https://tool.easonzhan.xyz/</link>
-    <description>视频解析、音视频处理、图片处理、二维码及常用在线工具。</description>
+    <description>多功能工具箱 RSS 更新。</description>
     <language>zh-CN</language>
     <item>
       <title>多功能工具箱</title>
       <link>https://tool.easonzhan.xyz/</link>
       <guid isPermaLink="true">https://tool.easonzhan.xyz/</guid>
-      <description>访问 Eason 的工具箱，使用视频、音频、图片、二维码及其他实用工具。</description>
+      <description>多功能工具箱功能与体验更新。</description>
     </item>
   </channel>
 </rss>

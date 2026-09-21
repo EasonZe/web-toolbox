@@ -14,8 +14,8 @@ import {
 
 const MOVE_TOLERANCE = 12;
 const LONG_PRESS_DELAY = 460;
-const ENTER_DELAY = 220;
-const FEEDBACK_DURATION = 420;
+const ENTER_DELAY = 480;
+const FEEDBACK_DURATION = 480;
 const HOME_SCROLL_KEY = "eason-toolbox-home-scroll";
 
 type TouchGesture = {
@@ -49,6 +49,12 @@ export function ToolCardLink({
   );
   const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isTouchEntering, setIsTouchEntering] = useState(false);
+
+  const isTouchLikePointer = (pointerType: string) => {
+    if (pointerType === "touch" || pointerType === "pen") return true;
+    if (pointerType) return false;
+    return window.matchMedia("(hover: none), (pointer: coarse)").matches;
+  };
 
   const rememberHomePosition = () => {
     if (external) return;
@@ -98,15 +104,13 @@ export function ToolCardLink({
   };
 
   const handlePointerDown = (event: PointerEvent<HTMLAnchorElement>) => {
-    if (event.pointerType !== "touch" && event.pointerType !== "pen") {
+    if (!isTouchLikePointer(event.pointerType)) {
       return;
     }
 
     shortTapRef.current = false;
     suppressClickRef.current = false;
-    if (!navigationPendingRef.current) {
-      setIsTouchEntering(false);
-    }
+    if (!navigationPendingRef.current) setIsTouchEntering(false);
     gestureRef.current = {
       pointerId: event.pointerId,
       startX: event.clientX,
@@ -185,6 +189,15 @@ export function ToolCardLink({
 
     if (!external && isPlainLeftClick) {
       rememberHomePosition();
+    }
+
+    const isTouchClick = window.matchMedia(
+      "(hover: none), (pointer: coarse)",
+    ).matches;
+    if (!external && isPlainLeftClick && isTouchClick && !shortTapRef.current) {
+      event.preventDefault();
+      scheduleInternalNavigation();
+      return;
     }
 
     if (!shortTapRef.current || !isPlainLeftClick) {
