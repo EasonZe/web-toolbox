@@ -2,7 +2,7 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "eason-video-toolbox-public",
   "main": "./dist/server/index.js",
-  "compatibility_date": "2026-08-13",
+  "compatibility_date": "2026-09-21",
   "workers_dev": true,
   "preview_urls": false,
   "routes": [

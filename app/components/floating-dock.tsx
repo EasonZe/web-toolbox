@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties, ComponentType } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import {
   FiArrowLeft,
@@ -21,6 +21,7 @@ import {
 import {
   isToolViewMode,
   openFavoritesEvent,
+  replayToolAnimationEvent,
   toolViewChangeEvent,
   toolViewStorageKey,
   type ToolViewMode,
@@ -195,6 +196,25 @@ export default function FloatingDock() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const settingsDialogRef = useRef<HTMLElement>(null);
   const dialogTriggerRef = useRef<HTMLElement | null>(null);
+  const settingsWasOpenRef = useRef(false);
+
+  const closeSettings = useCallback(() => {
+    setSettingsOpen(false);
+  }, []);
+
+  useEffect(() => {
+    if (settingsOpen) {
+      settingsWasOpenRef.current = true;
+      return;
+    }
+    if (!settingsWasOpenRef.current || pathname !== "/") return;
+
+    settingsWasOpenRef.current = false;
+    const frame = window.requestAnimationFrame(() => {
+      window.dispatchEvent(new Event(replayToolAnimationEvent));
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [pathname, settingsOpen]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -255,7 +275,7 @@ export default function FloatingDock() {
 
     const handleDialogKeys = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setSettingsOpen(false);
+        closeSettings();
         return;
       }
       if (event.key !== "Tab" || !dialog) return;
@@ -284,7 +304,7 @@ export default function FloatingDock() {
       window.removeEventListener("keydown", handleDialogKeys);
       dialogTriggerRef.current?.focus();
     };
-  }, [settingsOpen]);
+  }, [closeSettings, settingsOpen]);
 
   function openSettings() {
     dialogTriggerRef.current = document.activeElement as HTMLElement;
@@ -368,7 +388,7 @@ export default function FloatingDock() {
               <button
                 className="settings-back-button"
                 type="button"
-                onClick={() => setSettingsOpen(false)}
+                onClick={closeSettings}
                 data-dialog-initial-focus
               >
                 <FiArrowLeft aria-hidden="true" />

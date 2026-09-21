@@ -20,11 +20,15 @@ test("plays entry feedback only for a short stationary touch", () => {
     /const isShortTap = !gesture\.moved && elapsed < LONG_PRESS_DELAY;/,
   );
   assert.match(component, /setIsTouchEntering\(true\);/);
+  assert.match(
+    component,
+    /if \(!navigationPendingRef\.current\) setIsTouchEntering\(false\);/,
+  );
   assert.match(component, /suppressClickRef\.current = !isShortTap;/);
 });
 
 test("schedules internal navigation directly from a valid touch release", () => {
-  assert.match(component, /const ENTER_DELAY = 220;/);
+  assert.match(component, /const ENTER_DELAY = 480;/);
   assert.match(
     component,
     /const scheduleInternalNavigation = \(\) => \{[\s\S]*?navigationPendingRef\.current = true;\s*setIsTouchEntering\(true\);[\s\S]*?navigationTimerRef\.current = setTimeout\(\(\) => \{\s*navigationTimerRef\.current = null;\s*router\.push\(href\);\s*\}, ENTER_DELAY\);/,
@@ -40,6 +44,23 @@ test("schedules internal navigation directly from a valid touch release", () => 
   assert.match(
     component,
     /className=\{`tool-card\$\{isTouchEntering \? " is-touch-entering" : ""\}`\}/,
+  );
+});
+
+test("supports touch browsers and hybrid tablets that report incomplete pointer capabilities", () => {
+  assert.match(
+    component,
+    /const isTouchLikePointer = \(pointerType: string\) => \{[\s\S]*?pointerType === "touch" \|\| pointerType === "pen"[\s\S]*?window\.matchMedia\("\(hover: none\), \(pointer: coarse\)"\)\.matches;/,
+  );
+  assert.match(component, /if \(!isTouchLikePointer\(event\.pointerType\)\) \{/);
+  assert.match(
+    component,
+    /if \(!external && isPlainLeftClick && isTouchClick && !shortTapRef\.current\) \{[\s\S]*?scheduleInternalNavigation\(\);/,
+  );
+  assert.match(styles, /\.tool-card\.is-touch-entering\s*\{[^}]*transform:\s*scale\(0\.975\);/s);
+  assert.match(
+    styles,
+    /@media \(hover: none\) and \(pointer: coarse\)[\s\S]*?\r?\n\}\r?\n\r?\n\.tool-card\.is-touch-entering\s*\{/,
   );
 });
 

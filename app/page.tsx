@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { AiOutlineGithub, AiOutlineQq } from "react-icons/ai";
+import { AiOutlineGithub, AiOutlineMail, AiOutlineQq } from "react-icons/ai";
 import { FiGlobe } from "react-icons/fi";
 import { HomeScrollRestorer } from "./components/home-scroll-restorer";
 import { ToolSearchGrid } from "./components/tool-search-grid";
@@ -10,7 +10,6 @@ export default function Home() {
       <HomeScrollRestorer />
       <header className="home-header">
         <h1>多功能工具箱</h1>
-        <p>有问题意见反馈请加QQ2459366392。</p>
       </header>
 
       <ToolSearchGrid />
@@ -37,6 +36,9 @@ export default function Home() {
           <a href="https://qm.qq.com/q/7dNxa3Hgt2" target="_blank" rel="noopener noreferrer" aria-label="通过 QQ 联系 Eason" title="24125567">
             <AiOutlineQq aria-hidden="true" /><span>QQ</span>
           </a>
+          <a href="mailto:erk21635@gmail.com" aria-label="给 Eason 发送邮件" title="erk21635@gmail.com">
+            <AiOutlineMail aria-hidden="true" /><span>Email</span>
+          </a>
           <a href="https://easonzhan.xyz/" target="_blank" rel="noopener noreferrer" aria-label="Eason 的博客" title="Blog">
             <FiGlobe aria-hidden="true" /><span>Blog</span>
           </a>
@@ -45,7 +47,7 @@ export default function Home() {
 
       <footer className="site-footer">
         <p className="site-footer-meta">
-          <span>© 2026 Eason. All Rights Reserved.</span>
+          <span>© 2026 Eason · MIT License</span>
           <span className="site-footer-separator" aria-hidden="true">/</span>
           <a href="/rss.xml">RSS</a>
           <span className="site-footer-separator" aria-hidden="true">/</span>

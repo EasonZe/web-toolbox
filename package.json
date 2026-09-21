@@ -1,7 +1,26 @@
 {
-  "name": "eason-video-toolbox",
-  "version": "0.1.0",
+  "name": "web-toolbox",
+  "version": "1.0.0",
+  "description": "A production-ready collection of browser-based media, document, developer and everyday utilities.",
   "private": true,
+  "license": "MIT",
+  "author": "Eason <erk21635@gmail.com>",
+  "homepage": "https://tool.easonzhan.xyz/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EasonZe/web-toolbox.git"
+  },
+  "bugs": {
+    "url": "https://github.com/EasonZe/web-toolbox/issues"
+  },
+  "keywords": [
+    "toolbox",
+    "nextjs",
+    "cloudflare-workers",
+    "media-tools",
+    "web-utilities"
+  ],
+  "packageManager": "npm@11.12.1",
   "engines": {
     "node": ">=22.13.0"
   },
@@ -10,14 +29,22 @@
     "build": "node scripts/prepare-document-assets.mjs && vinext build",
     "start": "vinext start",
     "test": "npm run build && node --test tests/*.test.mjs",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .wrangler --ignore-pattern public/soundtouch"
+    "test:unit": "node --test tests/*.test.mjs",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .wrangler --ignore-pattern public/soundtouch",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run lint && npm run typecheck && npm test"
   },
   "dependencies": {
+    "@codemirror/commands": "^6.11.1",
+    "@codemirror/search": "^6.7.2",
+    "@codemirror/state": "^6.7.5",
+    "@codemirror/view": "^6.43.12",
     "@fix-webm-duration/fix": "^1.0.1",
     "@huggingface/transformers": "^3.8.1",
     "@mediabunny/mp3-encoder": "^1.51.0",
     "@morsecodeapp/morse": "^0.2.0",
     "@soundtouchjs/audio-worklet": "^2.1.1",
+    "change-case": "^5.4.4",
     "colorthief": "^3.5.0",
     "date-fns": "^4.4.0",
     "docx": "^9.7.1",
@@ -33,6 +60,7 @@
     "mathjs": "^15.2.0",
     "mediabunny": "^1.51.0",
     "next": "16.3.4",
+    "opencc-js": "^1.4.2",
     "papaparse": "^5.7.0",
     "pdfjs-dist": "^6.2.108",
     "pdfmake": "^0.3.11",
@@ -57,13 +85,13 @@
     "@types/react-dom": "19.2.3",
     "@types/three": "^0.185.4",
     "@vitejs/plugin-react": "6.0.2",
-    "@vitejs/plugin-rsc": "0.5.26",
+    "@vitejs/plugin-rsc": "^0.5.34",
     "eslint": "9.39.4",
     "eslint-config-next": "16.2.12",
     "react-server-dom-webpack": "19.2.8",
     "tailwindcss": "4.2.1",
     "typescript": "5.9.3",
-    "vinext": "0.0.50",
+    "vinext": "^1.0.0-beta.10",
     "vite": "8.1.5",
     "wrangler": "^4.129.0"
   },
@@ -73,8 +101,8 @@
     },
     "@babel/core": "7.29.7",
     "esbuild": "0.28.1",
-    "fast-uri": "3.1.4",
-    "js-yaml": "4.3.0",
+    "fast-uri": "3.1.6",
+    "js-yaml": "4.3.2",
     "postcss": "8.5.24",
     "baseline-browser-mapping": "2.11.0",
     "sharp": "0.35.4",

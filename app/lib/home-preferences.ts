@@ -4,6 +4,7 @@ export const toolViewStorageKey = "eason-toolbox-tool-view";
 export const favoritesStorageKey = "eason-toolbox-favorites";
 export const toolViewChangeEvent = "eason-toolbox-tool-view-change";
 export const openFavoritesEvent = "eason-toolbox-open-favorites";
+export const replayToolAnimationEvent = "eason-toolbox-replay-tool-animation";
 
 export function isToolViewMode(value: string | null): value is ToolViewMode {
   return value === "groups" || value === "table" || value === "minimal" || value === "cards";
