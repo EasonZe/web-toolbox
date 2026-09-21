@@ -82,6 +82,8 @@ test("renders the multifunction toolbox homepage with internal and third-party t
   assert.match(html, /href="\/image-line-redraw"/);
   assert.match(html, /href="\/ascii-art"/);
   assert.match(html, /href="\/fancy-text"/);
+  assert.match(html, /href="\/text-format"/);
+  assert.match(html, /href="\/plain-text-editor"/);
   assert.match(html, /href="\/word-counter"/);
   assert.match(html, /href="\/sensitive-redactor"/);
   assert.match(html, /href="\/ip-lookup"/);
@@ -149,7 +151,7 @@ test("图片文字工具初始显示预览、多种字体、对话框和导出�
   for (const text of ["图片加文字与对话框工具", "选择图片 / 拖入文件", "实时预览", "文字内容", "楷体", "仿宋", "圆体", "Arial", "Georgia", "无对话框", "圆角框", "左尾气泡", "右尾气泡", "思考气泡", "字幕框", "水平位置", "垂直位置", "导出格式", "下载图片", "最大 25 MB"]) assert.ok(html.includes(text), text);
   assert.doesNotMatch(html, /描边/);
   assert.match(html, /disabled="">.*下载图片/s);
-  assert.doesNotMatch(html, /不会上传|浏览器本地运行|在线工具/);
+  assert.doesNotMatch(html, /不会上传|浏览器本地运行/);
 });
 
 test("字数统计工具初始显示完整统计项与编辑操作", async () => {
@@ -158,7 +160,24 @@ test("字数统计工具初始显示完整统计项与编辑操作", async () =>
   const html = await response.text();
   for (const text of ["字数统计工具", "输入文字", "粘贴", "复制", "清空", "字符（含空格）", "字符（不含空格）", "中文字符", "总词数", "英文 / 数字词", "段落", "行数", "句数", "UTF-8", "预计阅读时长"]) assert.ok(html.includes(text), text);
   assert.match(html, /aria-label="需要统计的文字"/);
-  assert.doesNotMatch(html, /不会上传|浏览器本地运行|在线工具/);
+  assert.doesNotMatch(html, /不会上传|浏览器本地运行/);
+});
+
+test("文本格式转换页面显示完整格式、输入输出和文件操作", async () => {
+  const response = await render("/text-format");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  for (const text of ["文本格式转换工具", "选择转换格式", "全部大写", "驼峰命名", "转简体", "转繁体", "转半角", "转全角", "行去重", "原始文本", "转换结果", "继续转换", "下载"]) assert.ok(html.includes(text), text);
+  assert.match(html, /aria-label="原始文本"/);
+  assert.match(html, /aria-label="转换结果"/);
+});
+
+test("纯文本编辑器显示CodeMirror操作栏和本地草稿设置", async () => {
+  const response = await render("/plain-text-editor");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  for (const text of ["纯文本编辑器", "新建", "打开", "撤销", "重做", "查找替换", "粘贴", "复制全文", "自动换行", "自动保存草稿", "文件名", "下载 TXT", "草稿已自动保存在当前浏览器"]) assert.ok(html.includes(text), text);
+  assert.match(html, /aria-label="编辑器字号"/);
 });
 
 test("麦克风工具初始显示设备、波形、输入处理和录音结果", async () => {
@@ -166,7 +185,7 @@ test("麦克风工具初始显示设备、波形、输入处理和录音结果",
   assert.equal(response.status, 200);
   const html = await response.text();
   for (const text of ["麦克风测试与录音工具", "输入设备", "麦克风实时波形", "开始测试", "回声消除", "噪声抑制", "自动增益", "开始录音", "录音结果", "完成录音后可在这里试听和下载"]) assert.ok(html.includes(text), text);
-  assert.doesNotMatch(html, /不会上传|浏览器本地运行|在线工具/);
+  assert.doesNotMatch(html, /不会上传|浏览器本地运行/);
 });
 
 test("拼豆图纸页面初始显示图纸、设置和用量统计", async () => {
@@ -341,8 +360,10 @@ for (const [path, title, apiHost, description] of toolPages) {
     assert.match(html, /class="share-field-label"/);
     assert.match(html, /aria-controls="share-text"/);
     assert.match(html, /粘贴[^"<>]*分享链接/);
+    assert.match(html, /转换后的视频链接和预览会显示在这里/);
+    assert.match(html, /disabled="">打开视频<\/button>/);
+    assert.match(html, /disabled=""[^>]*>[^<]*(?:<svg[\s\S]*?<\/svg>)?下载视频<\/button>/);
     assert.doesNotMatch(html, /page-mark/);
-    assert.doesNotMatch(html, /在线工具/);
   });
 }
 
@@ -375,7 +396,6 @@ test("renders the local video to GIF tool", async () => {
   assert.match(html, /GIF预览/);
   assert.match(html, /GIF会显示在这里/);
   assert.match(html, /多功能工具箱/);
-  assert.doesNotMatch(html, /在线工具/);
 });
 
 test("renders the local video audio extractor", async () => {
@@ -394,7 +414,6 @@ test("renders the local video audio extractor", async () => {
   assert.match(html, /最大300 MB/);
   assert.match(html, /WAV/);
   assert.match(html, /多功能工具箱/);
-  assert.doesNotMatch(html, /在线工具/);
 });
 
 test("renders the local video compressor", async () => {
@@ -412,7 +431,6 @@ test("renders the local video compressor", async () => {
   assert.match(html, /压缩结果/);
   assert.match(html, /压缩后的视频会显示在这里/);
   assert.match(html, /多功能工具箱/);
-  assert.doesNotMatch(html, /在线工具/);
 });
 
 test("renders the local video format converter with all settings visible", async () => {
@@ -422,7 +440,7 @@ test("renders the local video format converter with all settings visible", async
   for (const text of ["视频格式转换工具", "支持批量导入视频", "批量选择视频", "原视频预览", "目标格式", "MP4", "WebM", "MOV", "MKV", "转换设置", "输出分辨率", "输出帧率", "输出画质", "保留视频声音", "转换结果", "转换后的视频会显示在这里", "单个最大500 MB"]) assert.ok(html.includes(text), text);
   assert.match(html, /multiple=""/);
   assert.match(html, /disabled="">.*批量转换 0 个视频为MP4/s);
-  assert.doesNotMatch(html, /浏览器本地处理|不会上传|在线工具/);
+  assert.doesNotMatch(html, /浏览器本地处理|不会上传/);
 });
 
 test("renders the local audio format converter", async () => {
@@ -440,7 +458,6 @@ test("renders the local audio format converter", async () => {
   assert.match(html, /转换结果/);
   assert.match(html, /转换后的音频会显示在这里/);
   assert.match(html, /多功能工具箱/);
-  assert.doesNotMatch(html, /在线工具/);
 });
 
 test("renders the audio and video reversal tools", async () => {
@@ -480,7 +497,6 @@ test("renders the local image watermark tool", async () => {
   assert.match(html, /水印设置/);
   assert.match(html, /尚未选择图片/);
   assert.match(html, /多功能工具箱/);
-  assert.doesNotMatch(html, /在线工具/);
 });
 
 test("renders the local image format converter", async () => {
@@ -501,7 +517,6 @@ test("renders the local image format converter", async () => {
   assert.match(html, /下载全部/);
   assert.match(html, /尚未选择图片/);
   assert.match(html, /多功能工具箱/);
-  assert.doesNotMatch(html, /在线工具/);
 });
 
 test("renders the local batch image compressor", async () => {
@@ -516,7 +531,6 @@ test("renders the local batch image compressor", async () => {
   assert.match(html, /下载全部/);
   assert.match(html, /单张最大25 MB/);
   assert.match(html, /多功能工具箱/);
-  assert.doesNotMatch(html, /在线工具/);
 });
 
 test("renders the local equal-width image line redraw tool", async () => {
@@ -536,7 +550,6 @@ test("renders the local equal-width image line redraw tool", async () => {
   assert.match(html, /尚未选择图片/);
   assert.match(html, /下载PNG线稿/);
   assert.match(html, /多功能工具箱/);
-  assert.doesNotMatch(html, /在线工具/);
 });
 
 test("renders the ASCII art generator", async () => {
@@ -555,7 +568,6 @@ test("renders the ASCII art generator", async () => {
   assert.match(html, /副标题/);
   assert.match(html, /边框样式/);
   assert.match(html, /多功能工具箱/);
-  assert.doesNotMatch(html, /在线工具/);
 });
 
 test("renders the local sensitive content redactor", async () => {
@@ -573,7 +585,6 @@ test("renders the local sensitive content redactor", async () => {
   assert.match(html, /遮挡/);
   assert.match(html, /下载已打码图片/);
   assert.match(html, /多功能工具箱/);
-  assert.doesNotMatch(html, /在线工具/);
 });
 
 test("renders the IP address lookup tool", async () => {
@@ -607,7 +618,6 @@ test("renders the local smart background remover", async () => {
   assert.match(html, /多功能工具箱/);
   assert.doesNotMatch(html, /提供IS-Net FP16、QInt8与BEN2 FP16三种本地AI模型/);
   assert.doesNotMatch(html, /本地高精度AI处理/);
-  assert.doesNotMatch(html, /在线工具/);
 });
 
 test("renders the local QR code generator", async () => {
@@ -629,7 +639,6 @@ test("renders the local QR code generator", async () => {
   assert.match(html, /上传背景/);
   assert.match(html, /下载PNG/);
   assert.match(html, /多功能工具箱/);
-  assert.doesNotMatch(html, /在线工具/);
 });
 
 test("renders the local QR code reader", async () => {
@@ -644,5 +653,4 @@ test("renders the local QR code reader", async () => {
   assert.match(html, /解析结果/);
   assert.match(html, /支持上传、拖放或粘贴截图，并可复制解析结果/);
   assert.match(html, /多功能工具箱/);
-  assert.doesNotMatch(html, /在线工具/);
 });

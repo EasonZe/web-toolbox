@@ -12,13 +12,14 @@ import {
   TbKeyboard, TbLayoutCollage, TbLink, TbMusicBolt, TbMusicCog, TbMusicDown,
   TbPhoto, TbPhotoCode, TbPhotoDown, TbPhotoEdit, TbPhotoVideo, TbQrcode,
   TbRadio, TbRewindBackward10, TbRotate360, TbScan, TbScribble, TbShieldLock,
-  TbTransform, TbTypography, TbVideo, TbWaveSine, TbWheel, TbWorldSearch,
+  TbTextGrammar, TbNotes, TbTransform, TbTypography, TbVideo, TbWaveSine, TbWheel, TbWorldSearch,
 } from "react-icons/tb";
 import {
   favoritesStorageKey,
   isToolViewMode,
   openFavoritesEvent,
   parseFavoriteHrefs,
+  replayToolAnimationEvent,
   toolViewChangeEvent,
   toolViewStorageKey,
   type ToolViewMode,
@@ -69,6 +70,8 @@ const tools: Tool[] = [
   { name: "等宽线条", title: "图片等宽线条重绘", href: "/image-line-redraw", icon: TbScribble, keywords: "图像 轮廓 描边 线稿", category: "图片与设计" },
   { name: "ASCII字符画", title: "ASCII字符画生成", href: "/ascii-art", icon: TbTypography, keywords: "文字 字符 figlet 艺术字", category: "文字与文档" },
   { name: "花体字", title: "花体字转换器", href: "/fancy-text", icon: TbTypography, keywords: "文字 字体 unicode 双线体 艺术字 英文", category: "文字与文档" },
+  { name: "文本格式", title: "文本格式转换", href: "/text-format", icon: TbTextGrammar, keywords: "文字 大小写 驼峰 下划线 简体 繁体 全角 半角 行去重", category: "文字与文档" },
+  { name: "文本编辑器", title: "纯文本编辑器", href: "/plain-text-editor", icon: TbNotes, keywords: "文字 txt 编辑 打开 下载 查找 替换 撤销 草稿 codemirror", category: "文字与文档" },
   { name: "字数统计", title: "字数统计", href: "/word-counter", icon: FiFileText, keywords: "文字 字符 词数 段落 行数 阅读时长", category: "文字与文档" },
   { name: "抽签大转盘", title: "抽签大转盘", href: "/lottery-wheel", icon: TbWheel, keywords: "抽奖 名单 导入 随机 选择 csv excel", category: "时间与生活" },
   { name: "短链接", title: "短链接生成", href: "/short-link", icon: TbLink, keywords: "网址 缩短 链接 分享 url", category: "设备与网络" },
@@ -178,8 +181,10 @@ export function ToolSearchGrid() {
         if (isToolViewMode(value)) setView(value);
       }
     };
+    const replayToolAnimation = () => setRevealCycle((current) => current + 1);
     window.addEventListener(toolViewChangeEvent, handleViewChange);
     window.addEventListener(openFavoritesEvent, toggleFavorites);
+    window.addEventListener(replayToolAnimationEvent, replayToolAnimation);
     window.addEventListener("hashchange", handleHash);
     window.addEventListener("storage", handleStorage);
     restorePreferences();
@@ -187,6 +192,7 @@ export function ToolSearchGrid() {
     return () => {
       window.removeEventListener(toolViewChangeEvent, handleViewChange);
       window.removeEventListener(openFavoritesEvent, toggleFavorites);
+      window.removeEventListener(replayToolAnimationEvent, replayToolAnimation);
       window.removeEventListener("hashchange", handleHash);
       window.removeEventListener("storage", handleStorage);
     };
@@ -197,39 +203,49 @@ export function ToolSearchGrid() {
     if (!browser) return;
 
     let observer: IntersectionObserver | undefined;
-    const frame = window.requestAnimationFrame(() => {
+    let revealFrame: number | undefined;
+    let items: HTMLElement[] = [];
+    const resetFrame = window.requestAnimationFrame(() => {
       const selector = view === "groups"
         ? ".tool-category-collapsible"
         : ".tool-category-heading, .tool-card-shell";
-      const items = Array.from(browser.querySelectorAll<HTMLElement>(selector));
+      items = Array.from(browser.querySelectorAll<HTMLElement>(selector));
       items.forEach((item, index) => {
+        item.classList.add("is-reveal-resetting");
         item.classList.remove("is-revealed");
         item.style.setProperty("--reveal-delay", `${Math.min(index % 4, 3) * 45}ms`);
       });
 
-      if (!("IntersectionObserver" in window)) {
-        items.forEach((item) => item.classList.add("is-revealed"));
-        return;
-      }
+      browser.getBoundingClientRect();
+      revealFrame = window.requestAnimationFrame(() => {
+        items.forEach((item) => item.classList.remove("is-reveal-resetting"));
 
-      observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const item = entry.target as HTMLElement;
-          const viewportHalf = window.innerHeight * 0.5;
-          const visibleEnough = entry.intersectionRatio >= 0.5
-            || (entry.boundingClientRect.height > window.innerHeight && entry.intersectionRect.height >= viewportHalf);
-          if (!visibleEnough) return;
-          item.classList.add("is-revealed");
-          observer?.unobserve(item);
-        });
-      }, { rootMargin: "0px", threshold: [0, 0.5] });
-      items.forEach((item) => observer?.observe(item));
+        if (!("IntersectionObserver" in window)) {
+          items.forEach((item) => item.classList.add("is-revealed"));
+          return;
+        }
+
+        observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const item = entry.target as HTMLElement;
+            const viewportHalf = window.innerHeight * 0.5;
+            const visibleEnough = entry.intersectionRatio >= 0.5
+              || (entry.boundingClientRect.height > window.innerHeight && entry.intersectionRect.height >= viewportHalf);
+            if (!visibleEnough) return;
+            item.classList.add("is-revealed");
+            observer?.unobserve(item);
+          });
+        }, { rootMargin: "0px", threshold: [0, 0.5] });
+        items.forEach((item) => observer?.observe(item));
+      });
     });
 
     return () => {
-      window.cancelAnimationFrame(frame);
+      window.cancelAnimationFrame(resetFrame);
+      if (revealFrame !== undefined) window.cancelAnimationFrame(revealFrame);
       observer?.disconnect();
+      items.forEach((item) => item.classList.remove("is-reveal-resetting"));
     };
   }, [activeCategory, favoritesOnly, revealCycle, searching, view, visibleTools.length]);
 
