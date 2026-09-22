@@ -40,9 +40,9 @@ type Tool = {
 };
 
 const tools: Tool[] = [
-  { name: "抖音", title: "抖音视频解析", href: "/douyin", icon: SiTiktok, keywords: "短视频 无水印 链接 下载", category: "视频工具" },
+  { name: "抖音", title: "抖音视频解析", href: "/douyin", icon: SiTiktok, keywords: "短视频 链接 播放 下载", category: "视频工具" },
   { name: "B站", title: "B站视频解析", href: "/bilibili", icon: SiBilibili, keywords: "哔哩哔哩 bilibili 视频 链接 下载", category: "视频工具" },
-  { name: "快手", title: "快手视频解析", href: "/kuaishou", icon: SiKuaishou, keywords: "短视频 无水印 链接 下载", category: "视频工具" },
+  { name: "快手", title: "快手视频解析", href: "/kuaishou", icon: SiKuaishou, keywords: "短视频 链接 播放 下载", category: "视频工具" },
   { name: "颜色", title: "颜色格式转换", href: "/color", icon: TbColorSwatch, keywords: "色值 hex rgb hsl hsv cmyk", category: "图片与设计" },
   { name: "视频转GIF", title: "视频转GIF", href: "/video-to-gif", icon: TbGif, keywords: "动图 gif 转换", category: "视频工具" },
   { name: "视频提取音频", title: "视频提取音频", href: "/video-to-audio", icon: TbWaveSine, keywords: "声音 音轨 导出", category: "视频工具" },

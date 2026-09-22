@@ -25,7 +25,7 @@ test("工具搜索支持名称、标题、关键词和多关键词匹配", () =>
   assert.match(source, /value\.normalize\("NFKC"\)/);
   assert.match(source, /tool\.name} \$\{tool\.title} \$\{tool\.keywords}/);
   assert.match(source, /terms\.every\(\(term\) => haystack\.includes\(term\)\)/);
-  for (const keyword of ["无水印", "bilibili", "批量", "马赛克", "sha256", "去除背景"]) {
+  for (const keyword of ["短视频", "bilibili", "批量", "马赛克", "sha256", "去除背景"]) {
     assert.ok(source.includes(keyword), keyword);
   }
 });
