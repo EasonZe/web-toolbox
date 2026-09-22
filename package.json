@@ -34,7 +34,7 @@
     "start": "vinext start",
     "test": "npm run build && node --experimental-strip-types --test tests/*.test.mjs",
     "test:unit": "node --experimental-strip-types --test tests/*.test.mjs",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .wrangler --ignore-pattern public/soundtouch",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .wrangler --ignore-pattern **/.wrangler/** --ignore-pattern public/soundtouch",
     "typecheck": "tsc --noEmit",
     "check": "npm run lint && npm run typecheck && npm test"
   },
@@ -78,6 +78,7 @@
     "youtubei.js": "^17.2.0"
   },
   "devDependencies": {
+    "@cloudflare/puppeteer": "^1.4.0",
     "@cloudflare/vite-plugin": "^1.54.4",
     "@tailwindcss/postcss": "4.2.1",
     "@types/html-to-pdfmake": "^2.4.5",
