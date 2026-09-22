@@ -206,7 +206,7 @@ export function ToolCardLink({
     }
 
     const shouldPreviewTouchNavigation =
-      touchPreview && event.detail > 0 && isCompactTouchViewport();
+      touchPreview && isCompactTouchViewport();
     if (
       !external &&
       isPlainLeftClick &&

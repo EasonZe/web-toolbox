@@ -69,11 +69,10 @@ npm run check
 
 | Platform | Production Worker | Primary upstream | Repository status |
 | --- | --- | --- | --- |
-| Douyin | `eason-daoyin-api` | Public Douyin pages and playback URLs | External deployment; source not included |
+| Douyin | `eason-daoyin-api` | Public Douyin pages and playback URLs | Source included |
 | Bilibili | `eason-bilibili-api` | Official public Bilibili playback APIs | Source included |
-| Kuaishou | `eason-kuaishou-api` | Third-party resolvers, then public Kuaishou pages as fallback | External deployment; source not included |
 
-These endpoints are not general-purpose public APIs provided by this repository. A fully independent fork must supply compatible Douyin and Kuaishou services and replace the page endpoints. See [architecture](docs/architecture.md), [deployment](docs/deployment.md), and the [dependency and upstream audit](docs/dependency-audit.md) for details.
+These endpoints are not general-purpose public APIs provided by this repository. Forks can deploy the corresponding Workers from this repository and replace the page endpoints. See [architecture](docs/architecture.md), [deployment](docs/deployment.md), and the [dependency and upstream audit](docs/dependency-audit.md) for details.
 
 ## Deployment
 

@@ -34,7 +34,7 @@ test("renders the multifunction toolbox homepage with internal and third-party t
   assert.doesNotMatch(html, /共27个工具|找到\d+个工具/);
   assert.match(html, /href="\/douyin"/);
   assert.match(html, /href="\/bilibili"/);
-  assert.match(html, /href="\/kuaishou"/);
+  assert.doesNotMatch(html, /href="\/kuaishou"/);
   assert.match(html, /href="\/color"/);
   assert.match(html, /href="\/video-to-gif"/);
   assert.match(html, /href="\/video-to-audio"/);
@@ -97,7 +97,7 @@ test("renders the multifunction toolbox homepage with internal and third-party t
   assert.match(html, /href="https:\/\/wyapi\.toubiec\.cn\/"/);
   assert.match(html, /抖音视频解析/);
   assert.match(html, /B站视频解析/);
-  assert.match(html, /快手视频解析/);
+  assert.doesNotMatch(html, /快手视频解析/);
   assert.match(html, /颜色格式转换/);
   assert.match(html, /视频转GIF/);
   assert.match(html, /视频提取音频/);
@@ -142,6 +142,11 @@ test("renders the multifunction toolbox homepage with internal and third-party t
   assert.match(html, /aria-label="打开设置"/);
   assert.match(html, /aria-label="爱发电支持作者"/);
   assert.doesNotMatch(html, /本站累计访问次数|访客计数/);
+});
+
+test("removed Kuaishou tool route returns 404", async () => {
+  const response = await render("/kuaishou");
+  assert.equal(response.status, 404);
 });
 
 test("图片文字工具初始显示预览、多种字体、对话框和导出设置", async () => {
@@ -338,12 +343,6 @@ const toolPages = [
     "B站视频解析",
     "bilibili-api",
     "将B站分享链接转换成可直接播放或下载的视频链接。",
-  ],
-  [
-    "/kuaishou",
-    "快手视频解析",
-    "kuaishou-api",
-    "将快手分享链接转换成可直接播放或下载的视频链接。",
   ],
 ];
 

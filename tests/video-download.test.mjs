@@ -23,7 +23,7 @@ test("downloads converted videos with progress and a safe fallback", () => {
 
 test("uses platform-specific MP4 download names", async () => {
   const pages = await Promise.all(
-    ["douyin", "bilibili", "kuaishou"].map((platform) =>
+    ["douyin", "bilibili"].map((platform) =>
       readFile(
         new URL(`../app/${platform}/page.tsx`, import.meta.url),
         "utf8",
@@ -34,5 +34,4 @@ test("uses platform-specific MP4 download names", async () => {
   assert.match(pages[0], /downloadName: "douyin-video\.mp4"/);
   assert.match(pages[1], /downloadName: "bilibili-video\.mp4"/);
   assert.match(pages[1], /apiPrefix: "https:\/\/bilibili-api\.easonzhan\.xyz\/\?url="/);
-  assert.match(pages[2], /downloadName: "kuaishou-video\.mp4"/);
 });

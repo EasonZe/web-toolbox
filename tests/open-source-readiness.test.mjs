@@ -52,12 +52,11 @@ test("community, CI and deployment documentation are present", async () => {
   assert.match(security, /qwas_qweasd@163\.com/);
   assert.match(conduct, /行为准则/);
   assert.match(workflow, /npm run check/);
-  for (const worker of ["eason-daoyin-api", "eason-bilibili-api", "eason-kuaishou-api"]) {
+  for (const worker of ["eason-daoyin-api", "eason-bilibili-api"]) {
     assert.match(`${architecture}\n${deployment}`, new RegExp(worker));
   }
   assert.doesNotMatch(`${architecture}\n${deployment}`, /api\.bugpk\.com|api\.qster\.top/);
   assert.match(architecture, /源码位于 `workers\/eason-daoyin-api\/`/);
-  assert.match(architecture, /源码位于 `workers\/eason-kuaishou-api\/`/);
   assert.match(notices, /MPL-2\.0/);
   assert.match(notices, /Apache-2\.0/);
 });

@@ -15,7 +15,7 @@ test("页脚显示版权、项目、作者、版本、构建日期与站点链�
   assert.match(page, /href="https:\/\/github\.com\/EasonZe\/web-toolbox"/);
   assert.match(page, /<AiOutlineGithub aria-hidden="true" \/>/);
   assert.match(page, /开源项目/);
-  assert.match(page, /href="https:\/\/easonzhan\.xyz\/"/);
+  assert.match(page, /href="https:\/\/github\.com\/EasonZe"[^>]*>[\s\S]*?<AiOutlineUser aria-hidden="true" \/>[\s\S]*?<span>作者主页<\/span>/);
   assert.match(page, /<AiOutlineUser aria-hidden="true" \/>/);
   assert.match(page, /作者主页/);
   assert.match(page, /Version \{__APP_VERSION__\}/);

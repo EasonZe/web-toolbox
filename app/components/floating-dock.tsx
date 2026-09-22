@@ -190,7 +190,7 @@ export default function FloatingDock() {
       const savedView = window.localStorage.getItem(toolViewStorageKey);
       if (isToolViewMode(savedView)) return savedView;
     } catch { /* Fall through to the viewport default. */ }
-    return window.matchMedia("(max-width: 680px)").matches ? "table" : "cards";
+    return window.matchMedia("(max-width: 680px)").matches ? "groups" : "cards";
   });
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
