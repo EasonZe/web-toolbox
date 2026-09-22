@@ -90,7 +90,8 @@ test("keeps the arrow expanded while an internal route is loading", () => {
 test("limits delayed touch navigation to compact card-grid layouts", () => {
   assert.match(component, /touchPreview\?: boolean;/);
   assert.match(component, /touchPreview = false/);
-  assert.match(component, /touchPreview && event\.detail > 0 && isCompactTouchViewport\(\)/);
+  assert.match(component, /touchPreview && isCompactTouchViewport\(\)/);
+  assert.doesNotMatch(component, /event\.detail > 0/);
   assert.match(toolGrid, /touchPreview=\{view === "cards"\}/);
 });
 

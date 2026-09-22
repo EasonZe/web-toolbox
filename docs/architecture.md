@@ -14,8 +14,7 @@ Browser
   │    └─ Rate Limiting: LINK_LIMITER
   └─ video parser Workers
        ├─ eason-daoyin-api
-       ├─ eason-bilibili-api
-       └─ eason-kuaishou-api
+       └─ eason-bilibili-api
 ```
 
 ## 浏览器本地处理
@@ -40,9 +39,8 @@ Browser
 | --- | --- | --- | --- |
 | `eason-daoyin-api` | `douyin-api.easonzhan.xyz` | 抖音公开页面、官方播放器与媒体地址；使用 Cloudflare Browser Rendering 回退 | 源码位于 `workers/eason-daoyin-api/` |
 | `eason-bilibili-api` | `bilibili-api.easonzhan.xyz` | `api.bilibili.com` 公开播放接口与受限媒体 CDN | 源码位于 `workers/eason-bilibili-api/` |
-| `eason-kuaishou-api` | `kuaishou-api.easonzhan.xyz` | 快手公开分享页与认可的媒体 CDN | 源码位于 `workers/eason-kuaishou-api/` |
 
-抖音与快手 Worker 不再调用第三方解析 API。三个生产端点不是本仓库承诺长期开放的通用 API；Fork 可以直接部署仓库内对应 Worker，并在页面中替换为自己的域名。生产使用前应评估平台条款、内容授权、可用性、限流、隐私和合规要求。
+抖音 Worker 不调用第三方解析 API。两个生产端点不是本仓库承诺长期开放的通用 API；Fork 可以直接部署仓库内对应 Worker，并在页面中替换为自己的域名。生产使用前应评估平台条款、内容授权、可用性、限流、隐私和合规要求。
 
 ## 数据与隐私边界
 

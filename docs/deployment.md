@@ -52,19 +52,17 @@ npx wrangler deploy --keep-vars
 
 ## 视频解析 Workers
 
-三个 Worker 的源码和配置均位于 `workers/`。抖音 Worker 需要 Cloudflare Browser Rendering 绑定；快手 Worker 只读取快手公开页面和认可的媒体 CDN，不使用第三方解析服务。
+两个 Worker 的源码和配置均位于 `workers/`。抖音 Worker 需要 Cloudflare Browser Rendering 绑定。
 
 ```bash
 npx wrangler deploy --config workers/eason-daoyin-api/wrangler.jsonc --dry-run
 npx wrangler deploy --config workers/eason-bilibili-api/wrangler.jsonc --dry-run
-npx wrangler deploy --config workers/eason-kuaishou-api/wrangler.jsonc --dry-run
 
 npx wrangler deploy --config workers/eason-daoyin-api/wrangler.jsonc
 npx wrangler deploy --config workers/eason-bilibili-api/wrangler.jsonc
-npx wrangler deploy --config workers/eason-kuaishou-api/wrangler.jsonc
 ```
 
-Fork 后请先修改 Worker 名称与 `routes`。三个 Worker 的健康检查路径均为 `/health`，无需第三方解析服务密钥。
+Fork 后请先修改 Worker 名称与 `routes`。两个 Worker 的健康检查路径均为 `/health`，无需第三方解析服务密钥。
 
 ## 发布后检查
 
@@ -72,5 +70,5 @@ Fork 后请先修改 Worker 名称与 `routes`。三个 Worker 的健康检查�
 2. 本地媒体工具能处理代表性样本；
 3. `/robots.txt`、`/sitemap.xml` 与 `/rss.xml` 可访问；
 4. `/api/short-links` 能创建短链，`/s/{code}` 能跳转；
-5. 三个视频解析端点均返回可预期的成功或结构化错误；
+5. 两个视频解析端点均返回可预期的成功或结构化错误；
 6. Cloudflare Logs 中无持续异常，D1 与限流绑定正常。

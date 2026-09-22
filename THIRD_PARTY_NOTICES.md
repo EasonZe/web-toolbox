@@ -47,9 +47,8 @@
 | --- | --- | --- |
 | `eason-daoyin-api` | 抖音公开页面、官方播放器与媒体地址；Cloudflare Browser Rendering | 源码与部署配置均收录在本仓库 |
 | `eason-bilibili-api` | Bilibili 官方公开播放接口与媒体 CDN | 源码与部署配置均收录在本仓库 |
-| `eason-kuaishou-api` | 快手公开分享页与认可的媒体 CDN | 源码与部署配置均收录在本仓库 |
 
-抖音和快手 Worker 不调用第三方解析 API。平台页面结构、访问策略和媒体地址可能发生变化；Fork 应部署自己的 Worker，并自行评估平台条款、内容授权、隐私与合规要求。
+抖音 Worker 不调用第三方解析 API。平台页面结构、访问策略和媒体地址可能发生变化；Fork 应部署自己的 Worker，并自行评估平台条款、内容授权、隐私与合规要求。
 
 完整依赖、锁定版本和包许可证字段见 `package.json` 与 `package-lock.json`。
 

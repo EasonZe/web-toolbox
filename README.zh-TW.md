@@ -69,11 +69,10 @@ npm run check
 
 | 平台 | 正式環境 Worker | 主要上游 | 儲存庫狀態 |
 | --- | --- | --- | --- |
-| 抖音 | `eason-daoyin-api` | 抖音公開頁面與播放位址 | 外部部署相依，未收錄原始碼 |
+| 抖音 | `eason-daoyin-api` | 抖音公開頁面與播放位址 | 已收錄原始碼 |
 | Bilibili | `eason-bilibili-api` | Bilibili 官方公開播放介面 | 已收錄原始碼 |
-| 快手 | `eason-kuaishou-api` | 第三方解析介面，失敗後回退至快手公開頁面 | 外部部署相依，未收錄原始碼 |
 
-這些端點不是本儲存庫的通用公共 API。Fork 若要完全獨立部署，需要自行提供相容的抖音與快手服務。完整說明請參閱 [系統架構](docs/architecture.md)、[部署文件](docs/deployment.md) 和 [相依套件與上游審查](docs/dependency-audit.md)。
+這些端點不是本儲存庫的通用公共 API。Fork 可以部署儲存庫內對應的 Worker。完整說明請參閱 [系統架構](docs/architecture.md)、[部署文件](docs/deployment.md) 和 [相依套件與上游審查](docs/dependency-audit.md)。
 
 ## 部署
 

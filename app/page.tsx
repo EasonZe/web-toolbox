@@ -53,7 +53,7 @@ export default function Home() {
             <span>开源项目</span>
           </a>
           <span className="site-footer-separator" aria-hidden="true">|</span>
-          <a href="https://easonzhan.xyz/" target="_blank" rel="noopener noreferrer">
+          <a href="https://github.com/EasonZe" target="_blank" rel="noopener noreferrer">
             <AiOutlineUser aria-hidden="true" />
             <span>作者主页</span>
           </a>

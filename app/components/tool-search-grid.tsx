@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FiChevronRight, FiEdit3, FiFileText, FiMic, FiSearch, FiStar, FiX } from "react-icons/fi";
 import type { IconType } from "react-icons";
-import { SiBilibili, SiKuaishou, SiNeteasecloudmusic, SiTiktok } from "react-icons/si";
+import { SiBilibili, SiNeteasecloudmusic, SiTiktok } from "react-icons/si";
 import {
   TbBackground, TbBinary, TbBrandMinecraft, TbCalculator, TbCalendarStats,
   TbClock, TbColorPicker, TbColorSwatch, TbCrop, TbCurrency, TbDeviceDesktop,
@@ -42,7 +42,6 @@ type Tool = {
 const tools: Tool[] = [
   { name: "抖音", title: "抖音视频解析", href: "/douyin", icon: SiTiktok, keywords: "短视频 链接 播放 下载", category: "视频工具" },
   { name: "B站", title: "B站视频解析", href: "/bilibili", icon: SiBilibili, keywords: "哔哩哔哩 bilibili 视频 链接 下载", category: "视频工具" },
-  { name: "快手", title: "快手视频解析", href: "/kuaishou", icon: SiKuaishou, keywords: "短视频 链接 播放 下载", category: "视频工具" },
   { name: "颜色", title: "颜色格式转换", href: "/color", icon: TbColorSwatch, keywords: "色值 hex rgb hsl hsv cmyk", category: "图片与设计" },
   { name: "视频转GIF", title: "视频转GIF", href: "/video-to-gif", icon: TbGif, keywords: "动图 gif 转换", category: "视频工具" },
   { name: "视频提取音频", title: "视频提取音频", href: "/video-to-audio", icon: TbWaveSine, keywords: "声音 音轨 导出", category: "视频工具" },
@@ -112,7 +111,7 @@ function readViewPreference(): ToolViewMode {
     const value = window.localStorage.getItem(toolViewStorageKey);
     if (isToolViewMode(value)) return value;
   } catch { /* Fall through to the viewport default. */ }
-  return window.matchMedia("(max-width: 680px)").matches ? "table" : "cards";
+  return window.matchMedia("(max-width: 680px)").matches ? "groups" : "cards";
 }
 
 function readFavorites() {
@@ -343,22 +342,41 @@ export function ToolSearchGrid() {
               <div className="tool-table-head" aria-hidden="true"><span>工具</span><span>分类</span><span>操作</span></div>
               <nav className={`tool-grid${searching ? " is-searching" : ""}`} aria-label="工具列表">{orderedVisibleTools.map((tool, index) => renderTool(tool, index))}</nav>
             </>
-          ) : groupedTools.map((group, categoryIndex) => view === "groups" ? (
-            <details
-              className="tool-category tool-category-collapsible is-reveal-pending"
-              key={group.category}
-              open={expandFilteredGroups || expandedCategories.has(group.category)}
-              onToggle={(event) => { if (!expandFilteredGroups) setCategoryExpanded(group.category, event.currentTarget.open); }}
-            >
-              <summary><span>{group.category}</span><span className="tool-category-count">{group.tools.length} 项</span></summary>
-              <nav className={`tool-grid${searching ? " is-searching" : ""}`} aria-label={`${group.category}工具`}>{group.tools.map((tool, index) => renderTool(tool, index))}</nav>
-            </details>
-          ) : (
+          ) : groupedTools.map((group, categoryIndex) => {
+            const groupExpanded = expandFilteredGroups || expandedCategories.has(group.category);
+            const groupPanelId = `tool-group-${categoryIndex}`;
+            return view === "groups" ? (
+              <section
+                className={`tool-category tool-category-collapsible is-reveal-pending${groupExpanded ? " is-expanded" : ""}`}
+                key={group.category}
+              >
+                <button
+                  className="tool-category-summary"
+                  type="button"
+                  aria-expanded={groupExpanded}
+                  aria-controls={groupPanelId}
+                  onClick={() => { if (!expandFilteredGroups) setCategoryExpanded(group.category, !groupExpanded); }}
+                >
+                  <span>{group.category}</span><span className="tool-category-count">{group.tools.length} 项</span>
+                </button>
+                <div
+                  className="tool-category-collapse"
+                  id={groupPanelId}
+                  aria-hidden={!groupExpanded}
+                  inert={!groupExpanded}
+                >
+                  <div className="tool-category-collapse-inner">
+                    <nav className={`tool-grid${searching ? " is-searching" : ""}`} aria-label={`${group.category}工具`}>{group.tools.map((tool, index) => renderTool(tool, index))}</nav>
+                  </div>
+                </div>
+              </section>
+            ) : (
             <section className="tool-category" key={group.category} aria-labelledby={`category-${categoryIndex}`}>
               <div className="tool-category-heading is-reveal-pending"><h2 id={`category-${categoryIndex}`}>{group.category}</h2><span>{group.tools.length} 项</span></div>
               <nav className={`tool-grid${searching ? " is-searching" : ""}`} aria-label={`${group.category}工具`}>{group.tools.map((tool, index) => renderTool(tool, index))}</nav>
             </section>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="tool-search-empty" role="status">

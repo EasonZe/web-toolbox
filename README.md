@@ -70,6 +70,7 @@ npm run check
 ```text
 app/                         页面、组件和浏览器端工具逻辑
 worker/                      主站 Cloudflare Worker
+workers/eason-daoyin-api/    抖音解析 Worker 源码
 workers/eason-bilibili-api/  Bilibili 解析 Worker 源码
 migrations/short-links/      D1 数据库迁移
 public/                      静态资源与字体许可证
@@ -81,11 +82,10 @@ docs/                        架构、部署与依赖审查文档
 
 | 平台 | 生产 Worker | 主要上游 | 仓库状态 |
 | --- | --- | --- | --- |
-| 抖音 | `eason-daoyin-api` | 抖音公开页面与播放地址 | 外部部署依赖，源码未收录 |
+| 抖音 | `eason-daoyin-api` | 抖音公开页面与播放地址 | 源码已收录 |
 | Bilibili | `eason-bilibili-api` | Bilibili 官方公开播放接口 | 源码已收录 |
-| 快手 | `eason-kuaishou-api` | 第三方解析接口，失败后回退到快手公开页面 | 外部部署依赖，源码未收录 |
 
-这些端点不是本仓库的通用公共 API。Fork 若要完全独立部署，需要自行提供兼容的抖音与快手服务，并替换页面中的地址。完整边界与审查结果见 [系统架构](docs/architecture.md)、[部署文档](docs/deployment.md) 和 [依赖与上游审查](docs/dependency-audit.md)。
+这些端点不是本仓库的通用公共 API。Fork 可以部署仓库内对应 Worker，并替换页面中的地址。完整边界与审查结果见 [系统架构](docs/architecture.md)、[部署文档](docs/deployment.md) 和 [依赖与上游审查](docs/dependency-audit.md)。
 
 ## 部署
 

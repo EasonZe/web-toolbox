@@ -53,11 +53,15 @@ test("首页分类标签、滚动渐入和收藏夹切换均已接入", async ()
   assert.match(source, /aria-controls="more-tool-categories"/);
   assert.match(source, />\{mobileCategoriesOpen \? "收起" : "更多"\}<\/button>/);
   assert.doesNotMatch(source, /常用工具集中在这里/);
-  assert.match(source, /matchMedia\("\(max-width: 680px\)"\)\.matches \? "table" : "cards"/);
+  assert.match(source, /matchMedia\("\(max-width: 680px\)"\)\.matches \? "groups" : "cards"/);
   assert.match(source, /new IntersectionObserver/);
   assert.match(source, /threshold: \[0, 0\.5\]/);
   assert.match(source, /view === "groups" \? "" : " is-reveal-pending"/);
   assert.match(source, /expandFilteredGroups = searching \|\| favoritesOnly \|\| activeCategory !== "全部"/);
+  assert.match(source, /className="tool-category-collapse"/);
+  assert.match(source, /aria-expanded=\{groupExpanded\}/);
+  assert.match(styles, /grid-template-rows:\s*0fr/);
+  assert.match(styles, /\.tool-category-collapsible\.is-expanded \.tool-category-collapse \{ grid-template-rows: 1fr;/);
   assert.match(source, /const restorePreferences = \(\) => \{\s*setView\(readViewPreference\(\)\);\s*setFavorites\(readFavorites\(\)\);/);
   assert.doesNotMatch(source, /requestAnimationFrame\(\(\) => \{\s*setView\(readViewPreference\(\)\)/);
   assert.match(source, /addEventListener\("storage", handleStorage\)/);

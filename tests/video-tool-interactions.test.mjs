@@ -94,7 +94,6 @@ function harness(config, readText) {
 const cases = [
   { name: "抖音", domains: ["douyin.com"], apiPrefix: "https://douyin-api.easonzhan.xyz/?url=", source: "https://v.douyin.com/example/" },
   { name: "B站", domains: ["bilibili.com"], canonicalizeBilibili: true, apiPrefix: "https://bilibili-api.easonzhan.xyz/?url=", source: "https://www.bilibili.com/video/BV1aJMV6jEdg/" },
-  { name: "快手", domains: ["kuaishou.com"], apiPrefix: "https://kuaishou-api.easonzhan.xyz/?url=", source: "https://www.kuaishou.com/f/example" },
 ];
 
 for (const config of cases) {
