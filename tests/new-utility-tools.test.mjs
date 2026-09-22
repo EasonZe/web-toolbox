@@ -36,12 +36,15 @@ test("新工具使用成熟数据和音频实现并加入首页", async () => {
   const rates = await read("../app/api/exchange-rates/route.ts");
   const clock = await read("../app/components/world-clock.tsx");
   const wheel = await read("../app/components/lottery-wheel.tsx");
+  const styles = await read("../app/globals.css");
   const morse = await read("../app/components/morse-code-converter.tsx");
   const home = await read("../app/components/tool-search-grid.tsx");
   for (const value of ["@soundtouchjs/audio-worklet", "processOffline", "pitchSemitones", "playbackRate"]) assert.ok(audio.includes(value), value);
   for (const value of ["api.frankfurter.dev/v2/rates", "Cache-Control", "currencyCodes"]) assert.ok(rates.includes(value), value);
   for (const value of ["supportedValuesOf", "/api/time", "requestFullscreen", "250"]) assert.ok(clock.includes(value), value);
   for (const value of ["大转盘", "翻牌抽签", "名单滚动"]) assert.ok(wheel.includes(value), value);
+  for (const value of ["cardPhase", "selectedCardIndex", "正在随机洗牌", "幸运卡片正在翻开", "setCardRevealName(drawn.name)"]) assert.ok(wheel.includes(value), value);
+  for (const value of ["lottery-flip-card-inner", "rotateY(180deg)", "card-shuffle .46s", "var(--card-index)"]) assert.ok(styles.includes(value), value);
   for (const value of ["toWavBlob", "audio.play()", "morse-audio", "下载摩斯音频 WAV"]) assert.ok(morse.includes(value), value);
   for (const value of ["/audio-speed-pitch", "/countdown", "/currency-converter", "/world-clock"]) assert.ok(home.includes(value), value);
 });

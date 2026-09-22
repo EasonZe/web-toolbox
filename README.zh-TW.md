@@ -16,6 +16,16 @@
   <a href="https://github.com/EasonZe/web-toolbox/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/EasonZe/web-toolbox/actions/workflows/ci.yml/badge.svg"></a>
   <a href="./LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-2563eb.svg"></a>
   <a href="https://tool.easonzhan.xyz/"><img alt="線上體驗" src="https://img.shields.io/badge/線上體驗-tool.easonzhan.xyz-0ea5e9.svg"></a>
+  <a href="https://github.com/EasonZe/web-toolbox/stargazers"><img alt="GitHub Stars" src="https://img.shields.io/github/stars/EasonZe/web-toolbox?style=flat&logo=github"></a>
+</p>
+
+<p align="center">
+  <img alt="Node.js 22+" src="https://img.shields.io/badge/Node.js-22%2B-339933?logo=nodedotjs&logoColor=white">
+  <img alt="TypeScript 5.9" src="https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white">
+  <img alt="React 19" src="https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white">
+  <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white">
+  <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white">
+  <img alt="50+ 工具" src="https://img.shields.io/badge/工具-50%2B-7c6fb1">
 </p>
 
 多功能工具箱以 React、Next.js、vinext 與 Cloudflare Workers 建置，收錄 50 多個影片、音訊、圖片、文件、開發及生活類工具。大多數媒體與文字處理都在瀏覽器本機完成，無須安裝應用程式。

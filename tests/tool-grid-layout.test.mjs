@@ -38,6 +38,6 @@ test("keeps toolbox cards left-aligned in fixed desktop and mobile columns", () 
   );
   assert.match(
     styles,
-    /\.tool-card\.is-touch-entering\s*\{[^}]*transform:\s*scale\(0\.975\);[^}]*border-color:\s*var\(--blue-hover\);[\s\S]*?\.tool-card\.is-touch-entering \.tool-action::before\s*\{[^}]*transform:\s*scaleX\(1\);[\s\S]*?\.tool-card\.is-touch-entering \.tool-arrow\s*\{[^}]*width:\s*calc\(100% - 24px\);[^}]*color:\s*#ffffff;/,
+    /\.tool-card\.is-touch-entering\s*\{[^}]*transform:\s*translateY\(-5px\);[^}]*border-color:\s*var\(--blue-hover\);[\s\S]*?\.tool-card\.is-touch-entering \.tool-icon\s*\{[^}]*transform:\s*translateY\(-2px\);[\s\S]*?\.tool-card\.is-touch-entering \.tool-action::before\s*\{[^}]*transform:\s*scaleX\(1\);[\s\S]*?\.tool-card\.is-touch-entering \.tool-arrow\s*\{[^}]*width:\s*calc\(100% - 24px\);[^}]*color:\s*#ffffff;/,
   );
 });

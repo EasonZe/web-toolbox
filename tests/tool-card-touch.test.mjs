@@ -10,6 +10,10 @@ const homeRestorer = await readFile(
   new URL("../app/components/home-scroll-restorer.tsx", import.meta.url),
   "utf8",
 );
+const toolGrid = await readFile(
+  new URL("../app/components/tool-search-grid.tsx", import.meta.url),
+  "utf8",
+);
 const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 
 test("plays entry feedback only for a short stationary touch", () => {
@@ -28,7 +32,7 @@ test("plays entry feedback only for a short stationary touch", () => {
 });
 
 test("schedules internal navigation directly from a valid touch release", () => {
-  assert.match(component, /const ENTER_DELAY = 480;/);
+  assert.match(component, /const ENTER_DELAY = 560;/);
   assert.match(
     component,
     /const scheduleInternalNavigation = \(\) => \{[\s\S]*?navigationPendingRef\.current = true;\s*setIsTouchEntering\(true\);[\s\S]*?navigationTimerRef\.current = setTimeout\(\(\) => \{\s*navigationTimerRef\.current = null;\s*router\.push\(href\);\s*\}, ENTER_DELAY\);/,
@@ -50,14 +54,17 @@ test("schedules internal navigation directly from a valid touch release", () => 
 test("supports touch browsers and hybrid tablets that report incomplete pointer capabilities", () => {
   assert.match(
     component,
-    /const isTouchLikePointer = \(pointerType: string\) => \{[\s\S]*?pointerType === "touch" \|\| pointerType === "pen"[\s\S]*?window\.matchMedia\("\(hover: none\), \(pointer: coarse\)"\)\.matches;/,
+    /const isCompactTouchViewport = \(\) => \{[\s\S]*?"\(max-width: 900px\)"[\s\S]*?navigator\.maxTouchPoints > 0[\s\S]*?"ontouchstart" in window/,
   );
+  assert.match(component, /if \(!touchPreview \|\| !window\.matchMedia/);
+  assert.match(component, /pointerType === "touch" \|\| pointerType === "pen"/);
   assert.match(component, /if \(!isTouchLikePointer\(event\.pointerType\)\) \{/);
   assert.match(
     component,
-    /if \(!external && isPlainLeftClick && isTouchClick && !shortTapRef\.current\) \{[\s\S]*?scheduleInternalNavigation\(\);/,
+    /shouldPreviewTouchNavigation[\s\S]*?isCompactTouchViewport\(\)[\s\S]*?scheduleInternalNavigation\(\);/,
   );
-  assert.match(styles, /\.tool-card\.is-touch-entering\s*\{[^}]*transform:\s*scale\(0\.975\);/s);
+  assert.match(toolGrid, /touchPreview=\{view === "cards"\}/);
+  assert.match(styles, /\.tool-card\.is-touch-entering\s*\{[^}]*transform:\s*translateY\(-5px\);/s);
   assert.match(
     styles,
     /@media \(hover: none\) and \(pointer: coarse\)[\s\S]*?\r?\n\}\r?\n\r?\n\.tool-card\.is-touch-entering\s*\{/,
@@ -78,6 +85,13 @@ test("keeps the arrow expanded while an internal route is loading", () => {
     component,
     /if \(isShortTap\) \{\s*setIsTouchEntering\(true\);\s*resetFeedbackLater\(\);/,
   );
+});
+
+test("limits delayed touch navigation to compact card-grid layouts", () => {
+  assert.match(component, /touchPreview\?: boolean;/);
+  assert.match(component, /touchPreview = false/);
+  assert.match(component, /touchPreview && event\.detail > 0 && isCompactTouchViewport\(\)/);
+  assert.match(toolGrid, /touchPreview=\{view === "cards"\}/);
 });
 
 test("saves the home scroll position before internal navigation", () => {

@@ -16,6 +16,16 @@
   <a href="https://github.com/EasonZe/web-toolbox/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/EasonZe/web-toolbox/actions/workflows/ci.yml/badge.svg"></a>
   <a href="./LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-2563eb.svg"></a>
   <a href="https://tool.easonzhan.xyz/"><img alt="Live site" src="https://img.shields.io/badge/Live-tool.easonzhan.xyz-0ea5e9.svg"></a>
+  <a href="https://github.com/EasonZe/web-toolbox/stargazers"><img alt="GitHub Stars" src="https://img.shields.io/github/stars/EasonZe/web-toolbox?style=flat&logo=github"></a>
+</p>
+
+<p align="center">
+  <img alt="Node.js 22+" src="https://img.shields.io/badge/Node.js-22%2B-339933?logo=nodedotjs&logoColor=white">
+  <img alt="TypeScript 5.9" src="https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white">
+  <img alt="React 19" src="https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white">
+  <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white">
+  <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white">
+  <img alt="50+ tools" src="https://img.shields.io/badge/Tools-50%2B-7c6fb1">
 </p>
 
 Web Toolbox is built with React, Next.js, vinext and Cloudflare Workers. It provides more than 50 utilities for video, audio, images, documents, development and everyday tasks. Most media and text processing happens locally in the browser, with no desktop installation required.

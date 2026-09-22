@@ -26,8 +26,13 @@ test("repository metadata identifies the MIT-licensed public project", async () 
   assert.match(readme, /public\/images\/toolbox-logo\.png/);
   assert.match(readme, /README\.zh-TW\.md/);
   assert.match(readme, /README\.en\.md/);
+  assert.match(readme, /img\.shields\.io\/github\/stars\/EasonZe\/web-toolbox/);
+  assert.match(readme, /Node\.js-22%2B/);
+  assert.match(readme, /Cloudflare-Workers/);
   assert.match(traditionalReadme, /繁體中文/);
+  assert.match(traditionalReadme, /github\/stars\/EasonZe\/web-toolbox/);
   assert.match(englishReadme, /Web Toolbox/);
+  assert.match(englishReadme, /github\/stars\/EasonZe\/web-toolbox/);
 });
 
 test("community, CI and deployment documentation are present", async () => {
