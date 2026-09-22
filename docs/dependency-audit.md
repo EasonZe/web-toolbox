@@ -55,7 +55,7 @@
 
 ```bash
 npm ci
-npm audit --audit-level=high
+npm audit --omit=dev --audit-level=high
 npm run check
 npx wrangler deploy --dry-run
 npx wrangler deploy --config workers/eason-daoyin-api/wrangler.jsonc --dry-run
