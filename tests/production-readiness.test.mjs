@@ -17,7 +17,7 @@ test("透明站点标志、robots与联系方式已用于生产页面", async ()
   assert.doesNotMatch(home, /All Rights Reserved/i);
   assert.match(home, /MIT License/);
   assert.match(layout, /\/images\/toolbox-logo\.png/);
-  assert.match(home, /mailto:erk21635@gmail\.com/);
+  assert.match(home, /mailto:qwas_qweasd@163\.com/);
   assert.equal(logo.subarray(0, 8).toString("hex"), "89504e470d0a1a0a");
   assert.equal(logo[25], 6, "项目标志应为带 Alpha 通道的 RGBA PNG");
   assert.match(robots, /User-agent: \*/);
