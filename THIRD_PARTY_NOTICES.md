@@ -1,6 +1,6 @@
-# Third-party notices
+# 第三方声明
 
-Web Toolbox 自身代码使用 MIT License。第三方依赖、字体与构建时复制的运行时资源仍遵循各自许可证；本文件不是这些许可证的替代品，准确文本以依赖包和资源目录中附带的许可证为准。
+多功能工具箱自身代码使用 MIT License。第三方依赖、字体与构建时复制的运行时资源仍遵循各自许可证；本文件不是这些许可证的替代品，准确文本以依赖包和资源目录中附带的许可证为准。
 
 ## 主要运行时依赖
 
@@ -8,7 +8,9 @@ Web Toolbox 自身代码使用 MIT License。第三方依赖、字体与构建�
 | --- | --- | --- |
 | React / Next.js / vinext | UI、路由与 Cloudflare 构建 | MIT |
 | CodeMirror 6 | 纯文本编辑、撤销、查找与替换 | MIT |
+| `@fix-webm-duration/fix` | WebM 录音时长修正 | MIT |
 | Mediabunny / `@mediabunny/mp3-encoder` | 浏览器音视频读取、编码与封装 | MPL-2.0 |
+| `@morsecodeapp/morse` | 摩斯电码转换 | MIT |
 | `@soundtouchjs/audio-worklet` | 音频变速与变调 | MPL-2.0 |
 | Transformers.js | 浏览器端智能抠图模型运行时 | Apache-2.0 |
 | DOMPurify | 文档转换内容净化 | MPL-2.0 OR Apache-2.0 |
@@ -20,6 +22,11 @@ Web Toolbox 自身代码使用 MIT License。第三方依赖、字体与构建�
 | Papa Parse | CSV 名单读取 | MIT |
 | read-excel-file | XLSX 名单读取 | MIT |
 | change-case | 英文命名格式转换 | MIT |
+| Color Thief | 图片主色提取 | MIT |
+| date-fns | 日期计算 | MIT |
+| FIGlet | ASCII 字符画 | MIT |
+| html-to-pdfmake | HTML 到 PDF 定义转换 | MIT |
+| React Icons | 界面图标 | MIT |
 | OpenCC.js | 简繁中文转换 | MIT AND Apache-2.0 |
 | mathjs | 算式与科学计算 | Apache-2.0 |
 | Three.js | 3D 模型预览与转台渲染 | MIT |
@@ -29,6 +36,20 @@ Web Toolbox 自身代码使用 MIT License。第三方依赖、字体与构建�
 | QRCode / jsQR | 二维码生成与解析 | MIT / Apache-2.0 |
 | hash-wasm | 浏览器文件哈希 | MIT |
 | youtubei.js | 媒体服务相关协议能力 | MIT |
+
+构建与开发工具包括 TypeScript、Vite、vinext、Wrangler、Cloudflare Vite 插件、Tailwind CSS、ESLint 与相关类型包；这些包的锁定版本和许可证字段可在 `package-lock.json` 中核对。
+
+间接依赖中还包含 BSD、ISC、BlueOak-1.0.0、CC-BY-4.0 等宽松或署名许可证。`sharp` 的可选平台二进制会带入 LGPL-3.0-or-later 的 `libvips` 包；`jszip` 可按 MIT 许可使用；`png-js` 的包元数据未填写 `license` 字段，但发布包附带 MIT License。完整审查结果见 `docs/dependency-audit.md`。
+
+## 外部服务与上游
+
+| 服务 | 上游 | 说明 |
+| --- | --- | --- |
+| `eason-daoyin-api` | 抖音公开页面、播放器与媒体地址；Cloudflare Browser Rendering | 部署源码未收录在本仓库 |
+| `eason-bilibili-api` | Bilibili 官方公开播放接口与媒体 CDN | 源码收录在本仓库 |
+| `eason-kuaishou-api` | `api.bugpk.com`、`api.qster.top`；快手公开页面作为回退 | 部署源码未收录在本仓库 |
+
+第三方解析服务的可用性、隐私政策与许可不受本项目控制。Fork 若要消除外部服务依赖，应部署自己的兼容实现并替换页面端点。
 
 完整依赖、锁定版本和包许可证字段见 `package.json` 与 `package-lock.json`。
 

@@ -1,10 +1,14 @@
 {
   "name": "web-toolbox",
   "version": "1.0.0",
-  "description": "A production-ready collection of browser-based media, document, developer and everyday utilities.",
+  "description": "多功能工具箱：面向浏览器的视频、音频、图片、文档、开发与生活工具集合。",
   "private": true,
   "license": "MIT",
-  "author": "Eason <erk21635@gmail.com>",
+  "author": {
+    "name": "EasonZe",
+    "email": "qwas_qweasd@163.com",
+    "url": "https://github.com/EasonZe"
+  },
   "homepage": "https://tool.easonzhan.xyz/",
   "repository": {
     "type": "git",

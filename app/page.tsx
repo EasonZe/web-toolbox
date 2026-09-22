@@ -36,7 +36,7 @@ export default function Home() {
           <a href="https://qm.qq.com/q/7dNxa3Hgt2" target="_blank" rel="noopener noreferrer" aria-label="通过 QQ 联系 Eason" title="24125567">
             <AiOutlineQq aria-hidden="true" /><span>QQ</span>
           </a>
-          <a href="mailto:erk21635@gmail.com" aria-label="给 Eason 发送邮件" title="erk21635@gmail.com">
+          <a href="mailto:qwas_qweasd@163.com" aria-label="给 Eason 发送邮件" title="qwas_qweasd@163.com">
             <AiOutlineMail aria-hidden="true" /><span>Email</span>
           </a>
           <a href="https://easonzhan.xyz/" target="_blank" rel="noopener noreferrer" aria-label="Eason 的博客" title="Blog">

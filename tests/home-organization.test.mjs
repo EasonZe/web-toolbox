@@ -37,7 +37,7 @@ test("收藏入口、列表设置、个人卡片和默认参考网格均已接�
     read("../app/components/model-turntable.tsx"),
   ]);
   for (const text of ["打开收藏夹", "折叠分组", "紧凑表格", "极简分割线", "卡片网格", "toolViewStorageKey"]) assert.ok(dock.includes(text), text);
-  for (const text of ["Eason", "生活明朗万物可爱", "https://github.com/EasonZe", "https://qm.qq.com/q/7dNxa3Hgt2", "mailto:erk21635@gmail.com", "https://easonzhan.xyz/", "/images/eason-avatar.png"]) assert.ok(home.includes(text), text);
+  for (const text of ["Eason", "生活明朗万物可爱", "https://github.com/EasonZe", "https://qm.qq.com/q/7dNxa3Hgt2", "mailto:qwas_qweasd@163.com", "https://easonzhan.xyz/", "/images/eason-avatar.png"]) assert.ok(home.includes(text), text);
   assert.ok(!home.includes("一个零手工纯AI开发小白"));
   assert.match(model, /useState\(true\).*?showGrid|\[showGrid, setShowGrid\] = useState\(true\)/s);
   assert.match(model, /grid\.visible = true/);

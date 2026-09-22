@@ -1,6 +1,6 @@
 # eason-bilibili-api
 
-Web Toolbox 的 Bilibili 链接解析与媒体代理 Worker。
+多功能工具箱的 Bilibili 链接解析与媒体代理 Worker。
 
 ## 端点
 

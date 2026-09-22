@@ -5,10 +5,12 @@ import test from "node:test";
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
 test("repository metadata identifies the MIT-licensed public project", async () => {
-  const [manifestText, license, readme] = await Promise.all([
+  const [manifestText, license, readme, traditionalReadme, englishReadme] = await Promise.all([
     read("package.json"),
     read("LICENSE"),
     read("README.md"),
+    read("README.zh-TW.md"),
+    read("README.en.md"),
   ]);
   const manifest = JSON.parse(manifestText);
 
@@ -16,8 +18,16 @@ test("repository metadata identifies the MIT-licensed public project", async () 
   assert.equal(manifest.license, "MIT");
   assert.equal(manifest.repository.url, "git+https://github.com/EasonZe/web-toolbox.git");
   assert.match(license, /^MIT License/);
-  assert.match(license, /Copyright \(c\) 2026 Eason/);
+  assert.equal(manifest.author.name, "EasonZe");
+  assert.equal(manifest.author.email, "qwas_qweasd@163.com");
+  assert.match(license, /Copyright \(c\) 2026 EasonZe/);
   assert.match(readme, /github\.com\/EasonZe\/web-toolbox/);
+  assert.match(readme, /<h1 align="center">多功能工具箱<\/h1>/);
+  assert.match(readme, /public\/images\/toolbox-logo\.png/);
+  assert.match(readme, /README\.zh-TW\.md/);
+  assert.match(readme, /README\.en\.md/);
+  assert.match(traditionalReadme, /繁體中文/);
+  assert.match(englishReadme, /Web Toolbox/);
 });
 
 test("community, CI and deployment documentation are present", async () => {
@@ -33,12 +43,14 @@ test("community, CI and deployment documentation are present", async () => {
     ]);
 
   assert.match(contributing, /npm run check/);
-  assert.match(security, /erk21635@gmail\.com/);
+  assert.match(security, /qwas_qweasd@163\.com/);
   assert.match(conduct, /行为准则/);
   assert.match(workflow, /npm run check/);
-  for (const worker of ["eason-douyin-api", "eason-bilibili-api", "eason-kuaishou-api"]) {
+  for (const worker of ["eason-daoyin-api", "eason-bilibili-api", "eason-kuaishou-api"]) {
     assert.match(`${architecture}\n${deployment}`, new RegExp(worker));
   }
+  assert.match(architecture, /api\.bugpk\.com/);
+  assert.match(architecture, /api\.qster\.top/);
   assert.match(notices, /MPL-2\.0/);
   assert.match(notices, /Apache-2\.0/);
 });

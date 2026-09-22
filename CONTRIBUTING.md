@@ -1,6 +1,6 @@
 # 贡献指南
 
-感谢你参与 Web Toolbox。提交代码前，请先搜索现有 Issue 和 Pull Request，避免重复工作。
+感谢你参与多功能工具箱。提交代码前，请先搜索现有 Issue 和 Pull Request，避免重复工作。
 
 ## 开发流程
 
@@ -30,12 +30,12 @@
 
 ## 提交与 Pull Request
 
-提交信息建议使用简洁的祈使句并标明范围，例如：
+提交信息使用干净、简洁的简体中文，例如：
 
 ```text
-feat(image): add palette export
-fix(home): preserve favorites after layout switch
-docs: clarify Cloudflare bindings
+增加配色导出
+修复切换布局后收藏丢失
+完善 Cloudflare 绑定说明
 ```
 
 一个 Pull Request 应聚焦一个主题。维护者可能要求拆分与本次目标无关的改动。

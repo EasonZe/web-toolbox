@@ -6,7 +6,7 @@
 
 ## 私下报告漏洞
 
-请将漏洞详情发送至 <erk21635@gmail.com>，标题以 `[web-toolbox security]` 开头。请尽量包含：
+请将漏洞详情发送至 <qwas_qweasd@163.com>，标题以 `[web-toolbox security]` 开头。请尽量包含：
 
 - 受影响的页面、接口或版本；
 - 可复现步骤或最小验证代码；

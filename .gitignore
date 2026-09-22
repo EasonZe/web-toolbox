@@ -39,7 +39,7 @@ yarn-error.log*
 next-env.d.ts
 *.tsbuildinfo
 /dist/
-/.wrangler/
+.wrangler/
 /outputs/
 /work/
 /public/pdfjs/

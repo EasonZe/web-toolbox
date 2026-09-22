@@ -2,18 +2,18 @@
 
 ## 概览
 
-Web Toolbox 是部署在 Cloudflare Workers 上的全栈 Web 应用。界面由 Next.js、React 与 vinext 构建，静态资源通过 Workers Assets 提供，少量需要服务端能力的功能由 Worker 路由处理。
+多功能工具箱是部署在 Cloudflare Workers 上的全栈 Web 应用。界面由 Next.js、React 与 vinext 构建，静态资源通过 Workers Assets 提供，少量需要服务端能力的功能由 Worker 路由处理。
 
 ```text
 Browser
   ├─ local media/text processing
-  ├─ Web Toolbox Worker (pages, assets, short links, image transforms)
+  ├─ 多功能工具箱 Worker（页面、静态资源、短链接、图片转换）
   │    ├─ Assets
   │    ├─ Images
   │    ├─ D1: SHORT_LINKS
   │    └─ Rate Limiting: LINK_LIMITER
   └─ video parser Workers
-       ├─ eason-douyin-api
+       ├─ eason-daoyin-api
        ├─ eason-bilibili-api
        └─ eason-kuaishou-api
 ```
@@ -36,13 +36,13 @@ Browser
 
 视频解析服务与主站隔离部署，避免上游响应、媒体代理和主站渲染相互影响。
 
-| Worker | 生产域名 | 仓库状态 |
-| --- | --- | --- |
-| `eason-douyin-api` | `douyin-api.easonzhan.xyz` | 外部部署依赖，当前仓库不包含源码 |
-| `eason-bilibili-api` | `bilibili-api.easonzhan.xyz` | 源码位于 `workers/eason-bilibili-api/` |
-| `eason-kuaishou-api` | `kuaishou-api.easonzhan.xyz` | 外部部署依赖，当前仓库不包含源码 |
+| Worker | 生产域名 | 实际上游 | 仓库状态 |
+| --- | --- | --- | --- |
+| `eason-daoyin-api` | `douyin-api.easonzhan.xyz` | 抖音公开页面、播放器与媒体地址；使用 Cloudflare Browser Rendering | 外部部署依赖，当前仓库不包含源码 |
+| `eason-bilibili-api` | `bilibili-api.easonzhan.xyz` | `api.bilibili.com` 公开播放接口与受限媒体 CDN | 源码位于 `workers/eason-bilibili-api/` |
+| `eason-kuaishou-api` | `kuaishou-api.easonzhan.xyz` | 优先使用 `api.bugpk.com`、`api.qster.top`，失败后回退到快手公开页面 | 外部部署依赖，当前仓库不包含源码 |
 
-Fork 可以保留这些公共端点用于开发验证，也可以在对应页面中替换为自己的兼容 API。生产使用前应自行评估平台条款、可用性、限流和合规要求。
+这些生产端点不是本仓库承诺长期开放的通用 API。Fork 可以临时用于开发验证，也可以在对应页面中替换为自己的兼容 API。完全独立部署必须自行实现或配置抖音、快手服务；生产使用前应评估上游条款、可用性、限流、隐私和合规要求。
 
 ## 数据与隐私边界
 

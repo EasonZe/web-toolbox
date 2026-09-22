@@ -65,10 +65,10 @@ Fork 后请先修改 Worker 名称与 `routes`。健康检查路径为 `/health`
 
 生产站点还使用以下独立 Cloudflare Workers：
 
-- `eason-douyin-api` → `douyin-api.easonzhan.xyz`
+- `eason-daoyin-api` → `douyin-api.easonzhan.xyz`
 - `eason-kuaishou-api` → `kuaishou-api.easonzhan.xyz`
 
-它们当前作为外部部署依赖记录，源码不在本仓库中。Fork 如需完全独立部署，应实现与页面当前请求/响应结构兼容的服务，并替换相应页面中的 API 前缀。
+它们当前作为外部部署依赖记录，源码不在本仓库中。抖音服务直接访问抖音公开页面和播放地址；快手服务会优先调用 `api.bugpk.com` 与 `api.qster.top`，失败后回退到快手公开页面。Fork 如需完全独立部署，应实现与页面当前请求/响应结构兼容的服务，并替换相应页面中的 API 前缀；密钥必须使用 Worker Secret，不得写入源码或配置。
 
 ## 发布后检查
 
