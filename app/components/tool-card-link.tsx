@@ -14,8 +14,8 @@ import {
 
 const MOVE_TOLERANCE = 12;
 const LONG_PRESS_DELAY = 460;
-const ENTER_DELAY = 480;
-const FEEDBACK_DURATION = 480;
+const ENTER_DELAY = 560;
+const FEEDBACK_DURATION = 560;
 const HOME_SCROLL_KEY = "eason-toolbox-home-scroll";
 
 type TouchGesture = {
@@ -31,6 +31,7 @@ type ToolCardLinkProps = {
   external?: boolean;
   href: string;
   style?: CSSProperties;
+  touchPreview?: boolean;
 };
 
 export function ToolCardLink({
@@ -38,6 +39,7 @@ export function ToolCardLink({
   external = false,
   href,
   style,
+  touchPreview = false,
 }: ToolCardLinkProps) {
   const router = useRouter();
   const gestureRef = useRef<TouchGesture | null>(null);
@@ -50,10 +52,22 @@ export function ToolCardLink({
   const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isTouchEntering, setIsTouchEntering] = useState(false);
 
+  const isCompactTouchViewport = () => {
+    if (!touchPreview || !window.matchMedia("(max-width: 900px)").matches) {
+      return false;
+    }
+
+    return (
+      window.matchMedia("(hover: none), (pointer: coarse)").matches ||
+      navigator.maxTouchPoints > 0 ||
+      "ontouchstart" in window
+    );
+  };
+
   const isTouchLikePointer = (pointerType: string) => {
+    if (!isCompactTouchViewport()) return false;
     if (pointerType === "touch" || pointerType === "pen") return true;
-    if (pointerType) return false;
-    return window.matchMedia("(hover: none), (pointer: coarse)").matches;
+    return pointerType === "";
   };
 
   const rememberHomePosition = () => {
@@ -191,10 +205,14 @@ export function ToolCardLink({
       rememberHomePosition();
     }
 
-    const isTouchClick = window.matchMedia(
-      "(hover: none), (pointer: coarse)",
-    ).matches;
-    if (!external && isPlainLeftClick && isTouchClick && !shortTapRef.current) {
+    const shouldPreviewTouchNavigation =
+      touchPreview && event.detail > 0 && isCompactTouchViewport();
+    if (
+      !external &&
+      isPlainLeftClick &&
+      shouldPreviewTouchNavigation &&
+      !shortTapRef.current
+    ) {
       event.preventDefault();
       scheduleInternalNavigation();
       return;
