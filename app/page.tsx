@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { AiOutlineGithub, AiOutlineMail, AiOutlineQq } from "react-icons/ai";
+import { AiOutlineGithub, AiOutlineMail, AiOutlineQq, AiOutlineUser } from "react-icons/ai";
 import { FiGlobe } from "react-icons/fi";
 import { HomeScrollRestorer } from "./components/home-scroll-restorer";
 import { ToolSearchGrid } from "./components/tool-search-grid";
@@ -46,12 +46,26 @@ export default function Home() {
       </section>
 
       <footer className="site-footer">
-        <p className="site-footer-meta">
-          <span>© 2026 Eason · MIT License</span>
-          <span className="site-footer-separator" aria-hidden="true">/</span>
+        <p>© 2026 Eason · MIT License</p>
+        <nav className="site-footer-links" aria-label="项目与作者信息">
+          <a href="https://github.com/EasonZe/web-toolbox" target="_blank" rel="noopener noreferrer">
+            <AiOutlineGithub aria-hidden="true" />
+            <span>开源项目</span>
+          </a>
+          <span className="site-footer-separator" aria-hidden="true">|</span>
+          <a href="https://easonzhan.xyz/" target="_blank" rel="noopener noreferrer">
+            <AiOutlineUser aria-hidden="true" />
+            <span>作者主页</span>
+          </a>
+          <span className="site-footer-separator" aria-hidden="true">|</span>
           <a href="/rss.xml">RSS</a>
-          <span className="site-footer-separator" aria-hidden="true">/</span>
+          <span className="site-footer-separator" aria-hidden="true">|</span>
           <a href="/sitemap.xml">Sitemap</a>
+        </nav>
+        <p className="site-footer-build">
+          <span>Version {__APP_VERSION__}</span>
+          <span className="site-footer-separator" aria-hidden="true">|</span>
+          <span>构建日期 {__BUILD_DATE__}</span>
         </p>
       </footer>
     </main>
