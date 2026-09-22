@@ -15,6 +15,7 @@ test("repository metadata identifies the MIT-licensed public project", async () 
   const manifest = JSON.parse(manifestText);
 
   assert.equal(manifest.name, "web-toolbox");
+  assert.equal(manifest.version, "1.0.0");
   assert.equal(manifest.license, "MIT");
   assert.equal(manifest.repository.url, "git+https://github.com/EasonZe/web-toolbox.git");
   assert.match(license, /^MIT License/);

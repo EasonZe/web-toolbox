@@ -9,12 +9,20 @@ const sitemap = await readFile(new URL("../public/sitemap.xml", import.meta.url)
 const worker = await readFile(new URL("../worker/index.ts", import.meta.url), "utf8");
 const config = JSON.parse(await readFile(new URL("../wrangler.jsonc", import.meta.url), "utf8"));
 
-test("页脚显示版权、RSS 与 Sitemap 链接", () => {
+test("页脚显示版权、项目、作者、版本、构建日期与站点链接", () => {
   assert.match(page, /© 2026 Eason · MIT License/);
   assert.doesNotMatch(page, /All Rights Reserved/i);
+  assert.match(page, /href="https:\/\/github\.com\/EasonZe\/web-toolbox"/);
+  assert.match(page, /<AiOutlineGithub aria-hidden="true" \/>/);
+  assert.match(page, /开源项目/);
+  assert.match(page, /href="https:\/\/easonzhan\.xyz\/"/);
+  assert.match(page, /<AiOutlineUser aria-hidden="true" \/>/);
+  assert.match(page, /作者主页/);
+  assert.match(page, /Version \{__APP_VERSION__\}/);
+  assert.match(page, /构建日期 \{__BUILD_DATE__\}/);
   assert.match(page, /href="\/rss\.xml">RSS<\/a>/);
   assert.match(page, /href="\/sitemap\.xml">Sitemap<\/a>/);
-  assert.match(styles, /\.site-footer-meta\s*\{[^}]*display:\s*flex;/s);
+  assert.match(styles, /\.site-footer-links,[\s\S]*?display:\s*flex;/);
   assert.doesNotMatch(page, /本站累计访问次数|SiteVisitCount|访客计数/);
   assert.doesNotMatch(styles, /\.site-visit-count/);
 });
