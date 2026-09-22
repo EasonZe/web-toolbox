@@ -4,7 +4,7 @@ import VideoTool from "../components/video-tool";
 export const metadata: Metadata = {
   title: "快手视频解析 | 多功能工具箱",
   description:
-    "将快手分享链接转换成可直接播放或下载的无水印视频链接，VRChat视频播放器可使用。",
+    "将快手分享链接转换成可直接播放或下载的视频链接，VRChat视频播放器可使用。",
 };
 
 export default function KuaishouPage() {
@@ -14,7 +14,7 @@ export default function KuaishouPage() {
         name: "快手",
         title: "快手视频解析",
         description:
-          "将快手分享链接转换成可直接播放或下载的无水印视频链接。",
+          "将快手分享链接转换成可直接播放或下载的视频链接。",
         note: "VRChat视频播放器可使用哦",
         apiPrefix: "https://kuaishou-api.easonzhan.xyz/?url=",
         placeholder: "粘贴整段分享文字或 https://www.kuaishou.com/f/... 链接",
