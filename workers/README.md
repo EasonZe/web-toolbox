@@ -4,8 +4,8 @@
 
 | Worker | 域名 | 本仓库是否含源码 |
 | --- | --- | --- |
-| `eason-daoyin-api` | `douyin-api.easonzhan.xyz` | 否 |
+| `eason-daoyin-api` | `douyin-api.easonzhan.xyz` | `eason-daoyin-api/` |
 | `eason-bilibili-api` | `bilibili-api.easonzhan.xyz` | `eason-bilibili-api/` |
-| `eason-kuaishou-api` | `kuaishou-api.easonzhan.xyz` | 否 |
+| `eason-kuaishou-api` | `kuaishou-api.easonzhan.xyz` | `eason-kuaishou-api/` |
 
-缺少源码的 Worker 作为生产外部依赖记录，不应被误认为可由本仓库直接部署。详细拓扑和替换方式见 `docs/architecture.md` 与 `docs/deployment.md`。
+三个 Worker 都可以从本仓库独立部署。抖音和快手实现仅访问对应平台公开页面、官方播放器或认可的媒体 CDN，不依赖第三方解析 API。详细拓扑和部署方式见 `docs/architecture.md` 与 `docs/deployment.md`。

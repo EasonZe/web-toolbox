@@ -37,19 +37,19 @@
 | hash-wasm | 浏览器文件哈希 | MIT |
 | youtubei.js | 媒体服务相关协议能力 | MIT |
 
-构建与开发工具包括 TypeScript、Vite、vinext、Wrangler、Cloudflare Vite 插件、Tailwind CSS、ESLint 与相关类型包；这些包的锁定版本和许可证字段可在 `package-lock.json` 中核对。
+构建与开发工具包括 TypeScript、Vite、vinext、Wrangler、Cloudflare Vite 插件、`@cloudflare/puppeteer`、Tailwind CSS、ESLint 与相关类型包；这些包的锁定版本和许可证字段可在 `package-lock.json` 中核对。
 
 间接依赖中还包含 BSD、ISC、BlueOak-1.0.0、CC-BY-4.0 等宽松或署名许可证。`sharp` 的可选平台二进制会带入 LGPL-3.0-or-later 的 `libvips` 包；`jszip` 可按 MIT 许可使用；`png-js` 的包元数据未填写 `license` 字段，但发布包附带 MIT License。完整审查结果见 `docs/dependency-audit.md`。
 
-## 外部服务与上游
+## 平台服务
 
-| 服务 | 上游 | 说明 |
+| 服务 | 数据来源 | 说明 |
 | --- | --- | --- |
-| `eason-daoyin-api` | 抖音公开页面、播放器与媒体地址；Cloudflare Browser Rendering | 部署源码未收录在本仓库 |
-| `eason-bilibili-api` | Bilibili 官方公开播放接口与媒体 CDN | 源码收录在本仓库 |
-| `eason-kuaishou-api` | `api.bugpk.com`、`api.qster.top`；快手公开页面作为回退 | 部署源码未收录在本仓库 |
+| `eason-daoyin-api` | 抖音公开页面、官方播放器与媒体地址；Cloudflare Browser Rendering | 源码与部署配置均收录在本仓库 |
+| `eason-bilibili-api` | Bilibili 官方公开播放接口与媒体 CDN | 源码与部署配置均收录在本仓库 |
+| `eason-kuaishou-api` | 快手公开分享页与认可的媒体 CDN | 源码与部署配置均收录在本仓库 |
 
-第三方解析服务的可用性、隐私政策与许可不受本项目控制。Fork 若要消除外部服务依赖，应部署自己的兼容实现并替换页面端点。
+抖音和快手 Worker 不调用第三方解析 API。平台页面结构、访问策略和媒体地址可能发生变化；Fork 应部署自己的 Worker，并自行评估平台条款、内容授权、隐私与合规要求。
 
 完整依赖、锁定版本和包许可证字段见 `package.json` 与 `package-lock.json`。
 

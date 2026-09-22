@@ -50,25 +50,21 @@ npx wrangler deploy --keep-vars
 
 `--keep-vars` 会保留通过 Cloudflare Dashboard 管理的变量；机密信息应通过 Secret 管理。
 
-## Bilibili Worker
+## 视频解析 Workers
 
-该 Worker 的源码和配置位于 `workers/eason-bilibili-api/`：
+三个 Worker 的源码和配置均位于 `workers/`。抖音 Worker 需要 Cloudflare Browser Rendering 绑定；快手 Worker 只读取快手公开页面和认可的媒体 CDN，不使用第三方解析服务。
 
 ```bash
+npx wrangler deploy --config workers/eason-daoyin-api/wrangler.jsonc --dry-run
 npx wrangler deploy --config workers/eason-bilibili-api/wrangler.jsonc --dry-run
+npx wrangler deploy --config workers/eason-kuaishou-api/wrangler.jsonc --dry-run
+
+npx wrangler deploy --config workers/eason-daoyin-api/wrangler.jsonc
 npx wrangler deploy --config workers/eason-bilibili-api/wrangler.jsonc
+npx wrangler deploy --config workers/eason-kuaishou-api/wrangler.jsonc
 ```
 
-Fork 后请先修改 Worker 名称与 `routes`。健康检查路径为 `/health`。
-
-## Douyin 与 Kuaishou Workers
-
-生产站点还使用以下独立 Cloudflare Workers：
-
-- `eason-daoyin-api` → `douyin-api.easonzhan.xyz`
-- `eason-kuaishou-api` → `kuaishou-api.easonzhan.xyz`
-
-它们当前作为外部部署依赖记录，源码不在本仓库中。抖音服务直接访问抖音公开页面和播放地址；快手服务会优先调用 `api.bugpk.com` 与 `api.qster.top`，失败后回退到快手公开页面。Fork 如需完全独立部署，应实现与页面当前请求/响应结构兼容的服务，并替换相应页面中的 API 前缀；密钥必须使用 Worker Secret，不得写入源码或配置。
+Fork 后请先修改 Worker 名称与 `routes`。三个 Worker 的健康检查路径均为 `/health`，无需第三方解析服务密钥。
 
 ## 发布后检查
 
