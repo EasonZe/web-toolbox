@@ -5,17 +5,21 @@ import test from "node:test";
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
 test("repository metadata identifies the MIT-licensed public project", async () => {
-  const [manifestText, license, readme, traditionalReadme, englishReadme] = await Promise.all([
+  const [manifestText, lockText, license, readme, traditionalReadme, englishReadme] = await Promise.all([
     read("package.json"),
+    read("package-lock.json"),
     read("LICENSE"),
     read("README.md"),
     read("README.zh-TW.md"),
     read("README.en.md"),
   ]);
   const manifest = JSON.parse(manifestText);
+  const lock = JSON.parse(lockText);
 
   assert.equal(manifest.name, "web-toolbox");
-  assert.equal(manifest.version, "1.0.0");
+  assert.match(manifest.version, /^\d+\.\d+\.\d+$/);
+  assert.equal(lock.version, manifest.version);
+  assert.equal(lock.packages[""].version, manifest.version);
   assert.equal(manifest.license, "MIT");
   assert.equal(manifest.repository.url, "git+https://github.com/EasonZe/web-toolbox.git");
   assert.match(license, /^MIT License/);
