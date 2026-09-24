@@ -211,7 +211,7 @@ export function ToolSearchGrid() {
       items = Array.from(browser.querySelectorAll<HTMLElement>(selector));
       items.forEach((item, index) => {
         item.classList.add("is-reveal-resetting");
-        item.classList.remove("is-revealed");
+        item.removeAttribute("data-revealed");
         item.style.setProperty("--reveal-delay", `${Math.min(index % 4, 3) * 45}ms`);
       });
 
@@ -220,7 +220,7 @@ export function ToolSearchGrid() {
         items.forEach((item) => item.classList.remove("is-reveal-resetting"));
 
         if (!("IntersectionObserver" in window)) {
-          items.forEach((item) => item.classList.add("is-revealed"));
+          items.forEach((item) => item.setAttribute("data-revealed", "true"));
           return;
         }
 
@@ -232,7 +232,7 @@ export function ToolSearchGrid() {
             const visibleEnough = entry.intersectionRatio >= 0.5
               || (entry.boundingClientRect.height > window.innerHeight && entry.intersectionRect.height >= viewportHalf);
             if (!visibleEnough) return;
-            item.classList.add("is-revealed");
+            item.setAttribute("data-revealed", "true");
             observer?.unobserve(item);
           });
         }, { rootMargin: "0px", threshold: [0, 0.5] });
@@ -364,6 +364,10 @@ export function ToolSearchGrid() {
                   id={groupPanelId}
                   aria-hidden={!groupExpanded}
                   inert={!groupExpanded}
+                  style={{
+                    "--tool-group-height": `${Math.ceil(group.tools.length / 2) * 100 + 24}px`,
+                    "--tool-group-height-mobile": `${group.tools.length * 100 + 24}px`,
+                  } as CSSProperties}
                 >
                   <div className="tool-category-collapse-inner">
                     <nav className={`tool-grid${searching ? " is-searching" : ""}`} aria-label={`${group.category}工具`}>{group.tools.map((tool, index) => renderTool(tool, index))}</nav>

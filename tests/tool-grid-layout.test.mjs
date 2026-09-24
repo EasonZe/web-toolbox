@@ -34,7 +34,7 @@ test("keeps toolbox cards left-aligned in fixed desktop and mobile columns", () 
   );
   assert.match(
     styles,
-    /@media \(hover: none\) and \(pointer: coarse\)[\s\S]*?\.tool-card-shell:hover > \.tool-card,\s*\.tool-card:active\s*\{[^}]*transform:\s*none;[^}]*border-color:\s*var\(--line\);[\s\S]*?\.tool-card-shell:hover > \.tool-card \.tool-action::before,\s*\.tool-card:active \.tool-action::before\s*\{[^}]*transform:\s*scaleX\(0\);[\s\S]*?\.tool-card-shell:hover > \.tool-card \.tool-arrow,\s*\.tool-card:active \.tool-arrow\s*\{[^}]*width:\s*22px;[^}]*color:\s*var\(--ui-accent\);/,
+    /@media \(hover: none\) and \(pointer: coarse\)[\s\S]*?\.tool-card-shell:hover > \.tool-card:not\(\.is-touch-entering\),\s*\.tool-card:active:not\(\.is-touch-entering\)\s*\{[^}]*transform:\s*none;[^}]*border-color:\s*var\(--line\);[\s\S]*?\.tool-card-shell:hover > \.tool-card:not\(\.is-touch-entering\) \.tool-action::before,\s*\.tool-card:active:not\(\.is-touch-entering\) \.tool-action::before\s*\{[^}]*transform:\s*scaleX\(0\);[\s\S]*?\.tool-card-shell:hover > \.tool-card:not\(\.is-touch-entering\) \.tool-arrow,\s*\.tool-card:active:not\(\.is-touch-entering\) \.tool-arrow\s*\{[^}]*width:\s*22px;[^}]*color:\s*var\(--ui-accent\);/,
   );
   assert.match(
     styles,

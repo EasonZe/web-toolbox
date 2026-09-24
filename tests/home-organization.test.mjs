@@ -62,6 +62,11 @@ test("首页分类标签、滚动渐入和收藏夹切换均已接入", async ()
   assert.match(source, /aria-expanded=\{groupExpanded\}/);
   assert.match(styles, /grid-template-rows:\s*0fr/);
   assert.match(styles, /\.tool-category-collapsible\.is-expanded \.tool-category-collapse \{ grid-template-rows: 1fr;/);
+  assert.match(styles, /max-height:\s*var\(--tool-group-height/);
+  assert.match(styles, /max-height:\s*var\(--tool-group-height-mobile/);
+  assert.doesNotMatch(styles, /\.tool-category-collapse \{[^}]*opacity:\s*0/);
+  assert.match(styles, /border-bottom:\s*1px solid transparent/);
+  assert.match(styles, /\.tool-category-collapsible\.is-expanded \.tool-category-summary \{ border-bottom-color: var\(--line\); \}/);
   assert.match(source, /const restorePreferences = \(\) => \{\s*setView\(readViewPreference\(\)\);\s*setFavorites\(readFavorites\(\)\);/);
   assert.doesNotMatch(source, /requestAnimationFrame\(\(\) => \{\s*setView\(readViewPreference\(\)\)/);
   assert.match(source, /addEventListener\("storage", handleStorage\)/);
@@ -71,7 +76,9 @@ test("首页分类标签、滚动渐入和收藏夹切换均已接入", async ()
   assert.match(source, /setFavoritesOnly\(\(current\) =>/);
   assert.doesNotMatch(source, /favorite \? " is-favorite"/);
   assert.match(source, /<div className=\{`tool-card-shell\$\{view === "groups" \? "" : " is-reveal-pending"\}`\} key=\{tool\.href\}>/);
-  assert.match(styles, /\.tool-card-shell\.is-reveal-pending\.is-revealed/);
+  assert.match(source, /setAttribute\("data-revealed", "true"\)/);
+  assert.doesNotMatch(source, /classList\.add\("is-revealed"\)/);
+  assert.match(styles, /\.tool-card-shell\.is-reveal-pending\[data-revealed="true"\]/);
   assert.match(styles, /\.tool-card-shell\.is-reveal-resetting/);
   assert.match(styles, /\.tool-card-shell:hover > \.tool-card/);
   assert.doesNotMatch(styles, /\.tool-card:hover\s*\{[\s\S]*?transform:\s*translateY\(-5px\)/);
