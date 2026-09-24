@@ -69,6 +69,18 @@ test("supports touch browsers and hybrid tablets that report incomplete pointer 
     styles,
     /@media \(hover: none\) and \(pointer: coarse\)[\s\S]*?\r?\n\}\r?\n\r?\n\.tool-card\.is-touch-entering\s*\{/,
   );
+  assert.match(
+    styles,
+    /\.tool-card-shell:hover > \.tool-card:not\(\.is-touch-entering\),\s*\.tool-card:active:not\(\.is-touch-entering\)/,
+  );
+  assert.match(
+    styles,
+    /\.tool-card-shell:hover > \.tool-card:not\(\.is-touch-entering\) \.tool-action::before,\s*\.tool-card:active:not\(\.is-touch-entering\) \.tool-action::before/,
+  );
+  assert.match(
+    styles,
+    /\.tool-card-shell:hover > \.tool-card:not\(\.is-touch-entering\) \.tool-arrow,\s*\.tool-card:active:not\(\.is-touch-entering\) \.tool-arrow/,
+  );
 });
 
 test("keeps the arrow expanded while an internal route is loading", () => {

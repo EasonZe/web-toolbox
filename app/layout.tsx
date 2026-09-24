@@ -49,6 +49,49 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
+      <head>
+        <style>{`
+          @media (hover: none) and (pointer: coarse) {
+            .tool-card-shell:hover > .tool-card.is-touch-entering,
+            .tool-card-shell > .tool-card.is-touch-entering,
+            .tool-card.is-touch-entering:active {
+              transform: translateY(-5px) !important;
+              border-color: var(--blue-hover) !important;
+              box-shadow: var(--shadow) !important;
+            }
+
+            .tool-card-shell:hover > .tool-card.is-touch-entering .tool-icon,
+            .tool-card-shell > .tool-card.is-touch-entering .tool-icon,
+            .tool-card.is-touch-entering:active .tool-icon {
+              transform: translateY(-2px) !important;
+              border-color: var(--blue-hover) !important;
+              background: linear-gradient(145deg, var(--surface-icon-start), var(--blue)) !important;
+              box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 9px 18px color-mix(in srgb, var(--ui-accent) 14%, transparent) !important;
+            }
+
+            .tool-card-shell:hover > .tool-card.is-touch-entering .tool-action,
+            .tool-card-shell > .tool-card.is-touch-entering .tool-action,
+            .tool-card.is-touch-entering:active .tool-action {
+              border-color: var(--blue-hover) !important;
+              box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 8px 18px color-mix(in srgb, var(--ui-accent) 14%, transparent) !important;
+            }
+
+            .tool-card-shell:hover > .tool-card.is-touch-entering .tool-action::before,
+            .tool-card-shell > .tool-card.is-touch-entering .tool-action::before,
+            .tool-card.is-touch-entering:active .tool-action::before {
+              transform: scaleX(1) !important;
+            }
+
+            .tool-card-shell:hover > .tool-card.is-touch-entering .tool-arrow,
+            .tool-card-shell > .tool-card.is-touch-entering .tool-arrow,
+            .tool-card.is-touch-entering:active .tool-arrow {
+              width: calc(100% - 24px) !important;
+              color: #fff !important;
+              filter: drop-shadow(0 1px 2px color-mix(in srgb, var(--ui-accent) 24%, transparent)) !important;
+            }
+          }
+        `}</style>
+      </head>
       <body>
         {children}
         <FloatingDock />
