@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
+
+const packageJson = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
 
 async function render(path = "/") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
@@ -29,6 +32,8 @@ test("renders the multifunction toolbox homepage with internal and third-party t
 
   const html = await response.text();
   assert.match(html, /<title>多功能工具箱<\/title>/i);
+  assert.match(html, new RegExp(`<span>Version (?:<!-- -->)?${packageJson.version.replaceAll(".", "\\.")}</span>`));
+  assert.match(html, /构建日期 (?:<!-- -->)?\d{4}\.\d{1,2}\.\d{1,2}<\/span>/);
   assert.match(html, /aria-label="搜索工具"/);
   assert.match(html, /placeholder="搜索工具"/);
   assert.doesNotMatch(html, /共27个工具|找到\d+个工具/);
@@ -230,6 +235,30 @@ test("六个通用工具页面显示完整初始操作", async () => {
     const html = await response.text();
     for (const text of texts) assert.ok(html.includes(text), `${path}: ${text}`);
   }
+});
+
+test("六个科学计算工具分别提供独立页面，旧链接兼容跳转", async () => {
+  const cases = [
+    ["/expression-calculator", "表达式计算", "变量赋值"],
+    ["/equation-solver", "方程求解", "添加方程"],
+    ["/calculus", "微积分计算", "导数阶数"],
+    ["/matrix-calculator", "矩阵运算", "矩阵 A"],
+    ["/statistics", "数据统计", "统计数据"],
+    ["/number-theory", "数论与组合", "质因数分解"],
+  ];
+  const home = await (await render("/")).text();
+  for (const [path, title, control] of cases) {
+    const response = await render(path);
+    assert.equal(response.status, 200, path);
+    const html = await response.text();
+    for (const text of [title, control, "计算结果"]) assert.ok(html.includes(text), `${path}: ${text}`);
+    assert.doesNotMatch(html, /role="tablist"/);
+    assert.ok(home.includes(`href="${path}"`), path);
+  }
+  assert.ok(!home.includes('href="/calculator"'));
+  const legacy = await render("/calculator");
+  assert.equal(legacy.status, 307);
+  assert.equal(legacy.headers.get("location"), "/expression-calculator");
 });
 
 test("四个新增工具页面显示完整初始操作", async () => {

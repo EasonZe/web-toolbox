@@ -39,12 +39,13 @@
     "check": "npm run lint && npm run typecheck && npm test"
   },
   "dependencies": {
+    "@cortex-js/compute-engine": "0.151.0",
     "@codemirror/commands": "^6.11.1",
     "@codemirror/search": "^6.7.2",
     "@codemirror/state": "^6.7.5",
     "@codemirror/view": "^6.43.12",
     "@fix-webm-duration/fix": "^1.0.1",
-    "@huggingface/transformers": "^3.8.1",
+    "@huggingface/transformers": "3.8.1",
     "@mediabunny/mp3-encoder": "^1.51.0",
     "@morsecodeapp/morse": "^0.2.0",
     "@soundtouchjs/audio-worklet": "^2.1.1",
@@ -52,7 +53,7 @@
     "colorthief": "^3.5.0",
     "date-fns": "^4.4.0",
     "docx": "^9.7.1",
-    "dompurify": "^3.4.14",
+    "dompurify": "^3.4.16",
     "figlet": "^1.11.4",
     "function-plot": "^1.25.4",
     "gifenc": "^1.0.3",
@@ -62,8 +63,9 @@
     "jsqr": "^1.4.0",
     "mammoth": "^1.12.1",
     "mathjs": "^15.2.0",
+    "mathlive": "0.111.0",
     "mediabunny": "^1.51.0",
-    "next": "16.3.4",
+    "next": "16.3.8",
     "opencc-js": "^1.4.2",
     "papaparse": "^5.7.0",
     "pdfjs-dist": "^6.2.108",
@@ -93,6 +95,7 @@
     "@vitejs/plugin-rsc": "^0.5.34",
     "eslint": "9.39.4",
     "eslint-config-next": "16.2.12",
+    "fast-glob": "file:packages/glob-compat",
     "react-server-dom-webpack": "19.2.8",
     "tailwindcss": "4.2.1",
     "typescript": "5.9.3",
@@ -101,17 +104,27 @@
     "wrangler": "^4.129.0"
   },
   "overrides": {
+    "fast-glob": "$fast-glob",
+    "mammoth": {
+      "argparse": "2.0.1"
+    },
+    "@huggingface/transformers": {
+      "onnxruntime-node": "1.30.0"
+    },
+    "@cloudflare/puppeteer": {
+      "@puppeteer/browsers": "3.2.4"
+    },
     "spin-wheel": {
       "canvas": "3.2.3"
     },
     "@babel/core": "7.29.7",
     "esbuild": "0.28.1",
-    "fast-uri": "3.1.6",
+    "fast-uri": "3.1.8",
     "js-yaml": "4.3.2",
     "postcss": "8.5.24",
     "baseline-browser-mapping": "2.11.0",
-    "sharp": "0.35.4",
-    "undici": "7.29.0",
+    "sharp": "0.35.5",
+    "undici": "7.29.1",
     "ws": "8.21.1"
   },
   "type": "module"

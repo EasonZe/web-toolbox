@@ -26,7 +26,8 @@ test("首页偏好能校验视图并安全解析收藏夹", async () => {
   vm.runInThisContext(`(function(exports, require) { ${code}\n })`)(exports, createRequire(import.meta.url));
   assert.equal(exports.isToolViewMode("cards"), true);
   assert.equal(exports.isToolViewMode("unknown"), false);
-  assert.deepEqual([...exports.parseFavoriteHrefs('["/color",7,"/calculator"]')], ["/color", "/calculator"]);
+  assert.deepEqual([...exports.parseFavoriteHrefs('["/color",7,"/calculator"]')], ["/color", "/expression-calculator"]);
+  assert.deepEqual([...exports.parseFavoriteHrefs('["/calculator","/expression-calculator"]')], ["/expression-calculator"]);
   assert.deepEqual([...exports.parseFavoriteHrefs("broken")], []);
 });
 

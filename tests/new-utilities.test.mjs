@@ -14,7 +14,6 @@ async function load(path) {
   return exports;
 }
 const lottery = await load("../app/lib/lottery.ts");
-const calculator = await load("../app/lib/calculator.ts");
 const links = await load("../worker/short-links.ts");
 
 test("名单保留同名概率，忽略空行并拒绝超限，随机索引不会越界", () => {
@@ -22,16 +21,6 @@ test("名单保留同名概率，忽略空行并拒绝超限，随机索引不�
   assert.throws(() => lottery.parseNames("名字\n".repeat(501)));
   assert.throws(() => lottery.randomWinner(0));
   for (let i = 0; i < 100; i++) { const index = lottery.randomWinner(7); assert.ok(index >= 0 && index < 7); }
-});
-
-test("计算器正确处理小数、括号、百分比和角度/弧度", () => {
-  assert.equal(calculator.calculate("0.1 + 0.2"), "0.3");
-  assert.equal(calculator.calculate("(12 + 8) × 5"), "100");
-  assert.equal(calculator.calculate("50%"), "0.5");
-  assert.equal(calculator.calculate("sqrt(81) + 2^3"), "17");
-  assert.ok(Math.abs(Number(calculator.calculate("sin(30)")) - .5) < 1e-12);
-  assert.ok(Math.abs(Number(calculator.calculate("cos(pi)", false)) + 1) < 1e-12);
-  for (const value of ["1/0", "a=5", "import(1)", "[1,2]", "9^9^9", "sqrt(-1)"]) assert.throws(() => calculator.calculate(value));
 });
 
 function environment() {

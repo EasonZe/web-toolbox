@@ -1,0 +1,14 @@
+{
+  "name": "@web-toolbox/glob-compat",
+  "version": "1.0.0",
+  "private": true,
+  "description": "基于 tinyglobby 的构建工具 glob 兼容层",
+  "license": "MIT",
+  "main": "index.cjs",
+  "dependencies": {
+    "tinyglobby": "0.2.17"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

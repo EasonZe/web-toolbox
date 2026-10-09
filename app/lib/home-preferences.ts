@@ -17,6 +17,7 @@ export function parseFavoriteHrefs(value: string | null) {
     return new Set(
       Array.isArray(parsed)
         ? parsed.filter((item): item is string => typeof item === "string")
+          .map((href) => href === "/calculator" ? "/expression-calculator" : href)
         : [],
     );
   } catch {

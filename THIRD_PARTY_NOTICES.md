@@ -29,6 +29,9 @@
 | React Icons | 界面图标 | MIT |
 | OpenCC.js | 简繁中文转换 | MIT AND Apache-2.0 |
 | mathjs | 算式与科学计算 | Apache-2.0 |
+| [MathLive](https://github.com/arnog/mathlive) | 科学计算工具的可视化公式编辑与数学键盘 | MIT |
+| [Cortex Compute Engine](https://github.com/cortex-js/compute-engine) | 科学计算工具的符号运算、方程求解与微积分 | MIT |
+| [KaTeX fonts](https://github.com/KaTeX/katex-fonts) | MathLive 附带的数学字体；许可证保存于 `licenses/KaTeX-fonts-LICENSE.txt` | MIT |
 | Three.js | 3D 模型预览与转台渲染 | MIT |
 | function-plot | 函数图像绘制 | MIT |
 | gifenc | GIF 编码 | MIT |
@@ -38,6 +41,10 @@
 | youtubei.js | 媒体服务相关协议能力 | MIT |
 
 构建与开发工具包括 TypeScript、Vite、vinext、Wrangler、Cloudflare Vite 插件、`@cloudflare/puppeteer`、Tailwind CSS、ESLint 与相关类型包；这些包的锁定版本和许可证字段可在 `package-lock.json` 中核对。
+
+- [tinyglobby](https://github.com/SuperchupuDev/tinyglobby)（MIT）为构建工具提供路径匹配；`packages/glob-compat` 是本项目 MIT 许可的有限 API 适配层，不包含 fast-glob、micromatch 或 braces 的源码。
+- [argparse](https://github.com/nodeca/argparse) 2.0.1（Python-2.0）仅用于 Mammoth CLI 兼容；上游发布包附带许可证。网站浏览器转换路径不打包 CLI。
+- `@puppeteer/browsers` 3.2.4（Apache-2.0）及其 `modern-tar`（MIT）用于开发依赖的浏览器管理；Cloudflare Worker 保留原远程 Browser Rendering API。
 
 间接依赖中还包含 BSD、ISC、BlueOak-1.0.0、CC-BY-4.0 等宽松或署名许可证。`sharp` 的可选平台二进制会带入 LGPL-3.0-or-later 的 `libvips` 包；`jszip` 可按 MIT 许可使用；`png-js` 的包元数据未填写 `license` 字段，但发布包附带 MIT License。完整审查结果见 `docs/dependency-audit.md`。
 
@@ -56,6 +63,7 @@
 
 - `public/fonts/noto-sans-sc/`：Noto Sans SC，SIL Open Font License 1.1；目录内包含许可证与来源说明。
 - `public/pdfjs/`：构建时由 `pdfjs-dist` 复制，不进入 Git；运行时资源及许可证由 `scripts/prepare-document-assets.mjs` 一并准备。
+- `public/mathlive/`：构建时由 MathLive 复制版本匹配的数学字体；附带 MathLive、Compute Engine 与 KaTeX fonts 的 MIT 许可证，公式输入不依赖第三方 CDN。
 - `public/soundtouch/`：构建时由 `@soundtouchjs/audio-worklet` 复制，不手工维护；目录内包含上游许可证。
 - `public/images/eason-avatar.png`：站点维护者的个人头像素材，不属于 MIT 软件授权范围，未经原权利人许可请勿复用。
 
