@@ -36,6 +36,7 @@ Web Toolbox is built with React, Next.js, vinext and Cloudflare Workers. It prov
 - **Audio:** conversion, compression, reversal, speed and pitch adjustment, microphone testing and recording.
 - **Images and design:** compression, cropping, stitching, watermarks, color extraction, pixel art, bead patterns, background removal, QR codes and 3D model previews.
 - **Text and documents:** plain-text editing, format conversion, word counts, ASCII art, Chinese script conversion and Word/PDF tools.
+- **Scientific computing:** six independent tools for expressions, equations, calculus, matrices, statistics, and number theory / combinatorics; visual math input powered by MathLive, Cortex Compute Engine and Math.js in a browser Web Worker.
 - **Development and daily life:** file hashes, base conversion, function plotting, Morse code, short links, exchange rates, world clocks, date calculations, timers and device tests.
 - **Experience:** search, categories, favorites, four list layouts, light/dark modes, custom theme colors, and responsive desktop, tablet and mobile layouts.
 

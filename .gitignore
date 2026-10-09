@@ -43,6 +43,7 @@ next-env.d.ts
 /outputs/
 /work/
 /public/pdfjs/
+/public/mathlive/
 .dev.*.log
 
 # local design and QA artifacts

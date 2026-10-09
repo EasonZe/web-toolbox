@@ -1,9 +1,23 @@
 import vinext from "vinext";
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import packageJson from "./package.json";
 
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
+
+function workerEnvironment(): Plugin {
+  return {
+    name: "toolbox:pdf-worker-environment",
+    enforce: "pre",
+    transform(code, id) {
+      if (!id.replaceAll("\\", "/").endsWith("/pdfmake/build/pdfmake.js")) return;
+      // vinext folds bare `typeof window` to "object" in client builds.
+      // Preserve pdfmake's runtime probe in Workers, which have no Window,
+      // without mutating the main client environment or adding a fake Window.
+      return { code: code.replace(/\btypeof window\b/g, "typeof globalThis.window"), map: null };
+    },
+  };
+}
 
 const localBindingConfig = {
   main: "./worker/index.ts",
@@ -38,6 +52,7 @@ export default defineConfig(async () => {
     server: isCodexSeatbeltSandbox
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,
+    worker: { plugins: () => [workerEnvironment()] },
     plugins: [
       vinext(),
       cloudflare({

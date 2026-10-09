@@ -6,13 +6,13 @@ import { FiChevronRight, FiEdit3, FiFileText, FiMic, FiSearch, FiStar, FiX } fro
 import type { IconType } from "react-icons";
 import { SiBilibili, SiNeteasecloudmusic, SiTiktok } from "react-icons/si";
 import {
-  TbBackground, TbBinary, TbBrandMinecraft, TbCalculator, TbCalendarStats,
+  TbBackground, TbBinary, TbBrandMinecraft, TbCalendarStats, TbChartDots,
   TbClock, TbColorPicker, TbColorSwatch, TbCrop, TbCurrency, TbDeviceDesktop,
   TbFileTypePdf, TbFunction, TbGif, TbGridDots, TbHash, TbHourglass,
-  TbKeyboard, TbLayoutCollage, TbLink, TbMusicBolt, TbMusicCog, TbMusicDown,
+  TbKeyboard, TbLayoutCollage, TbLink, TbMathFunction, TbMatrix, TbMusicBolt, TbMusicCog, TbMusicDown, TbNumbers,
   TbPhoto, TbPhotoCode, TbPhotoDown, TbPhotoEdit, TbPhotoVideo, TbQrcode,
   TbRadio, TbRewindBackward10, TbRotate360, TbScan, TbScribble, TbShieldLock,
-  TbTextGrammar, TbNotes, TbTransform, TbTypography, TbVideo, TbWaveSine, TbWheel, TbWorldSearch,
+  TbTextGrammar, TbNotes, TbTransform, TbTypography, TbVariable, TbVideo, TbWaveSine, TbWheel, TbWorldSearch,
 } from "react-icons/tb";
 import {
   favoritesStorageKey,
@@ -74,7 +74,12 @@ const tools: Tool[] = [
   { name: "字数统计", title: "字数统计", href: "/word-counter", icon: FiFileText, keywords: "文字 字符 词数 段落 行数 阅读时长", category: "文字与文档" },
   { name: "抽签大转盘", title: "抽签大转盘", href: "/lottery-wheel", icon: TbWheel, keywords: "抽奖 名单 导入 随机 选择 csv excel", category: "时间与生活" },
   { name: "短链接", title: "短链接生成", href: "/short-link", icon: TbLink, keywords: "网址 缩短 链接 分享 url", category: "设备与网络" },
-  { name: "计算器", title: "计算器", href: "/calculator", icon: TbCalculator, keywords: "数学 科学 运算 加减乘除 百分比", category: "计算与换算" },
+  { name: "表达式", title: "表达式计算", href: "/expression-calculator", icon: TbMathFunction, keywords: "科学计算 数学 公式 分数 复数 变量 代入 化简 三角函数 根号", category: "计算与换算" },
+  { name: "方程", title: "方程求解", href: "/equation-solver", icon: TbVariable, keywords: "科学计算 数学 一元 二次 方程组 未知数 实数 复数 求解", category: "计算与换算" },
+  { name: "微积分", title: "微积分计算", href: "/calculus", icon: TbFunction, keywords: "科学计算 数学 求导 导数 定积分 极限 上限 下限", category: "计算与换算" },
+  { name: "矩阵", title: "矩阵运算", href: "/matrix-calculator", icon: TbMatrix, keywords: "科学计算 数学 线性代数 行列式 逆矩阵 转置 乘法", category: "计算与换算" },
+  { name: "统计", title: "数据统计", href: "/statistics", icon: TbChartDots, keywords: "科学计算 数学 数据 均值 中位数 极值 标准差 方差 样本 总体", category: "计算与换算" },
+  { name: "数论", title: "数论与组合", href: "/number-theory", icon: TbNumbers, keywords: "科学计算 数学 质数 素数 因数 公约数 公倍数 排列 组合 整数", category: "计算与换算" },
   { name: "进制转换", title: "进制转换器", href: "/base-converter", icon: TbBinary, keywords: "二进制 八进制 十进制 十六进制 radix bigint", category: "编码与开发" },
   { name: "函数图像", title: "函数图像绘制", href: "/function-plotter", icon: TbFunction, keywords: "数学 曲线 坐标 绘图 函数 plot graph", category: "计算与换算" },
   { name: "摩斯电码", title: "摩斯电码转换", href: "/morse-code", icon: TbRadio, keywords: "莫尔斯 电报码 点划 编码 解码 播放", category: "编码与开发" },
