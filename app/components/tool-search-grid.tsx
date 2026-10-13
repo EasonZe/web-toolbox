@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FiChevronRight, FiEdit3, FiFileText, FiMic, FiSearch, FiStar, FiX } from "react-icons/fi";
 import type { IconType } from "react-icons";
-import { SiBilibili, SiNeteasecloudmusic, SiTiktok } from "react-icons/si";
+import { SiBilibili, SiTiktok } from "react-icons/si";
 import {
   TbBackground, TbBinary, TbBrandMinecraft, TbCalendarStats, TbChartDots,
   TbClock, TbColorPicker, TbColorSwatch, TbCrop, TbCurrency, TbDeviceDesktop,
@@ -28,7 +28,7 @@ import { ToolCardLink } from "./tool-card-link";
 
 const categoryOrder = [
   "视频工具", "音频工具", "图片与设计", "文字与文档", "编码与开发",
-  "计算与换算", "时间与生活", "设备与网络", "其他服务",
+  "计算与换算", "时间与生活", "设备与网络",
 ] as const;
 const primaryMobileCategories = categoryOrder.slice(0, 3);
 const secondaryMobileCategories = categoryOrder.slice(3);
@@ -96,7 +96,22 @@ const tools: Tool[] = [
   { name: "二维码解析", title: "二维码解析", href: "/qr-reader", icon: TbScan, keywords: "qr 识别 扫码 读取", category: "编码与开发" },
   { name: "文件哈希", title: "文件哈希计算", href: "/file-hash", icon: TbHash, keywords: "md5 sha1 sha256 sha512 校验", category: "编码与开发" },
   { name: "文档转换", title: "Word与PDF互转", href: "/document-converter", icon: TbFileTypePdf, keywords: "doc docx 文档 格式", category: "文字与文档" },
-  { name: "网易云音乐", title: "网易云音乐无损解析（第三方）", href: "https://wyapi.toubiec.cn/", icon: SiNeteasecloudmusic, keywords: "歌曲 音频 下载", category: "其他服务", external: true },
+  { name: "PDF页面", title: "PDF 页面管理", href: "/pdf-pages", icon: TbFileTypePdf, keywords: "文档 合并 拆分 删除 排序 旋转 页码", category: "文字与文档" },
+  { name: "文本对比", title: "文本差异对比", href: "/text-diff", icon: TbTextGrammar, keywords: "文字 左右 diff 差异 高亮 增加 删除 修改", category: "文字与文档" },
+  { name: "批量重命名", title: "批量文件重命名", href: "/batch-rename", icon: TbNotes, keywords: "文件 序号 替换 日期 名称 预览 zip 下载", category: "编码与开发" },
+  { name: "图片OCR", title: "图片文字识别 OCR", href: "/image-ocr", icon: TbScan, keywords: "文字 图像 中英文 识别 tesseract 复制 导出", category: "图片与设计" },
+  { name: "JSON", title: "JSON 格式化与校验", href: "/json-formatter", icon: TbPhotoCode, keywords: "开发 数据 压缩 格式化 校验 错误 定位", category: "编码与开发" },
+  { name: "Markdown", title: "Markdown 编辑与预览", href: "/markdown-editor", icon: FiEdit3, keywords: "文字 md 实时 预览 html 文档 导出", category: "文字与文档" },
+  { name: "ZIP", title: "ZIP 打包与解压", href: "/zip", icon: TbNotes, keywords: "文件 压缩包 预览 提取 下载 fflate", category: "编码与开发" },
+  { name: "字幕", title: "字幕编辑与转换", href: "/subtitle-editor", icon: TbTextGrammar, keywords: "视频 srt vtt 文字 编辑 时间 偏移 同步", category: "视频工具" },
+  { name: "音频裁剪", title: "音频裁剪与拼接", href: "/audio-editor", icon: TbWaveSine, keywords: "声音 区间 剪辑 合并 多段 淡入 淡出 wav", category: "音频工具" },
+  { name: "EXIF", title: "图片 EXIF 查看与清除", href: "/image-exif", icon: TbShieldLock, keywords: "图片 元数据 gps 隐私 相机 照片 信息 删除", category: "图片与设计" },
+  { name: "时间戳", title: "时间戳转换", href: "/timestamp", icon: TbClock, keywords: "unix 秒 毫秒 日期 时区 epoch UTC", category: "时间与生活" },
+  { name: "Unicode", title: "Unicode 字符检查", href: "/unicode-inspector", icon: TbTypography, keywords: "编码 文字 utf8 utf16 零宽 隐藏 空格 字符", category: "编码与开发" },
+  { name: "无缝贴图", title: "无缝贴图检查器", href: "/seamless-texture", icon: TbGridDots, keywords: "图片 texture 重复 平铺 缩放 接缝 辅助线", category: "图片与设计" },
+  { name: "通道打包", title: "贴图通道打包", href: "/channel-packer", icon: TbPhotoCode, keywords: "图片 texture RGBA ORM 通道 来源 反转 png", category: "图片与设计" },
+  { name: "全景图", title: "360° 全景图预览", href: "/panorama", icon: TbRotate360, keywords: "图片 等距柱状 360 panorama 拖动 视角 缩放", category: "图片与设计" },
+  { name: "法线图", title: "高度图转法线图", href: "/height-to-normal", icon: TbPhoto, keywords: "图片 贴图 height normal 强度 反转 方向 png", category: "图片与设计" },
 ];
 
 function normalizeSearch(value: string) {

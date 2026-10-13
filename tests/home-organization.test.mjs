@@ -15,7 +15,8 @@ test("每个首页工具都有分类并提供四种视图", async () => {
   const toolRows = source.match(/\{ name: [^\n]+\}/g) ?? [];
   assert.ok(toolRows.length >= 50);
   for (const row of toolRows) assert.match(row, /category: "/, row);
-  for (const category of ["视频工具", "音频工具", "图片与设计", "文字与文档", "编码与开发", "计算与换算", "时间与生活", "设备与网络", "其他服务"]) assert.ok(source.includes(category), category);
+  for (const category of ["视频工具", "音频工具", "图片与设计", "文字与文档", "编码与开发", "计算与换算", "时间与生活", "设备与网络"]) assert.ok(source.includes(category), category);
+  assert.doesNotMatch(source, /其他服务|网易云|wyapi\.toubiec\.cn/);
   for (const view of ["groups", "table", "minimal", "cards"]) assert.ok(dock.includes(`value: "${view}"`), view);
 });
 
@@ -29,6 +30,7 @@ test("首页偏好能校验视图并安全解析收藏夹", async () => {
   assert.deepEqual([...exports.parseFavoriteHrefs('["/color",7,"/calculator"]')], ["/color", "/expression-calculator"]);
   assert.deepEqual([...exports.parseFavoriteHrefs('["/calculator","/expression-calculator"]')], ["/expression-calculator"]);
   assert.deepEqual([...exports.parseFavoriteHrefs("broken")], []);
+  assert.deepEqual([...exports.parseFavoriteHrefs('["https://wyapi.toubiec.cn/","/image-ocr"]')], ["/image-ocr"]);
 });
 
 test("收藏入口、列表设置、个人卡片和默认参考网格均已接入", async () => {
