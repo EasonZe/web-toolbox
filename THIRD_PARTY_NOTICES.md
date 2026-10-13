@@ -8,6 +8,16 @@
 | --- | --- | --- |
 | React / Next.js / vinext | UI、路由与 Cloudflare 构建 | MIT |
 | CodeMirror 6 | 纯文本编辑、撤销、查找与替换 | MIT |
+| [PDF-lib](https://github.com/Hopding/pdf-lib) | PDF 合并、拆分、页序与旋转 | MIT |
+| [jsdiff](https://github.com/kpdecker/jsdiff) | 文本行级、字符级差异比较 | BSD-3-Clause |
+| [fflate](https://github.com/101arrowz/fflate) | 本地 ZIP 打包、解压与批量重命名下载 | MIT |
+| [Tesseract.js](https://github.com/naptha/tesseract.js) / core | 中英文图片 OCR 与 WebAssembly 引擎 | Apache-2.0 |
+| [naptha/tessdata](https://github.com/naptha/tessdata) | 中英文 OCR 模型；见 `licenses/OCR-models-NOTICE.md` | MIT（数据包）/ Apache-2.0（上游模型） |
+| [jsonc-parser](https://github.com/microsoft/node-jsonc-parser) | 严格 JSON 校验、错误位置与无精度损失格式化 | MIT |
+| [Marked](https://github.com/markedjs/marked) | Markdown 解析；输出经 DOMPurify 净化 | MIT |
+| [exifr](https://github.com/MikeKovarik/exifr) | 图片 EXIF、XMP、IPTC 与 GPS 元数据读取 | MIT |
+| [SRT/VTT Parser](https://github.com/plussub/srt-vtt-parser) | 浏览器字幕解析 | MIT |
+| [date-fns-tz](https://github.com/marnusw/date-fns-tz) | IANA 时区与时间戳转换 | MIT |
 | `@fix-webm-duration/fix` | WebM 录音时长修正 | MIT |
 | Mediabunny / `@mediabunny/mp3-encoder` | 浏览器音视频读取、编码与封装 | MPL-2.0 |
 | `@morsecodeapp/morse` | 摩斯电码转换 | MIT |
@@ -64,6 +74,8 @@
 - `public/fonts/noto-sans-sc/`：Noto Sans SC，SIL Open Font License 1.1；目录内包含许可证与来源说明。
 - `public/pdfjs/`：构建时由 `pdfjs-dist` 复制，不进入 Git；运行时资源及许可证由 `scripts/prepare-document-assets.mjs` 一并准备。
 - `public/mathlive/`：构建时由 MathLive 复制版本匹配的数学字体；附带 MathLive、Compute Engine 与 KaTeX fonts 的 MIT 许可证，公式输入不依赖第三方 CDN。
+- `public/ocr/`：构建时复制 Tesseract.js、匹配的 core 及中英文语言模型，OCR 图片不上传，目录附带许可证与模型来源说明。
+- `public/vendor-licenses/`：构建时复制新增浏览器依赖的原始许可证文本，随站点静态资源一起分发。
 - `public/soundtouch/`：构建时由 `@soundtouchjs/audio-worklet` 复制，不手工维护；目录内包含上游许可证。
 - `public/images/eason-avatar.png`：站点维护者的个人头像素材，不属于 MIT 软件授权范围，未经原权利人许可请勿复用。
 

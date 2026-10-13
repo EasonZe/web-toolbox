@@ -18,6 +18,7 @@ export function parseFavoriteHrefs(value: string | null) {
       Array.isArray(parsed)
         ? parsed.filter((item): item is string => typeof item === "string")
           .map((href) => href === "/calculator" ? "/expression-calculator" : href)
+          .filter((href) => !/^https:\/\/wyapi\.toubiec\.cn\/?(?:[?#].*)?$/.test(href))
         : [],
     );
   } catch {

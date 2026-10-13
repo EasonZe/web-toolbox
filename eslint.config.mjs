@@ -13,6 +13,8 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     "public/pdfjs/**", // Version-matched generated PDF.js assets, not application source.
+    "public/ocr/**", // Generated third-party OCR runtime, never application source.
+    "public/vendor-licenses/**", // Copied upstream license texts.
     "types/cloudflare-env.d.ts", // Generated Worker runtime declarations.
     "work/**", // Local browser QA fixtures and scripts.
   ]),

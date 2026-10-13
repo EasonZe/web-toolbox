@@ -25,10 +25,10 @@
   <img alt="React 19" src="https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white">
   <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white">
   <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white">
-  <img alt="50+ 工具" src="https://img.shields.io/badge/工具-50%2B-7c6fb1">
+  <img alt="70+ 工具" src="https://img.shields.io/badge/工具-70%2B-7c6fb1">
 </p>
 
-多功能工具箱基于 React、Next.js、vinext 与 Cloudflare Workers 构建，收录 50 余个视频、音频、图片、文档、开发和生活类工具。多数媒体和文本处理在浏览器本地完成，无需安装客户端。
+多功能工具箱基于 React、Next.js、vinext 与 Cloudflare Workers 构建，收录 70 余个视频、音频、图片、文档、开发和生活类工具。多数媒体和文本处理在浏览器本地完成，无需安装客户端。
 
 ## 功能
 
@@ -39,6 +39,7 @@
 - **科学计算**：表达式计算、方程求解、微积分计算、矩阵运算、数据统计、数论与组合六个独立工具；基于 MathLive、Cortex Compute Engine 与 Math.js，支持可视化公式输入，在浏览器后台线程中运行。
 - **开发与生活**：文件哈希、进制转换、函数绘图、摩斯电码、短链接、汇率、全球时间、日期计算、倒计时和设备测试。
 - **使用体验**：搜索、分类、收藏、四种列表布局、浅色/深色模式、自定义主题色，以及桌面、平板和手机适配。
+- **扩展工具**：PDF 页面管理、文本差异、批量重命名、OCR、JSON、Markdown、ZIP、字幕编辑、音频裁剪拼接、EXIF、时间戳、Unicode、无缝贴图、RGBA 通道、全景预览和高度转法线。选型与处理边界见 [GitHub 调研记录](docs/extended-tools-research.md)。
 
 ## 快速开始
 

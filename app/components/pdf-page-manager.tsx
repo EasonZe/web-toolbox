@@ -1,0 +1,327 @@
+"use client";
+/* eslint-disable @next/next/no-img-element -- Local PDF preview is a revocable Blob URL. */
+import { useEffect, useState } from "react";
+import { UtilityShell } from "./utility-shell";
+import {
+  LocalUpload,
+  LocalDownload,
+  TaskFeedback,
+  useBlobUrl,
+  useLocalTask,
+} from "./local-workbench";
+import { checkFiles } from "../lib/local-files";
+import { parsePageSelection, type PdfPageChoice } from "../lib/pdf-pages";
+import { runFileWorker } from "../lib/file-worker-client";
+type Source = { file: File; bytes: Uint8Array; pages: number };
+function PdfPreview({
+  file,
+  page,
+  rotation,
+}: {
+  file?: File;
+  page: number;
+  rotation: number;
+}) {
+  const [preview, setPreview] = useState<{
+    file: File;
+    page: number;
+    blob: Blob | null;
+    error: string;
+  } | null>(null);
+  const current =
+      preview?.file === file && preview?.page === page ? preview : null,
+    url = useBlobUrl(current?.blob);
+  useEffect(() => {
+    const controller = new AbortController();
+    if (file)
+      void (async () => {
+        const { loadPdf, renderPdfPage } = await import("../lib/document-pdf");
+        const pdf = await loadPdf(file, controller.signal);
+        try {
+          const result = await renderPdfPage(
+            pdf,
+            page + 1,
+            controller.signal,
+            0.7,
+          );
+          if (!controller.signal.aborted)
+            setPreview({ file, page, blob: result.blob, error: "" });
+        } finally {
+          await pdf.loadingTask.destroy();
+        }
+      })().catch((cause) => {
+        if (!controller.signal.aborted)
+          setPreview({
+            file,
+            page,
+            blob: null,
+            error: (cause as Error).message,
+          });
+      });
+    return () => controller.abort();
+  }, [file, page]);
+  return (
+    <div className="pdf-page-preview">
+      {url ? (
+        <img
+          src={url}
+          alt={`第 ${page + 1} 页预览`}
+          style={{ transform: `rotate(${rotation}deg)` }}
+        />
+      ) : (
+        <p className="utility-muted">
+          {current?.error ||
+            (file ? "正在生成页面预览…" : "导入 PDF 后选择页面预览")}
+        </p>
+      )}
+    </div>
+  );
+}
+export default function PdfPageManager() {
+  const [sources, setSources] = useState<Source[]>([]),
+    [pages, setPages] = useState<PdfPageChoice[]>([]),
+    [selected, setSelected] = useState(0),
+    [range, setRange] = useState("");
+  const loading = useLocalTask<Source[]>(),
+    task = useLocalTask<{ blob: Blob; name: string }>(),
+    busy = loading.busy || task.busy;
+  function update(next: PdfPageChoice[]) {
+    setPages(next);
+    setSelected(0);
+    task.reset();
+  }
+  function move(index: number, step: number) {
+    const next = [...pages];
+    [next[index], next[index + step]] = [next[index + step], next[index]];
+    update(next);
+  }
+  const choice = pages[selected];
+  async function exportPages(split: boolean) {
+    void task.run(async (signal) => {
+      const bytes = await runFileWorker<Uint8Array>(
+        {
+          action: split ? "pdf-split" : "pdf-build",
+          sources: sources.map((source) => source.bytes),
+          choices: pages,
+        },
+        signal,
+      );
+      return {
+        blob: new Blob([new Uint8Array(bytes)], {
+          type: split ? "application/zip" : "application/pdf",
+        }),
+        name: split ? "split-pages.zip" : "managed-pages.pdf",
+      };
+    });
+  }
+  return (
+    <UtilityShell
+      title="PDF 页面管理"
+      description="合并、拆分、删除、排序和旋转 PDF 页面，保留页面内容。"
+    >
+      <LocalUpload
+        accept=".pdf"
+        multiple
+        disabled={busy}
+        title="导入 PDF（可追加）"
+        hint="最多 10 个 PDF · 总大小 50 MB · 单文件 100 页 · 合计 200 页"
+        onFiles={async (files) => {
+          task.reset();
+          const added = await loading.run(async (signal) => {
+            checkFiles(
+              [...sources.map((s) => s.file), ...files],
+              50 * 1048576,
+              10,
+            );
+            const next = [];
+            for (const file of files) {
+              if (!/\.pdf$/i.test(file.name))
+                throw new Error("请选择 PDF 文件。");
+              const bytes = new Uint8Array(await file.arrayBuffer());
+              const info = await runFileWorker<{ rotation: number }[]>(
+                { action: "pdf-inspect", data: bytes },
+                signal,
+              );
+              if (info.length > 100) throw new Error("单个 PDF 最多 100 页。");
+              next.push({ file, bytes, pages: info.length });
+            }
+            if (
+              [...sources, ...next].reduce((sum, s) => sum + s.pages, 0) > 200
+            )
+              throw new Error("合计最多 200 页。");
+            return next;
+          });
+          if (added) {
+            setSources([...sources, ...added]);
+            update([
+              ...pages,
+              ...added.flatMap((s, i) =>
+                Array.from({ length: s.pages }, (_, page) => ({
+                  source: sources.length + i,
+                  page,
+                  rotation: 0,
+                })),
+              ),
+            ]);
+          }
+        }}
+      />
+      <TaskFeedback task={loading} />
+      <p className="utility-muted">
+        密码保护的 PDF
+        请先解锁。书签、数字签名和可编辑表单可能无法保留；拆分结果打包下载，不改变原文件。
+      </p>
+      {sources.length > 0 && (
+        <div className="workbench-two">
+          <section className="utility-panel utility-controls">
+            <h2>页面管理 · {pages.length} 页</h2>
+            <label>
+              保留 / 重排输出页码（如 3,1-2）
+              <input
+                value={range}
+                onChange={(e) => setRange(e.target.value)}
+                placeholder="1-3,5"
+              />
+            </label>
+            <div className="utility-actions">
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => {
+                  try {
+                    update(
+                      parsePageSelection(range, pages.length).map(
+                        (i) => pages[i],
+                      ),
+                    );
+                    setRange("");
+                  } catch (cause) {
+                    task.setError((cause as Error).message);
+                  }
+                }}
+              >
+                应用页码
+              </button>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() =>
+                  update(
+                    sources.flatMap((s, source) =>
+                      Array.from({ length: s.pages }, (_, page) => ({
+                        source,
+                        page,
+                        rotation: 0,
+                      })),
+                    ),
+                  )
+                }
+              >
+                恢复全部页面
+              </button>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => {
+                  setSources([]);
+                  update([]);
+                  loading.reset();
+                }}
+              >
+                清空 PDF
+              </button>
+            </div>
+            <div className="pdf-page-grid">
+              {pages.map((item, i) => (
+                <article
+                  key={`${item.source}-${item.page}`}
+                  className={selected === i ? "is-selected" : ""}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setSelected(i)}
+                    aria-pressed={selected === i}
+                  >
+                    <strong>输出第 {i + 1} 页</strong>
+                    <span>{sources[item.source].file.name}</span>
+                    <small>
+                      原第 {item.page + 1} 页 · 旋转 {item.rotation}°
+                    </small>
+                  </button>
+                  <div className="utility-actions">
+                    <button
+                      type="button"
+                      aria-label={`上移第 ${i + 1} 页`}
+                      disabled={busy || i === 0}
+                      onClick={() => move(i, -1)}
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`下移第 ${i + 1} 页`}
+                      disabled={busy || i === pages.length - 1}
+                      onClick={() => move(i, 1)}
+                    >
+                      ↓
+                    </button>
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => {
+                        const next = pages.map((p, n) =>
+                          n === i
+                            ? { ...p, rotation: (p.rotation + 90) % 360 }
+                            : p,
+                        );
+                        update(next);
+                        setSelected(i);
+                      }}
+                    >
+                      旋转
+                    </button>
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => update(pages.filter((_, n) => n !== i))}
+                    >
+                      删除
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+          <section className="utility-panel">
+            <h2>页面预览</h2>
+            <PdfPreview
+              file={choice ? sources[choice.source].file : undefined}
+              page={choice?.page ?? 0}
+              rotation={choice?.rotation ?? 0}
+            />
+            <div className="utility-actions">
+              <button
+                type="button"
+                disabled={busy || !pages.length}
+                onClick={() => void exportPages(false)}
+              >
+                合并 / 导出 PDF
+              </button>
+              <button
+                type="button"
+                disabled={busy || !pages.length}
+                onClick={() => void exportPages(true)}
+              >
+                逐页拆分（ZIP）
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+      <TaskFeedback task={task} />
+      {task.result && (
+        <LocalDownload blob={task.result.blob} name={task.result.name} />
+      )}
+    </UtilityShell>
+  );
+}

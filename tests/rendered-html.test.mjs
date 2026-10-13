@@ -99,7 +99,7 @@ test("renders the multifunction toolbox homepage with internal and third-party t
   assert.match(html, /文件哈希计算/);
   assert.ok(html.includes('href="/document-converter"'));
   assert.ok(html.includes("Word与PDF互转"));
-  assert.match(html, /href="https:\/\/wyapi\.toubiec\.cn\/"/);
+  assert.doesNotMatch(html, /href="https:\/\/wyapi\.toubiec\.cn\/"/);
   assert.match(html, /抖音视频解析/);
   assert.match(html, /B站视频解析/);
   assert.doesNotMatch(html, /快手视频解析/);
@@ -138,7 +138,7 @@ test("renders the multifunction toolbox homepage with internal and third-party t
   assert.match(html, /智能抠图/);
   assert.match(html, /二维码生成/);
   assert.match(html, /二维码解析/);
-  assert.match(html, /网易云音乐无损解析（第三方）/);
+  assert.doesNotMatch(html, /网易云音乐|其他服务/);
   assert.doesNotMatch(html, /前往|EASON'S TOOLBOX|<small/);
   assert.doesNotMatch(html, /tool-mark|进入工具/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/);
@@ -152,6 +152,28 @@ test("renders the multifunction toolbox homepage with internal and third-party t
 test("removed Kuaishou tool route returns 404", async () => {
   const response = await render("/kuaishou");
   assert.equal(response.status, 404);
+});
+
+test("16 个新增工具页面显示各自完整的初始操作", async () => {
+  const cases = [
+    ["/pdf-pages", ["PDF 页面管理", "导入 PDF", "合并、拆分"]],
+    ["/text-diff", ["文本差异对比", "原始文本", "修改后文本", "开始对比"]],
+    ["/batch-rename", ["批量文件重命名", "重命名规则", "名称预览", "重命名并打包"]],
+    ["/image-ocr", ["图片文字识别 OCR", "识别语言", "识别文字", "开始识别"]],
+    ["/json-formatter", ["JSON 格式化与校验", "格式化 / 校验", "处理结果", "压缩"]],
+    ["/markdown-editor", ["Markdown 编辑与预览", "实时预览", "导出 Markdown", "导出 HTML"]],
+    ["/zip", ["ZIP 打包与解压", "ZIP 打包", "ZIP 解压", "生成 ZIP"]],
+    ["/subtitle-editor", ["字幕编辑与转换", "字幕原文", "载入字幕原文"]],
+    ["/audio-editor", ["音频裁剪与拼接", "导入音频", "裁剪并合并音频"]],
+    ["/image-exif", ["图片 EXIF 查看与清除", "元数据", "清除元数据并导出"]],
+    ["/timestamp", ["时间戳转换", "时间戳 → 日期", "日期 → 时间戳", "转换时区"]],
+    ["/unicode-inspector", ["Unicode 字符检查", "零宽字符", "隐藏空格", "UTF-16"]],
+    ["/seamless-texture", ["无缝贴图检查器", "缩放", "接缝辅助线"]],
+    ["/channel-packer", ["贴图通道打包", "来源通道", "反转通道", "打包 RGBA"]],
+    ["/panorama", ["360° 全景图预览", "视野角度", "重置视角", "全屏预览"]],
+    ["/height-to-normal", ["高度图转法线图", "强度", "生成法线图", "法线图预览"]],
+  ];
+  for (const [path, labels] of cases) { const response = await render(path); assert.equal(response.status, 200, path); const html = await response.text(); for (const label of labels) assert.ok(html.includes(label), `${path} ${label}`); }
 });
 
 test("图片文字工具初始显示预览、多种字体、对话框和导出设置", async () => {

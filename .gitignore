@@ -44,6 +44,8 @@ next-env.d.ts
 /work/
 /public/pdfjs/
 /public/mathlive/
+/public/ocr/
+/public/vendor-licenses/
 .dev.*.log
 
 # local design and QA artifacts

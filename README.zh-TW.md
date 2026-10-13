@@ -25,10 +25,10 @@
   <img alt="React 19" src="https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white">
   <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white">
   <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white">
-  <img alt="50+ 工具" src="https://img.shields.io/badge/工具-50%2B-7c6fb1">
+  <img alt="70+ 工具" src="https://img.shields.io/badge/工具-70%2B-7c6fb1">
 </p>
 
-多功能工具箱以 React、Next.js、vinext 與 Cloudflare Workers 建置，收錄 50 多個影片、音訊、圖片、文件、開發及生活類工具。大多數媒體與文字處理都在瀏覽器本機完成，無須安裝應用程式。
+多功能工具箱以 React、Next.js、vinext 與 Cloudflare Workers 建置，收錄 70 多個影片、音訊、圖片、文件、開發及生活類工具。大多數媒體與文字處理都在瀏覽器本機完成，無須安裝應用程式。
 
 ## 功能
 
@@ -41,6 +41,8 @@
 - **使用體驗**：搜尋、分類、收藏、四種清單版面、淺色/深色模式、自訂主題色，以及桌面、平板和手機適配。
 
 ## 快速開始
+
+新增 PDF 頁面管理、文字差異、批次重新命名、OCR、JSON、Markdown、ZIP、字幕、音訊剪輯、EXIF、時間戳、Unicode、無縫貼圖、RGBA 通道、全景預覽及高度轉法線。來源與處理限制見 [GitHub 調研記錄](docs/extended-tools-research.md)。
 
 需要 Node.js `>= 22.13.0` 與 npm `>= 10`。
 

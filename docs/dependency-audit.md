@@ -1,8 +1,19 @@
 # 依赖与上游审查
 
-最近审查：2026-10-09。下方补丁阶段与 2026-09-22 内容为历史快照。
+最近审查：2026-10-13。下方 2026-10-09 与 2026-09-22 内容为历史快照。
 
-## 当前完整依赖审计（2026-10-09）
+## 新增工具与完整依赖审计（2026-10-13）
+
+- 新增九项运行时依赖，分别用于 PDF 页面、文本差异、ZIP、OCR、JSON、Markdown、EXIF、字幕和时区；中英文 OCR 模型作为两项构建期依赖，锁定版本、来源与许可证见 [调研记录](extended-tools-research.md) 和 [第三方声明](../THIRD_PARTY_NOTICES.md)。当前直接运行时依赖 48 个、开发依赖 24 个。
+- `npm audit --audit-level=low` 与 `npm audit --omit=dev --audit-level=low` 均通过，全部依赖 0 个已知漏洞；依赖锁可通过 `npm ci --dry-run --ignore-scripts` 校验。
+- OCR 引擎和模型自托管，模型压缩载荷使用 `.traineddata` URL，避免 `.gz` 被静态服务器当作 HTTP 预压缩附属文件。模型内容与上游发布包一致，随构建附带来源说明及许可证。
+- ZIP 先检查路径、条目数、解压体积、压缩比和加密标记，再执行提取和 CRC32 校验。Markdown 输出经 DOMPurify 净化，不允许脚本、嵌入或能加载外部资源的样式属性。
+- 文件、贴图和音频采样处理使用独立 Worker；长任务支持取消和超时，不将上传文件送往第三方解析服务。移除“其他服务”分类及网易云音乐第三方入口，不修改已有视频 API Worker。
+- `npm run check` 通过：Lint、类型检查、生产构建及 266 项测试。主站 `wrangler deploy --dry-run` 通过；单个浏览器静态资源均不超过 Cloudflare 25 MiB 限制。
+
+本节记录发布前的检查结果，构建与 dry-run 本身不等于已部署或已推送 GitHub。当前主站打包 gzip 约 5.01 MiB；远程上传是否成功需以实际部署结果为准。零已知漏洞是审计快照，不等于不存在未知风险。
+
+## 完整依赖审计快照（2026-10-09）
 
 `npm audit --audit-level=low` 与 `npm audit --omit=dev --audit-level=low` 均通过：生产及开发依赖合计 **0 个已知漏洞**。没有使用漏洞忽略列表、审计阈值下调、虚构修复版本或 `npm audit fix --force`。
 
