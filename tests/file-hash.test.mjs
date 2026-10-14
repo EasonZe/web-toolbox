@@ -3,14 +3,14 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import test from "node:test";
-import vm from "node:vm";
+import { runToolTest } from "./helpers/vm-modules.mjs";
 import ts from "typescript";
 
 const require = createRequire(import.meta.url);
 async function loadTs(file, imports = {}) {
   const source = await readFile(new URL(`../app/${file}`, import.meta.url), "utf8");
   const exports = {};
-  vm.runInNewContext(ts.transpileModule(source, {
+  runToolTest(ts.transpileModule(source, {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   }).outputText, { exports, require: (name) => imports[name] ?? require(name), Uint8Array, Date, DOMException });
   return exports;

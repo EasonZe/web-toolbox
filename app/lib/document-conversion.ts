@@ -1,13 +1,14 @@
+import { toolLimits } from "./resource-limits";
 export type DocumentDirection = "word-to-pdf" | "pdf-to-word";
 export type PdfWordMode = "text" | "layout";
 export type DocumentSettings = { direction: DocumentDirection; mode: PdfWordMode; paper: "A4" | "LETTER"; landscape: boolean };
 export const defaultDocumentSettings: DocumentSettings = { direction: "word-to-pdf", mode: "text", paper: "A4", landscape: false };
-export const maxDocumentBytes = 20 * 1024 * 1024;
-export const maxPdfPages = 100;
+export const maxDocumentBytes = toolLimits.document.fileBytes;
+export const maxPdfPages = toolLimits.document.pages;
 
 export function validateDocumentFile(file: File, direction: DocumentDirection) {
   if (!file.size) throw new Error("文件为空，请重新选择。");
-  if (file.size > maxDocumentBytes) throw new Error("文件不能超过20 MB。");
+  if (file.size > maxDocumentBytes) throw new Error("文件不能超过200 MB。");
   if (/\.doc$/i.test(file.name)) throw new Error("暂不支持旧版.doc文件，请用Word另存为.docx后再转换。");
   const extension = direction === "word-to-pdf" ? "docx" : "pdf";
   if (!file.name.toLowerCase().endsWith(`.${extension}`)) throw new Error(`请选择.${extension}文件。`);

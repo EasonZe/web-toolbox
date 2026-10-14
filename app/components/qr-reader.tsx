@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 
 import jsQR from "jsqr";
 import Link from "next/link";
@@ -13,7 +14,7 @@ import {
 import { TbScan } from "react-icons/tb";
 import { FileDropZone } from "./file-drop-zone";
 
-const maxFileSize = 25 * 1024 * 1024;
+const maxFileSize = toolLimits.image.fileBytes;
 const maxDecodeDimension = 2400;
 
 function isHttpUrl(value: string) {
@@ -91,7 +92,7 @@ export default function QrReader() {
       return;
     }
     if (file.size > maxFileSize) {
-      setMessage("图片不能超过25MB。");
+      setMessage("图片不能超过100 MB。");
       return;
     }
 

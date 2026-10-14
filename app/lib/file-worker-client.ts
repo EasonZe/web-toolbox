@@ -1,4 +1,6 @@
 export type FileWorkerRequest =
+  | { action: "text-diff"; left: string; right: string }
+  | { action: "json-format"; text: string; compact: boolean }
   | { action: "zip-pack"; entries: { name: string; data: Uint8Array }[] }
   | { action: "zip-inspect"; data: Uint8Array }
   | { action: "zip-extract"; data: Uint8Array; name?: string }
@@ -35,7 +37,7 @@ export function runFileWorker<T>(
     const timer = setTimeout(() => {
       finish();
       reject(new Error("处理超时，请减少文件或页数。"));
-    }, 180000);
+    }, 900000);
     signal.addEventListener("abort", abort, { once: true });
     worker.onmessage = ({ data }) => {
       finish();

@@ -22,7 +22,7 @@ export function recognizeImage(
     const timer = setTimeout(() => {
       finish();
       reject(new Error("OCR 超时，请裁剪图片后重试。"));
-    }, 180000);
+    }, 600000);
     signal.addEventListener("abort", abort, { once: true });
     worker.onmessage = ({ data }) => {
       if (data.progress !== undefined) {

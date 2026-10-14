@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 
 import Link from "next/link";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -476,7 +477,7 @@ export default function AsciiArtGenerator() {
           <span className="ascii-text-source-label">输入文字</span>
           <textarea
             value={sourceText}
-            maxLength={80}
+            maxLength={toolLimits.text.shortChars}
             rows={3}
             autoFocus
             placeholder="输入英文、数字或中文"

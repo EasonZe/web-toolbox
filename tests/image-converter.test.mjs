@@ -9,9 +9,9 @@ const source = await readFile(
 
 test("图片格式转换工具支持批量选择和批量任务", () => {
   assert.match(source, /<FileDropZone[\s\S]*?multiple[\s\S]*?onFiles=\{addFiles\}/);
-  assert.match(source, /const maxFiles = 20/);
-  assert.match(source, /const maxFileSize = 25 \* 1024 \* 1024/);
-  assert.match(source, /const maxTotalSize = 150 \* 1024 \* 1024/);
+  assert.match(source, /const maxFiles = toolLimits.image.batchFiles/);
+  assert.match(source, /const maxFileSize = toolLimits.image.fileBytes/);
+  assert.match(source, /const maxTotalSize = toolLimits.image.batchBytes/);
   assert.match(source, /for \(const sourceItem of items\)/);
   assert.match(source, /开始批量转换/);
   assert.match(source, /转换完成，共/);

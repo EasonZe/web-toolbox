@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 
 import { Compartment, EditorState } from "@codemirror/state";
 import { EditorView, drawSelection, dropCursor, highlightActiveLine, highlightActiveLineGutter, keymap, lineNumbers, rectangularSelection } from "@codemirror/view";
@@ -10,8 +11,8 @@ import { countText } from "../lib/word-count";
 import { UtilityShell } from "./utility-shell";
 
 const draftStorageKey = "eason-toolbox-plain-text-draft";
-const maxFileSize = 5 * 1024 * 1024;
-const maxTextLength = 1_000_000;
+const maxFileSize = toolLimits.text.fileBytes;
+const maxTextLength = toolLimits.text.editorChars;
 
 function safeFileName(value: string) {
   const normalized = value.trim().replace(/[<>:"/\\|?*\u0000-\u001f]/g, "-").slice(0, 80);
@@ -128,14 +129,15 @@ export default function PlainTextEditor() {
   async function openFile(file: File | undefined) {
     if (!file) return;
     if (file.size > maxFileSize) {
-      setMessage("文本文件不能超过5 MB。");
+      setMessage("文本文件不能超过32 MB。");
       return;
     }
     try {
       const value = await file.text();
+      if (value.length > maxTextLength) { setMessage("文件超过 800 万字符，未载入，也未修改当前文档；请分段处理。"); return; }
       replaceDocument(value);
       setFileName(safeFileName(file.name));
-      setMessage(value.length > maxTextLength ? "文件过长，仅载入前100万个字符。" : `已打开 ${file.name}。`);
+      setMessage(`已打开 ${file.name}。`);
     } catch {
       setMessage("无法读取这个文本文件。");
     }
@@ -148,10 +150,11 @@ export default function PlainTextEditor() {
       const value = await navigator.clipboard.readText();
       const range = view.state.selection.main;
       const available = maxTextLength - (view.state.doc.length - (range.to - range.from));
-      const insert = value.slice(0, Math.max(0, available));
+      if (value.length > available) { setMessage("粘贴后将超过 800 万字符，未插入内容，请分段处理。"); return; }
+      const insert = value;
       view.dispatch({ changes: { from: range.from, to: range.to, insert }, selection: { anchor: range.from + insert.length } });
       view.focus();
-      setMessage(insert.length < value.length ? "内容过长，仅粘贴到100万个字符上限。" : "已粘贴剪贴板内容。");
+      setMessage("已粘贴剪贴板内容。");
     } catch {
       setMessage("无法读取剪贴板，请在编辑器内手动粘贴。");
     }

@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type { Wheel } from "spin-wheel";
@@ -148,7 +149,7 @@ export default function LotteryWheel() {
     const job = ++importJob.current;
     setReading(true); setError("");
     try {
-      if (file.size > 5 * 1024 * 1024) throw new Error("名单文件不能超过5 MB。");
+      if (file.size > toolLimits.text.fileBytes) throw new Error("名单文件不能超过32 MB。");
       const extension = file.name.split(".").pop()?.toLowerCase();
       if (extension === "txt") {
         const value = await file.text(); parseNames(value);
@@ -157,15 +158,19 @@ export default function LotteryWheel() {
         let data: string[][];
         if (extension === "csv") {
           const { default: Papa } = await import("papaparse");
-          const result = Papa.parse<string[]>(await file.text(), { skipEmptyLines: true });
+          const result = Papa.parse<string[]>(await file.text(), { skipEmptyLines: true, preview: toolLimits.lottery.entries + 2 });
           if (result.errors.some((e) => e.type === "Quotes")) throw new Error("CSV引号格式有误，请检查文件。");
           data = result.data;
         } else if (extension === "xlsx") {
+          const { inspectZip } = await import("../lib/local-archive");
+          const entries = inspectZip(new Uint8Array(await file.arrayBuffer()));
+          if (entries.reduce((sum, entry) => sum + entry.size, 0) > toolLimits.lottery.excelExpandedBytes)
+            throw new Error("Excel 展开体积超过 128 MB，请仅保留需要的名单工作表后重试。");
           const { readSheet } = await import("read-excel-file/browser");
           const result = await readSheet(file);
           data = result.map((row) => row.map((cell) => cell == null ? "" : String(cell)));
         } else throw new Error("请选择TXT、CSV或Excel（.xlsx）名单。");
-        if (!data.length || data.length > 501 || data.some((row) => row.length > 100)) throw new Error("表格为空或超过500项/100列，请整理后重试。");
+        if (!data.length || data.length > toolLimits.lottery.entries + 1 || data.some((row) => row.length > toolLimits.lottery.columns) || data.reduce((sum, row) => sum + row.length, 0) > toolLimits.lottery.cells) throw new Error("表格为空，或超过5000项、1000列、100万个单元格的处理范围，请仅保留需要的数据。");
         if (job === importJob.current) { setRows(data); setColumn(0); setSkipHeader(true); }
       }
     } catch (e) { if (job === importJob.current) setError(e instanceof Error ? e.message : "名单读取失败。"); }
@@ -214,9 +219,9 @@ export default function LotteryWheel() {
       </div>
       <div className="utility-panel utility-controls">
         <h2>抽奖名单</h2>
-        <FileDropZone className="video-file-picker" accept=".txt,.csv,.xlsx" disabled={busy || reading} onFile={importFile}><FiUploadCloud /><strong>{reading ? "正在读取名单…" : "导入名单 / 拖入文件"}</strong><span>TXT、CSV、Excel（.xlsx），最多500项</span></FileDropZone>
+        <FileDropZone className="video-file-picker" accept=".txt,.csv,.xlsx" disabled={busy || reading} onFile={importFile}><FiUploadCloud /><strong>{reading ? "正在读取名单…" : "导入名单 / 拖入文件"}</strong><span>TXT、CSV、Excel（.xlsx），最多5000项</span></FileDropZone>
         {rows.length > 0 && <div className="utility-controls import-options"><label>选择姓名所在列<select value={column} onChange={(e) => setColumn(Number(e.target.value))}>{Array.from({ length: Math.max(...rows.map((r) => r.length)) }, (_, i) => <option value={i} key={i}>第{i + 1}列 · {rows[0]?.[i]?.slice(0, 20) || "未命名"}</option>)}</select></label><label className="utility-checkbox"><input type="checkbox" checked={skipHeader} onChange={(e) => setSkipHeader(e.target.checked)} />首行为标题，跳过</label><button type="button" onClick={applyRows}>使用此列名单</button></div>}
-        <label>每行一个名字或选项<textarea value={text} maxLength={20500} rows={8} disabled={busy || reading} onChange={(e) => updateNames(e.target.value)} /></label>
+        <label>每行一个名字或选项<textarea value={text} maxLength={(toolLimits.lottery.entries + 1) * (toolLimits.lottery.nameChars * 2 + 1)} rows={8} disabled={busy || reading} onChange={(e) => updateNames(e.target.value)} /></label>
         <p className="utility-muted">每行等概率；同名多行会增加抽中机会。</p>
         <label className="utility-checkbox"><input type="checkbox" checked={exclude} disabled={busy} onChange={(e) => { setExclude(e.target.checked); setRemoved([]); }} />抽中后不再重复抽取</label>
         <div className="utility-actions"><button disabled={busy || reading} onClick={() => updateNames([...new Set(parsed.names)].join("\n"))}>去除重复</button><button disabled={busy || reading} onClick={() => { setRemoved([]); setHistory([]); setWinner(""); resetCardDraw(); }}>重置抽签</button><button disabled={busy || reading} onClick={() => updateNames("")}>清空名单</button></div>

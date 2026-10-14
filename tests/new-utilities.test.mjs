@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { loadLocalModule } from "./helpers/load-local-module.mjs";
 import { readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { DatabaseSync } from "node:sqlite";
@@ -10,7 +11,7 @@ async function load(path) {
   const exports = {};
   const source = await readFile(new URL(path, import.meta.url), "utf8");
   const code = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
-  vm.runInThisContext(`(function(exports, require) { ${code}\n })`)(exports, createRequire(import.meta.url));
+  vm.runInThisContext(`(function(exports, require) { ${code}\n })`)(exports, ((id) => id.endsWith("/resource-limits") ? loadLocalModule("app/lib/resource-limits.ts") : createRequire(import.meta.url)(id)));
   return exports;
 }
 const lottery = await load("../app/lib/lottery.ts");
@@ -18,7 +19,7 @@ const links = await load("../worker/short-links.ts");
 
 test("名单保留同名概率，忽略空行并拒绝超限，随机索引不会越界", () => {
   assert.equal(lottery.parseNames("\uFEFF小明\r\n\n 小红 \n小明").join(","), "小明,小红,小明");
-  assert.throws(() => lottery.parseNames("名字\n".repeat(501)));
+  assert.throws(() => lottery.parseNames("名字\n".repeat(5001)));
   assert.throws(() => lottery.randomWinner(0));
   for (let i = 0; i < 100; i++) { const index = lottery.randomWinner(7); assert.ok(index >= 0 && index < 7); }
 });

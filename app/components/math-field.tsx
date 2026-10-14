@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 
 import { useEffect, useRef, useState } from "react";
 import type { MathfieldElement } from "mathlive";
@@ -37,7 +38,7 @@ export function MathField({ value, label, readOnly = false, onChange, onEnter }:
     let field: MathfieldElement | undefined;
     const input = () => {
       if (!field) return;
-      if (field.value.length > 500) field.setValue(latest.current.value, { silenceNotifications: true });
+      if (field.value.length > toolLimits.math.expressionChars) field.setValue(latest.current.value, { silenceNotifications: true });
       else if (field.value !== latest.current.value) latest.current.onChange?.(field.value);
     };
     const keydown = (event: KeyboardEvent) => {
@@ -69,7 +70,7 @@ export function MathField({ value, label, readOnly = false, onChange, onEnter }:
 
   return <div className={`science-math-field${readOnly ? " is-output" : ""}`}>
     <div ref={container} />
-    {!ready && (readOnly ? <span className="science-formula-fallback">{value}</span> : <input aria-label={label} value={value} maxLength={500} spellCheck={false} onChange={(event) => onChange?.(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); onEnter?.(); } }} />)}
+    {!ready && (readOnly ? <span className="science-formula-fallback">{value}</span> : <input aria-label={label} value={value} maxLength={toolLimits.math.expressionChars} spellCheck={false} onChange={(event) => onChange?.(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); onEnter?.(); } }} />)}
     {!readOnly && failed && <p className="utility-muted">公式编辑器暂未加载，可直接输入 LaTeX 公式，或刷新后重试。</p>}
   </div>;
 }

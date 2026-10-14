@@ -35,7 +35,7 @@ export function runRasterWorker<T>(
     const timer = setTimeout(() => {
       finish();
       reject(new Error("处理超时，请缩小图片或音频。"));
-    }, 120000);
+    }, 900000);
     signal.addEventListener("abort", abort, { once: true });
     worker.onmessage = ({ data }) => {
       finish();
@@ -47,7 +47,9 @@ export function runRasterWorker<T>(
       reject(new Error("处理引擎加载失败，请刷新后重试。"));
     };
     try {
-      worker.postMessage(request);
+      const buffers = request.action === "pack" ? request.channels.flatMap((channel) => channel.pixels ? [channel.pixels.buffer as ArrayBuffer] : []) : request.action === "normal" ? [request.pixels.buffer as ArrayBuffer] : [];
+      // Raster arrays are fresh per task; audio source arrays remain editable and must not detach.
+      worker.postMessage(request, [...new Set(buffers)]);
     } catch (cause) {
       finish();
       reject(cause);

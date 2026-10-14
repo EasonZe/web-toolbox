@@ -103,4 +103,6 @@ Fork 後必須替換 `wrangler.jsonc` 內的生產網域與 Cloudflare 資源，
 
 ## 授權
 
+大檔案、批次處理與裝置記憶體保護說明見 [本機處理與限制](docs/resource-limits.md)。
+
 專案程式碼採用 [MIT License](LICENSE)。第三方元件、字型、模型與資源仍依各自授權條款使用。

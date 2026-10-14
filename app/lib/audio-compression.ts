@@ -1,3 +1,5 @@
+import { toolLimits } from "./resource-limits";
+import { createMediaBlobTarget } from "./media-blob-target";
 import type { Conversion } from "mediabunny";
 
 export type AudioFormat = "mp3" | "m4a" | "ogg";
@@ -15,7 +17,7 @@ export const defaultAudioSettings: AudioSettings = {
 
 export function validateAudioFile(file: File) {
   if (!file.size) throw new Error("文件为空，请重新选择音频。");
-  if (file.size > 500 * 1024 * 1024) throw new Error("文件不能超过500 MB。");
+  if (file.size > toolLimits.media.fileBytes) throw new Error("文件不能超过2 GB。");
   if (!file.type.startsWith("audio/") && !/\.(mp3|wav|m4a|aac|ogg|oga|opus|webm|flac)$/i.test(file.name)) {
     throw new Error("请选择MP3、WAV、M4A、AAC、FLAC、OGG或WebM音频文件。");
   }
@@ -105,9 +107,9 @@ export async function compressAudio(
       throw new Error(`当前浏览器不支持${settings.format.toUpperCase()}编码，请改用MP3。`);
     }
     signal.throwIfAborted();
-    const target = new media.BufferTarget();
+    const targetStore = createMediaBlobTarget(media.StreamTarget); const target = targetStore.target;
     const output = new media.Output({ target, format: settings.format === "mp3" ? new media.Mp3OutputFormat()
-      : settings.format === "m4a" ? new media.Mp4OutputFormat() : new media.OggOutputFormat() });
+      : settings.format === "m4a" ? new media.Mp4OutputFormat({ fastStart: false }) : new media.OggOutputFormat() });
     conversion = await media.Conversion.init({
       input, output, tracks: "primary", video: { discard: true },
       audio: { ...config, forceTranscode: true }, showWarnings: false,
@@ -119,8 +121,8 @@ export async function compressAudio(
     };
     await conversion.execute();
     signal.throwIfAborted();
-    if (!target.buffer?.byteLength) throw new Error("压缩结果为空，请更换参数后重试。");
-    return new Blob([target.buffer], { type: { mp3: "audio/mpeg", m4a: "audio/mp4", ogg: "audio/ogg" }[settings.format] });
+    if (!targetStore.size) throw new Error("压缩结果为空，请更换参数后重试。");
+    return targetStore.blob({ mp3: "audio/mpeg", m4a: "audio/mp4", ogg: "audio/ogg" }[settings.format]);
   } finally {
     signal.removeEventListener("abort", abort);
     // Also cancel a conversion that finished initializing after the request was aborted.

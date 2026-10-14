@@ -1,3 +1,4 @@
+import { toolLimits } from "./resource-limits";
 export type StitchDirection = "horizontal" | "vertical";
 export type StitchSizeMode = "original" | "uniform";
 export type StitchAlignment = "start" | "center" | "end";
@@ -30,11 +31,11 @@ export type StitchLayout = {
 };
 
 export const imageStitchingLimits = {
-  maxFiles: 30,
-  maxFileSize: 25 * 1024 * 1024,
-  maxInputPixels: 40_000_000,
+  maxFiles: toolLimits.image.batchFiles,
+  maxFileSize: toolLimits.image.fileBytes,
+  maxInputPixels: toolLimits.image.pixels,
   maxOutputDimension: 16_384,
-  maxOutputPixels: 80_000_000,
+  maxOutputPixels: toolLimits.image.pixels,
 } as const;
 
 const supportedTypes = new Set([
@@ -74,7 +75,7 @@ export function validateStitchImages(files: File[], current: File[] = []) {
       continue;
     }
     if (file.size > imageStitchingLimits.maxFileSize) {
-      errors.push(`${file.name}：单张图片不能超过25 MB`);
+      errors.push(`${file.name}：单张图片不能超过100 MB`);
       continue;
     }
     if (file.size === 0) {

@@ -1,4 +1,5 @@
 "use client";
+import { createMediaBlobTarget } from "../lib/media-blob-target";
 
 import Link from "next/link";
 import type { FormEvent } from "react";
@@ -323,7 +324,7 @@ export default function VideoConverter() {
         formats: media.ALL_FORMATS,
       });
       input = mediaInput;
-      const target = new media.BufferTarget();
+      const targetStore = createMediaBlobTarget(media.StreamTarget); const target = targetStore.target;
       const format = outputFormat === "mp4"
         ? new media.Mp4OutputFormat({ fastStart: false })
         : outputFormat === "mov"
@@ -366,9 +367,9 @@ export default function VideoConverter() {
         setProgress(Math.min(99, Math.round(((position + nextProgress) / total) * 100)));
       };
       await conversion.execute();
-      if (!target.buffer) throw new Error("没有生成转换后的视频");
+      if (!targetStore.size) throw new Error("没有生成转换后的视频");
 
-      const blob = new Blob([target.buffer], { type: profile.mimeType });
+      const blob = targetStore.blob(profile.mimeType);
       const resultUrl = URL.createObjectURL(blob);
       updateItem(item.id, (current) => ({
         ...current,
@@ -471,7 +472,7 @@ export default function VideoConverter() {
         >
           <FiUploadCloud aria-hidden="true" />
           <strong>{items.length ? "继续添加视频" : "批量选择视频"}</strong>
-          <span>可一次选择或拖入多个视频，支持MP4、WebM、MOV、MKV等格式，单个最大500 MB</span>
+          <span>可一次选择或拖入多个视频，支持MP4、WebM、MOV、MKV等格式，单个最大2 GB</span>
         </FileDropZone>
 
         {items.length ? (

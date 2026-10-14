@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { decodeDetailed, encodeDetailed, stats, type CharsetId } from "@morsecodeapp/morse/core";
@@ -84,7 +85,7 @@ export default function MorseCodeConverter() {
       <div className="utility-panel utility-controls">
         <div className="mode-tabs" role="tablist" aria-label="转换方向"><button type="button" role="tab" aria-selected={mode === "encode"} onClick={() => switchMode("encode")}>文字 → 摩斯</button><button type="button" role="tab" aria-selected={mode === "decode"} onClick={() => switchMode("decode")}>摩斯 → 文字</button></div>
         <label>字符集<select aria-label="摩斯字符集" value={charset} onChange={(event) => setCharset(event.target.value as CharsetId)}>{charsets.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>
-        <label>{mode === "encode" ? "输入文字" : "输入摩斯电码"}<textarea aria-label="摩斯转换输入" rows={8} maxLength={4000} spellCheck={false} value={input} placeholder={mode === "encode" ? "输入需要编码的文字" : "例如：... --- ... / .... . .-.. .--."} onChange={(event) => { setInput(event.target.value); setMessage(""); }} /></label>
+        <label>{mode === "encode" ? "输入文字" : "输入摩斯电码"}<textarea aria-label="摩斯转换输入" rows={8} maxLength={toolLimits.text.morseChars} spellCheck={false} value={input} placeholder={mode === "encode" ? "输入需要编码的文字" : "例如：... --- ... / .... . .-.. .--."} onChange={(event) => { setInput(event.target.value); setMessage(""); }} /></label>
         {conversion.errors.length ? <p className="utility-error" role="alert">无法转换：{[...new Set(conversion.errors)].join("、")}</p> : null}
       </div>
       <div className="utility-panel utility-controls">

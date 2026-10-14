@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { loadLocalModule } from "./helpers/load-local-module.mjs";
 import { readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import vm from "node:vm";
@@ -13,7 +14,7 @@ async function load(path) {
   const exports = {};
   const source = await read(path);
   const code = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
-  vm.runInThisContext(`(function(exports, require) { ${code}\n })`)(exports, createRequire(import.meta.url));
+  vm.runInThisContext(`(function(exports, require) { ${code}\n })`)(exports, ((id) => id.endsWith("/resource-limits") ? loadLocalModule("app/lib/resource-limits.ts") : createRequire(import.meta.url)(id)));
   return exports;
 }
 

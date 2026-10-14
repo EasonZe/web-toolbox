@@ -1,12 +1,12 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import vm from "node:vm";
+import { runToolTest } from "./helpers/vm-modules.mjs";
 import ts from "typescript";
 const compile = (source) => ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText;
 const source = compile(await readFile(new URL("../app/components/document-converter.tsx", import.meta.url), "utf8"));
 const helpers = {};
-vm.runInNewContext(compile(await readFile(new URL("../app/lib/document-conversion.ts", import.meta.url), "utf8")), { exports: helpers });
+runToolTest(compile(await readFile(new URL("../app/lib/document-conversion.ts", import.meta.url), "utf8")), { exports: helpers });
 
 function harness() {
   const slots = [], cleanups = [], requests = [], revoked = [], timers = new Map();
@@ -17,7 +17,7 @@ function harness() {
     useEffect(callback) { const i = cursor++; if (!(i in slots)) { slots[i] = true; cleanups.push(callback()); } },
   };
   const exports = {}, jsx = (type, props) => ({ type, props });
-  vm.runInNewContext(source, {
+  runToolTest(source, {
     exports, AbortController, Error,
     URL: { createObjectURL() { return `blob:test-${++nextUrl}`; }, revokeObjectURL(url) { if (url) revoked.push(url); } },
     setTimeout(callback) { timers.set(++nextTimer, callback); return nextTimer; }, clearTimeout(id) { timers.delete(id); },

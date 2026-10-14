@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits, checkDecodedAudio } from "../lib/resource-limits";
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -65,8 +66,13 @@ export default function AudioReverser() {
     let context: AudioContext | null = null;
     try {
       context = new AudioContext();
+      if (file.size > toolLimits.decodedAudio.fileBytes) throw new Error("倒放需要在内存中解码，源文件最多 512 MB；大文件可先用音频格式转换减小体积。");
+      const { readAudioInfo } = await import("../lib/audio-compression");
+      const info = await readAudioInfo(file, controller.signal);
+      checkDecodedAudio(info.duration, context.sampleRate, info.channels);
       const decoded = await context.decodeAudioData(await file.arrayBuffer());
       if (controller.signal.aborted) return;
+      checkDecodedAudio(decoded.duration, decoded.sampleRate, decoded.numberOfChannels);
       const channels = Array.from(
         { length: Math.min(2, decoded.numberOfChannels) },
         (_, index) => decoded.getChannelData(index).slice(),

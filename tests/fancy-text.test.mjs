@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import vm from "node:vm";
+import { runToolTest } from "./helpers/vm-modules.mjs";
 import ts from "typescript";
 
 const source = await readFile(new URL("../app/lib/fancy-text.ts", import.meta.url), "utf8");
@@ -9,7 +9,7 @@ const compiled = ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText;
 const helpers = {};
-vm.runInNewContext(compiled, { exports: helpers, Array, String });
+runToolTest(compiled, { exports: helpers, Array, String });
 
 test("双线体准确生成用户要求的花体字", () => {
   const style = helpers.fancyTextStyles.find((item) => item.id === "double-struck");

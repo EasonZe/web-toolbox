@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 
 import { useMemo, useState } from "react";
 import { FiClipboard, FiCopy, FiTrash2 } from "react-icons/fi";
@@ -57,7 +58,7 @@ export default function WordCounter() {
           </div>
           <textarea
             aria-label="需要统计的文字"
-            maxLength={1_000_000}
+            maxLength={toolLimits.text.editorChars}
             placeholder="在这里输入或粘贴需要统计的文字…"
             rows={18}
             spellCheck={false}

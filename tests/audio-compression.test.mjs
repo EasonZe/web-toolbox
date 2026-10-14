@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import vm from "node:vm";
+import { runToolTest } from "./helpers/vm-modules.mjs";
 import ts from "typescript";
 
 const source = await readFile(new URL("../app/lib/audio-compression.ts", import.meta.url), "utf8");
@@ -11,7 +11,7 @@ function load(options = {}) {
   const track = { getNumberOfChannels: async () => 2, getSampleRate: async () => 44100, canDecode: async () => options.decodable !== false };
   const media = {
     Input: class { async getPrimaryAudioTrack() { return options.noTrack ? null : track; } async computeDuration() { return options.duration ?? 8; } dispose() { state.disposed++; } },
-    BlobSource: class {}, ALL_FORMATS: [], BufferTarget: class {},
+    BlobSource: class {}, ALL_FORMATS: [], StreamTarget: class { constructor(stream) { this.writer = stream.getWriter(); } },
     Mp3OutputFormat: class {}, Mp4OutputFormat: class {}, OggOutputFormat: class {},
     Output: class { constructor(config) { Object.assign(this, config); } },
     canEncodeAudio: async () => options.encodable !== false,
@@ -25,7 +25,8 @@ function load(options = {}) {
           if (options.executing) await options.executing();
           if (this.state === "canceled") throw new DOMException("Canceled", "AbortError");
           if (options.failure) throw new Error("encoding failed");
-          config.output.target.buffer = new Uint8Array(options.empty ? 0 : 32).buffer;
+          if (!options.empty) await config.output.target.writer.write({ type: "write", position: 0, data: new Uint8Array(32) });
+          await config.output.target.writer.close();
           this.onProgress(1);
           this.state = "done";
         },
@@ -36,7 +37,7 @@ function load(options = {}) {
     } },
   };
   const exports = {};
-  vm.runInNewContext(compiled, { exports, Blob, require(name) {
+  runToolTest(compiled, { exports, Blob, require(name) {
     if (name === "mediabunny") return media;
     if (name === "@mediabunny/mp3-encoder") return { registerMp3Encoder() { state.registered = true; } };
     throw new Error(name);
@@ -54,7 +55,7 @@ test("音频大小估算、默认参数与文件名正确", () => {
   assert.equal(api.compressedAudioName("录音.1.WAV", "mp3"), "录音.1-compressed.mp3");
   assert.throws(() => api.validateAudioFile(new File([], "empty.mp3")), /为空/);
   assert.throws(() => api.validateAudioFile(new File(["text"], "notes.txt")), /请选择/);
-  assert.throws(() => api.validateAudioFile({ ...file, size: 501 * 1024 * 1024 }), /500 MB/);
+  assert.throws(() => api.validateAudioFile({ ...file, size: 2049 * 1024 * 1024 }), /2 GB/);
   api.validateAudioFile(new File(["x"], "test.FLAC"));
 });
 

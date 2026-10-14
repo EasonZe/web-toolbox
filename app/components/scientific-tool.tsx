@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -14,7 +15,7 @@ const modules = [
   { id: "equation", label: "方程", icon: TbVariable, title: "方程求解", hint: "填写一元方程或方程组，并指定要求解的未知量。" },
   { id: "calculus", label: "微积分", icon: TbFunction, title: "微积分计算", hint: "计算一至三阶导数，或连续实函数的定积分；三角函数使用弧度。" },
   { id: "matrix", label: "矩阵", icon: TbMatrix, title: "矩阵运算", hint: "直接在表格中填写数值，可输入小数和分数。" },
-  { id: "statistics", label: "统计", icon: TbChartDots, title: "数据统计", hint: "粘贴一组数字，计算均值、标准差等统计量，最多 10000 项。" },
+  { id: "statistics", label: "统计", icon: TbChartDots, title: "数据统计", hint: "粘贴一组数字，计算均值、标准差等统计量，最多 100000 项。" },
   { id: "number", label: "数论与组合", icon: TbNumbers, title: "数论与组合", hint: "判断质数、分解质因数，或计算公约数、排列与组合。" },
 ] as const;
 const matrixLabels: Record<MatrixOperation, string> = { add: "A + B", multiply: "A × B", determinant: "行列式 det(A)", inverse: "逆矩阵 A⁻¹", transpose: "转置 Aᵀ" };
@@ -29,8 +30,8 @@ function MatrixEditor({ name, value, onChange }: { name: string; value: string[]
   return <fieldset className="science-matrix-editor">
     <legend>矩阵 {name}</legend>
     <div className="science-fields-row">
-      <label>行数<select aria-label={`矩阵 ${name} 行数`} value={value.length} onChange={(e) => resize(Number(e.target.value), value[0].length)}>{[1, 2, 3, 4, 5].map((n) => <option key={n}>{n}</option>)}</select></label>
-      <label>列数<select aria-label={`矩阵 ${name} 列数`} value={value[0].length} onChange={(e) => resize(value.length, Number(e.target.value))}>{[1, 2, 3, 4, 5].map((n) => <option key={n}>{n}</option>)}</select></label>
+      <label>行数<select aria-label={`矩阵 ${name} 行数`} value={value.length} onChange={(e) => resize(Number(e.target.value), value[0].length)}>{Array.from({ length: toolLimits.math.matrixEdge }, (_, i) => i + 1).map((n) => <option key={n}>{n}</option>)}</select></label>
+      <label>列数<select aria-label={`矩阵 ${name} 列数`} value={value[0].length} onChange={(e) => resize(value.length, Number(e.target.value))}>{Array.from({ length: toolLimits.math.matrixEdge }, (_, i) => i + 1).map((n) => <option key={n}>{n}</option>)}</select></label>
     </div>
     <div className="science-matrix-cells" style={{ gridTemplateColumns: `repeat(${value[0].length}, minmax(44px, 1fr))` }}>
       {value.flatMap((row, r) => row.map((entry, c) => <input key={`${r}-${c}`} aria-label={`矩阵 ${name} 第 ${r + 1} 行第 ${c + 1} 列`} value={entry} maxLength={40} placeholder="0" spellCheck={false} onChange={(e) => onChange(value.map((items, i) => items.map((item, j) => i === r && j === c ? e.target.value : item)))} />))}
@@ -179,7 +180,7 @@ export default function ScientificTool({ mode }: { mode: ScienceMode }) {
             <MatrixEditor name="A" value={a} onChange={(value) => change(setA, value)} />
             {(matrixOperation === "add" || matrixOperation === "multiply") && <MatrixEditor name="B" value={b} onChange={(value) => change(setB, value)} />}
           </>}
-          {mode === "statistics" && <label>数据<textarea aria-label="统计数据" rows={7} maxLength={200000} value={data} spellCheck={false} placeholder={"例如：12, 15, 18\n支持逗号、空格、换行分隔"} onChange={(e) => change(setData, e.target.value)} /><span className="utility-muted">可以直接粘贴表格里的数字；不要包含列名或千位分隔符。</span></label>}
+          {mode === "statistics" && <label>数据<textarea aria-label="统计数据" rows={7} maxLength={toolLimits.text.formatChars} value={data} spellCheck={false} placeholder={"例如：12, 15, 18\n支持逗号、空格、换行分隔"} onChange={(e) => change(setData, e.target.value)} /><span className="utility-muted">可以直接粘贴表格里的数字；不要包含列名或千位分隔符。</span></label>}
           {mode === "number" && <>
             <label>操作<select value={numberOperation} onChange={(e) => change(setNumberOperation, e.target.value as NumberOperation)}>{Object.entries(numberLabels).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>
             <div className="science-fields-row"><label>{numberOperation === "gcd" || numberOperation === "lcm" ? "整数 a" : "整数 n"}<input inputMode="numeric" value={n} maxLength={13} onChange={(e) => change(setN, e.target.value)} /></label>{numberOperation !== "prime" && numberOperation !== "factor" && <label>{numberOperation === "gcd" || numberOperation === "lcm" ? "整数 b" : "选取数量 r"}<input inputMode="numeric" value={r} maxLength={13} onChange={(e) => change(setR, e.target.value)} /></label>}</div>

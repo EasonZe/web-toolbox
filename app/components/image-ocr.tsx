@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 /* eslint-disable @next/next/no-img-element -- Local raster preview uses a revocable Blob URL. */
 import { useState } from "react";
 import { UtilityShell } from "./utility-shell";
@@ -9,7 +10,7 @@ import {
   useLocalTask,
 } from "./local-workbench";
 import { checkFiles, downloadLocal } from "../lib/local-files";
-import { rasterPixels, pixelsToPng } from "../lib/local-images";
+import { loadRaster, pixelsToPng } from "../lib/local-images";
 import { recognizeImage } from "../lib/ocr-client";
 export default function ImageOcr() {
   const [file, setFile] = useState<File | null>(null),
@@ -28,13 +29,13 @@ export default function ImageOcr() {
       <LocalUpload
         accept="image/png,image/jpeg,image/webp,image/bmp"
         disabled={task.busy}
-        hint="PNG / JPG / WebP / BMP · 最大 15 MB · 最多 12 MP"
+        hint="PNG / JPG / WebP / BMP · 最大 100 MB · 最多 100 MP · 识别图最长边 6000px"
         onFiles={(files) => {
           task.reset();
           setText("");
           setFile(null);
           try {
-            checkFiles(files, 15 * 1048576, 1);
+            checkFiles(files, toolLimits.image.fileBytes, 1);
             setFile(files[0]);
           } catch (cause) {
             task.setError((cause as Error).message);
@@ -71,9 +72,19 @@ export default function ImageOcr() {
             disabled={!file || task.busy}
             onClick={async () => {
               const result = await task.run(async (signal, report) => {
-                const image = await rasterPixels(file!, signal);
-                if (image.width * image.height > 12_000_000)
-                  throw new Error("OCR 图片最多 12 MP，请先裁剪或缩小图片。");
+                const bitmap = await loadRaster(file!, signal);
+                let image: ImageData;
+                try {
+                  const scale = Math.min(1, 6000 / Math.max(bitmap.width, bitmap.height));
+                  const canvas = document.createElement("canvas");
+                  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+                  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+                  const context = canvas.getContext("2d", { willReadFrequently: true });
+                  if (!context) throw new Error("浏览器无法绘制识别图片。");
+                  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+                  image = context.getImageData(0, 0, canvas.width, canvas.height);
+                  canvas.width = canvas.height = 1;
+                } finally { bitmap.close(); }
                 // Composite transparent pixels over white before OCR.
                 for (let i = 0; i < image.data.length; i += 4) {
                   const alpha = image.data[i + 3] / 255;

@@ -1,4 +1,6 @@
 "use client";
+import { createMediaBlobTarget } from "../lib/media-blob-target";
+import { toolLimits } from "../lib/resource-limits";
 
 import Link from "next/link";
 import type { FormEvent } from "react";
@@ -129,8 +131,8 @@ export default function AudioConverter() {
       setMessage("请选择常见的音频文件。");
       return;
     }
-    if (selectedFile.size > 500 * 1024 * 1024) {
-      setMessage("音频文件不能超过500 MB。");
+    if (selectedFile.size > toolLimits.media.fileBytes) {
+      setMessage("音频文件不能超过2 GB。");
       return;
     }
 
@@ -251,7 +253,7 @@ export default function AudioConverter() {
               }
             : outputFormat === "m4a"
               ? {
-                  format: new media.Mp4OutputFormat(),
+                  format: new media.Mp4OutputFormat({ fastStart: false }),
                   codec: "aac" as const,
                   extension: "m4a",
                   mimeType: "audio/mp4",
@@ -288,7 +290,7 @@ export default function AudioConverter() {
         formats: media.ALL_FORMATS,
       });
       input = mediaInput;
-      const target = new media.BufferTarget();
+      const targetStore = createMediaBlobTarget(media.StreamTarget); const target = targetStore.target;
       const output = new media.Output({
         format: configuration.format,
         target,
@@ -325,8 +327,8 @@ export default function AudioConverter() {
       };
       await conversion.execute();
 
-      if (!target.buffer) throw new Error("没有生成音频文件");
-      const blob = new Blob([target.buffer], { type: configuration.mimeType });
+      if (!targetStore.size) throw new Error("没有生成音频文件");
+      const blob = targetStore.blob(configuration.mimeType);
       const resultUrl = URL.createObjectURL(blob);
       const baseName = file.name.replace(/\.[^.]+$/, "") || "converted-audio";
       const name = `${baseName}.${configuration.extension}`;

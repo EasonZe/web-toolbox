@@ -1,12 +1,13 @@
-export const MAX_AUDIO_TRANSFORM_BYTES = 150 * 1024 * 1024;
-export const MAX_AUDIO_TRANSFORM_SECONDS = 30 * 60;
+import { toolLimits } from "./resource-limits";
+export const MAX_AUDIO_TRANSFORM_BYTES = toolLimits.decodedAudio.fileBytes;
+export const MAX_AUDIO_TRANSFORM_SECONDS = toolLimits.decodedAudio.seconds;
 
 type FileLike = { name: string; size: number; type?: string };
 
 export function validateAudioTransformFile(file: FileLike) {
   const supported = file.type?.startsWith("audio/") || /\.(mp3|wav|m4a|aac|ogg|oga|opus|webm|flac)$/i.test(file.name);
   if (!supported) return "请选择常见的音频文件";
-  if (!file.size || file.size > MAX_AUDIO_TRANSFORM_BYTES) return "音频文件不能超过150 MB";
+  if (!file.size || file.size > MAX_AUDIO_TRANSFORM_BYTES) return "音频文件不能超过512 MB";
   return "";
 }
 

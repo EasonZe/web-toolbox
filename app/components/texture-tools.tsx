@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits, checkRasterWork } from "../lib/resource-limits";
 /* eslint-disable @next/next/no-img-element -- All previews are local Blob URLs. */
 import { useState, type CSSProperties } from "react";
 import { UtilityShell } from "./utility-shell";
@@ -29,7 +30,7 @@ export function SeamlessChecker() {
       <LocalUpload
         accept="image/png,image/jpeg,image/webp,image/avif,image/bmp"
         disabled={task.busy}
-        hint="最大 25 MB · 最多 16 MP"
+        hint="最大 100 MB · 最多 100 MP"
         onFiles={async (files) => {
           setFile(null);
           const result = await task.run(async (signal) => {
@@ -147,7 +148,7 @@ export function ChannelPacker() {
             aria-label="通道输出宽度"
             type="number"
             min="1"
-            max="4096"
+            max="8192"
             disabled={task.busy}
             value={width}
             onChange={(e) => {
@@ -162,7 +163,7 @@ export function ChannelPacker() {
             aria-label="通道输出高度"
             type="number"
             min="1"
-            max="4096"
+            max="8192"
             disabled={task.busy}
             value={height}
             onChange={(e) => {
@@ -180,7 +181,7 @@ export function ChannelPacker() {
               accept="image/png,image/jpeg,image/webp,image/bmp,image/avif"
               disabled={task.busy}
               title={slot.file?.name ?? "选择通道来源图片"}
-              hint="最大 25 MB · 最多 16 MP"
+              hint="最大 100 MB · 最多 100 MP"
               onFiles={(files) => change(i, { file: files[0] })}
             />
             <label>
@@ -256,10 +257,11 @@ export function ChannelPacker() {
               !Number.isInteger(height) ||
               width < 1 ||
               height < 1 ||
-              width > 4096 ||
-              height > 4096
+              width > toolLimits.raster.edge ||
+              height > toolLimits.raster.edge
             )
-              throw new Error("输出宽高须为 1–4096 的整数。");
+              throw new Error("输出宽高须为 1–8192 的整数。");
+            checkRasterWork(width, height, slots.filter((slot) => slot.file).length + 2);
             const channels = [];
             for (let i = 0; i < slots.length; i++) {
               const slot = slots[i];
@@ -321,7 +323,7 @@ export function HeightNormal() {
       <LocalUpload
         accept="image/png,image/jpeg,image/webp,image/bmp"
         disabled={task.busy}
-        hint="最大 25 MB · 最多 16 MP · 输出保留原图尺寸"
+        hint="最大 100 MB · 最多 100 MP · 输出保留原图尺寸"
         onFiles={(files) => {
           task.reset();
           setFile(files[0]);

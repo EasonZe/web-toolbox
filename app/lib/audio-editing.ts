@@ -1,3 +1,4 @@
+import { toolLimits, audioSampleBudget } from "./resource-limits";
 export type AudioClip = {
   channels: Float32Array[];
   sampleRate: number;
@@ -7,8 +8,8 @@ export type AudioClip = {
   fadeOut: number;
 };
 export function composeAudio(clips: AudioClip[]) {
-  if (!clips.length || clips.length > 20)
-    throw new Error("请选择 1–20 段音频。");
+  if (!clips.length || clips.length > toolLimits.decodedAudio.files)
+    throw new Error("请选择 1–200 段音频。");
   const sampleRate = clips[0].sampleRate,
     channels = Math.min(
       2,
@@ -48,8 +49,8 @@ export function composeAudio(clips: AudioClip[]) {
       fadeOut: Math.round(clip.fadeOut * sampleRate),
     };
   });
-  if (total > sampleRate * 600 || total * channels > 30_000_000)
-    throw new Error("合并结果不能超过 10 分钟或 3000 万音频采样点。");
+  if (total * channels > audioSampleBudget())
+    throw new Error("合并结果超过本设备的音频采样预算，请缩短输出区间或分批导出。");
   const output = Array.from(
     { length: channels },
     () => new Float32Array(total),

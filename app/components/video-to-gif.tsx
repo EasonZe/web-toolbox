@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits, checkGifWork } from "../lib/resource-limits";
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -6,9 +7,9 @@ import type { FormEvent } from "react";
 import { FiDownload, FiImage, FiUploadCloud } from "react-icons/fi";
 import { FileDropZone } from "./file-drop-zone";
 
-const maxClipDuration = 12;
-const frameRateOptions = [6, 8, 10, 12];
-const widthOptions = [320, 480, 640];
+const maxClipDuration = toolLimits.gif.duration;
+const frameRateOptions = [6, 8, 10, 12, 15, 24, 30];
+const widthOptions = [320, 480, 640, 960, 1280, 1920];
 
 type GifResult = {
   url: string;
@@ -199,6 +200,7 @@ export default function VideoToGif() {
     setStatus("正在准备视频画面…");
 
     try {
+      checkGifWork(targetWidth, targetHeight, totalFrames);
       const { GIFEncoder, applyPalette, quantize } = await import("gifenc");
       const context = canvas.getContext("2d", {
         alpha: false,
@@ -355,7 +357,7 @@ export default function VideoToGif() {
                   />
                 </label>
                 <label>
-                  <span>片段时长（最多12秒）</span>
+                  <span>片段时长（最多60秒）</span>
                   <input
                     type="number"
                     min="0.1"

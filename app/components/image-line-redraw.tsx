@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -10,8 +11,8 @@ import {
 } from "react-icons/fi";
 import { FileDropZone } from "./file-drop-zone";
 
-const maxFileSize = 25 * 1024 * 1024;
-const maxSourcePixels = 30_000_000;
+const maxFileSize = toolLimits.image.fileBytes;
+const maxSourcePixels = toolLimits.image.pixels;
 const maxProcessPixels = 2_500_000;
 const maxProcessEdge = 2_000;
 
@@ -239,7 +240,7 @@ export default function ImageLineRedraw() {
       return;
     }
     if (file.size > maxFileSize) {
-      setMessage("图片不能超过25 MB。");
+      setMessage("图片不能超过100 MB。");
       return;
     }
 
@@ -247,7 +248,7 @@ export default function ImageLineRedraw() {
     try {
       const image = await loadImage(url);
       if (image.naturalWidth * image.naturalHeight > maxSourcePixels) {
-        throw new Error("图片像素不能超过3000万");
+        throw new Error("图片像素不能超过1亿");
       }
       if (sourceUrlRef.current) URL.revokeObjectURL(sourceUrlRef.current);
       sourceUrlRef.current = url;
@@ -313,7 +314,7 @@ export default function ImageLineRedraw() {
         >
           <FiUploadCloud aria-hidden="true" />
           <strong>{sourceFile ? "重新选择图片" : "选择图片"}</strong>
-          <span>点击选择或直接拖入图片，支持PNG、JPG、WebP等常见格式，最大25 MB</span>
+          <span>点击选择或直接拖入图片，支持PNG、JPG、WebP等常见格式，最大100 MB</span>
         </FileDropZone>
 
         <div className="image-line-workbench">

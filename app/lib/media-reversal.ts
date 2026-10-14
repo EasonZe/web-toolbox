@@ -1,5 +1,6 @@
-export const MAX_AUDIO_REVERSE_BYTES = 500 * 1024 * 1024;
-export const MAX_VIDEO_REVERSE_BYTES = 500 * 1024 * 1024;
+import { toolLimits } from "./resource-limits";
+export const MAX_AUDIO_REVERSE_BYTES = toolLimits.media.fileBytes;
+export const MAX_VIDEO_REVERSE_BYTES = toolLimits.media.fileBytes;
 
 type FileLike = { name: string; size: number; type?: string };
 
@@ -8,7 +9,7 @@ export function validateAudioReverseFile(file: FileLike) {
     file.type?.startsWith("audio/") ||
     /\.(mp3|wav|m4a|aac|ogg|oga|opus|webm|flac)$/i.test(file.name);
   if (!supported) return "请选择常见的音频文件";
-  if (file.size > MAX_AUDIO_REVERSE_BYTES) return "音频文件不能超过500 MB";
+  if (file.size > MAX_AUDIO_REVERSE_BYTES) return "音频文件不能超过2 GB";
   return "";
 }
 
@@ -17,7 +18,7 @@ export function validateVideoReverseFile(file: FileLike) {
     file.type?.startsWith("video/") ||
     /\.(mp4|webm|mov|m4v|mkv|avi|ogv|mpeg|mpg|ts|mts|m2ts)$/i.test(file.name);
   if (!supported) return "请选择常见的视频文件";
-  if (file.size > MAX_VIDEO_REVERSE_BYTES) return "视频文件不能超过500 MB";
+  if (file.size > MAX_VIDEO_REVERSE_BYTES) return "视频文件不能超过2 GB";
   return "";
 }
 

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { calculateScience } from "../app/lib/scientific-computing.ts";
+import { loadLocalModule } from "./helpers/load-local-module.mjs";
+const { calculateScience } = loadLocalModule("app/lib/scientific-computing.ts");
 
 const expression = (value, options = {}) => calculateScience({ mode: "expression", expression: value, variables: "", angle: "deg", operation: "evaluate", ...options });
 const equation = (equations, variables = "x", domain = "real") => calculateScience({ mode: "equation", equations, variables, domain });

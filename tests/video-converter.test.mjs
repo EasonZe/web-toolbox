@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import vm from "node:vm";
+import { runToolTest } from "./helpers/vm-modules.mjs";
 import ts from "typescript";
 
 const libSource = await readFile(new URL("../app/lib/video-conversion.ts", import.meta.url), "utf8");
@@ -12,7 +12,7 @@ const compiled = ts.transpileModule(libSource, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText;
 const helpers = {};
-vm.runInNewContext(compiled, { exports: helpers, Math, Number });
+runToolTest(compiled, { exports: helpers, Math, Number });
 
 test("视频转换保持比例并限制分辨率和帧率", () => {
   assert.deepEqual(

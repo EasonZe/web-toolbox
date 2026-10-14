@@ -109,7 +109,7 @@ export default function BeadPatternGenerator() {
   async function selectImage(nextFile: File) {
     invalidate();
     if (!nextFile.size || nextFile.size > maxLocalImageSize || !isSupportedRasterImage(nextFile)) {
-      setMessage("请选择 25 MB 以内的 PNG、JPG、WebP、BMP、AVIF 或 GIF 图片。");
+      setMessage("请选择 100 MB 以内的 PNG、JPG、WebP、BMP、AVIF 或 GIF 图片。");
       return;
     }
     const job = ++jobRef.current;
@@ -117,7 +117,7 @@ export default function BeadPatternGenerator() {
     try {
       const nextImage = await loadLocalImage(url);
       if (job !== jobRef.current) return URL.revokeObjectURL(url);
-      if (nextImage.naturalWidth * nextImage.naturalHeight > maxLocalImagePixels) throw new Error("图片像素过大，请缩小到 4000 万像素以内。");
+      if (nextImage.naturalWidth * nextImage.naturalHeight > maxLocalImagePixels) throw new Error("图片像素过大，请缩小到 10000 万像素以内。");
       if (sourceUrlRef.current) URL.revokeObjectURL(sourceUrlRef.current);
       sourceUrlRef.current = url;
       setFile(nextFile);
@@ -181,7 +181,7 @@ export default function BeadPatternGenerator() {
       <FileDropZone className="video-file-picker" accept="image/png,image/jpeg,image/webp,image/bmp,image/avif,image/gif" ariaLabel="选择或拖入图片生成拼豆图纸" onFile={selectImage} disabled={working}>
         <FiUploadCloud aria-hidden="true" />
         <strong>{file ? "重新选择图片" : "选择图片 / 拖入文件"}</strong>
-        <span>{file ? file.name : "支持 PNG、JPG、WebP 等格式，最大 25 MB"}</span>
+        <span>{file ? file.name : "支持 PNG、JPG、WebP 等格式，最大 100 MB"}</span>
       </FileDropZone>
 
       <div className="utility-columns pixel-tool-columns">

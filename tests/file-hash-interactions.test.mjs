@@ -1,14 +1,14 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import vm from "node:vm";
+import { runToolTest } from "./helpers/vm-modules.mjs";
 import ts from "typescript";
 
 const source = await readFile(new URL("../app/components/file-hash.tsx", import.meta.url), "utf8");
 const helpersSource = await readFile(new URL("../app/lib/file-hash.ts", import.meta.url), "utf8");
 const compile = (code) => ts.transpileModule(code, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText;
 const helpers = {};
-vm.runInNewContext(compile(helpersSource), { exports: helpers });
+runToolTest(compile(helpersSource), { exports: helpers });
 
 function harness() {
   const slots = [], workers = [], cleanups = [], copied = [];
@@ -20,7 +20,7 @@ function harness() {
   };
   const exports = {};
   const jsx = (type, props) => ({ type, props });
-  vm.runInNewContext(compile(source.replaceAll("import.meta.url", '"https://example.test/tool.js"')), {
+  runToolTest(compile(source.replaceAll("import.meta.url", '"https://example.test/tool.js"')), {
     exports, URL,
     Worker: class {
       constructor() { workers.push(this); }

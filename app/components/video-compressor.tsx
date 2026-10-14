@@ -1,4 +1,6 @@
 "use client";
+import { createMediaBlobTarget } from "../lib/media-blob-target";
+import { toolLimits } from "../lib/resource-limits";
 
 import Link from "next/link";
 import type { FormEvent } from "react";
@@ -29,7 +31,7 @@ type CompressionResult = {
   format: OutputFormat;
 };
 
-const MAX_FILE_SIZE = 300 * 1024 * 1024;
+const MAX_FILE_SIZE = toolLimits.media.fileBytes;
 
 const codecNames: Record<string, string> = {
   avc: "H.264",
@@ -199,7 +201,7 @@ export default function VideoCompressor() {
       return;
     }
     if (selectedFile.size > MAX_FILE_SIZE) {
-      setMessage("视频文件不能超过300 MB。");
+      setMessage("视频文件不能超过2 GB。");
       return;
     }
 
@@ -320,7 +322,7 @@ export default function VideoCompressor() {
         formats: media.ALL_FORMATS,
       });
       input = mediaInput;
-      const target = new media.BufferTarget();
+      const targetStore = createMediaBlobTarget(media.StreamTarget); const target = targetStore.target;
       const output = new media.Output({
         format: isMp4
           ? new media.Mp4OutputFormat({ fastStart: false })
@@ -368,10 +370,10 @@ export default function VideoCompressor() {
         setProgress(Math.min(99, Math.max(6, Math.round(nextProgress * 100))));
       };
       await conversion.execute();
-      if (!target.buffer) throw new Error("没有生成压缩视频");
+      if (!targetStore.size) throw new Error("没有生成压缩视频");
 
       const mimeType = isMp4 ? "video/mp4" : "video/webm";
-      const blob = new Blob([target.buffer], { type: mimeType });
+      const blob = targetStore.blob(mimeType);
       const resultUrl = URL.createObjectURL(blob);
       const baseName = file.name.replace(/\.[^.]+$/, "") || "compressed-video";
       const name = `${baseName}-compressed.${outputFormat}`;
@@ -433,7 +435,7 @@ export default function VideoCompressor() {
         >
           <FiUploadCloud aria-hidden="true" />
           <strong>{file ? "重新选择视频" : "选择视频"}</strong>
-          <span>点击选择或拖入视频，支持MP4、WebM、MOV等格式，最大300 MB</span>
+          <span>点击选择或拖入视频，支持MP4、WebM、MOV等格式，最大2 GB</span>
         </FileDropZone>
 
         <div className="video-source-preview">

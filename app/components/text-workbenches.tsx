@@ -1,9 +1,11 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { toolLimits } from "../lib/resource-limits";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { WorkbenchPagination } from "./workbench-pagination";
+import { runFileWorker } from "../lib/file-worker-client";
 import { UtilityShell } from "./utility-shell";
 import { LocalUpload, TaskFeedback, useLocalTask } from "./local-workbench";
 import {
-  compareTexts,
   inspectJson,
   inspectUnicode,
   type DiffRow,
@@ -23,6 +25,7 @@ function useCopy() {
   return { message, copy };
 }
 export function TextDiff() {
+  const [page, setPage] = useState(0);
   const [left, setLeft] = useState(""),
     [right, setRight] = useState(""),
     task = useLocalTask<DiffRow[]>();
@@ -30,15 +33,16 @@ export function TextDiff() {
     task.reset();
     try {
       const text = await readTextFile(files[0]);
-      if (text.length > 50000) throw new Error("每份文本最多 5 万字符。");
+      if (text.length > toolLimits.text.diffChars / 2) throw new Error("每份文本最多 100 万字符。");
       if (side === "left") setLeft(text);
       else setRight(text);
     } catch (cause) {
       task.setError((cause as Error).message);
     }
   }
-  let oldLine = 0,
-    newLine = 0;
+  const pageStart = Math.min(page, Math.max(0, Math.ceil((task.result?.length ?? 0) / toolLimits.pageRows) - 1)) * toolLimits.pageRows;
+  let oldLine = task.result?.slice(0, pageStart).filter((row) => row.old !== null).length ?? 0,
+    newLine = task.result?.slice(0, pageStart).filter((row) => row.next !== null).length ?? 0;
   return (
     <UtilityShell
       title="文本差异对比"
@@ -48,13 +52,13 @@ export function TextDiff() {
         <section className="utility-panel utility-controls">
           <h2>原始文本</h2>
           <LocalUpload
-            hint="文本文件 · 最大 2 MB / 5 万字符"
+            hint="文本文件 · 最大 32 MB / 100 万字符"
             onFiles={(files) => importText(files, "left")}
           />
           <textarea
             aria-label="原始文本"
             rows={12}
-            maxLength={50000}
+            maxLength={toolLimits.text.diffChars / 2}
             value={left}
             onChange={(e) => {
               setLeft(e.target.value);
@@ -65,13 +69,13 @@ export function TextDiff() {
         <section className="utility-panel utility-controls">
           <h2>修改后文本</h2>
           <LocalUpload
-            hint="文本文件 · 最大 2 MB / 5 万字符"
+            hint="文本文件 · 最大 32 MB / 100 万字符"
             onFiles={(files) => importText(files, "right")}
           />
           <textarea
             aria-label="修改后文本"
             rows={12}
-            maxLength={50000}
+            maxLength={toolLimits.text.diffChars / 2}
             value={right}
             onChange={(e) => {
               setRight(e.target.value);
@@ -84,7 +88,7 @@ export function TextDiff() {
         <button
           type="button"
           disabled={task.busy}
-          onClick={() => void task.run(async () => compareTexts(left, right))}
+          onClick={() => { setPage(0); void task.run((signal) => runFileWorker<DiffRow[]>({ action: "text-diff", left, right }, signal)); }}
         >
           开始对比
         </button>
@@ -116,7 +120,7 @@ export function TextDiff() {
                 </tr>
               </thead>
               <tbody>
-                {task.result.map((row, i) => (
+                {task.result.slice(pageStart, pageStart + toolLimits.pageRows).map((row, i) => (
                   <tr key={i} className={`diff-${row.kind}`}>
                     <td>
                       <span className="diff-line-number">
@@ -155,6 +159,7 @@ export function TextDiff() {
               </tbody>
             </table>
           </div>
+          <WorkbenchPagination total={task.result.length} page={page} onPage={setPage} />
         </section>
       )}
     </UtilityShell>
@@ -181,7 +186,7 @@ export function JsonFormatter() {
     >
       <LocalUpload
         accept=".json,.txt"
-        hint="JSON / TXT · 最大 2 MB"
+        hint="JSON / TXT · 最大 32 MB"
         onFiles={async (files) => {
           task.reset();
           try {
@@ -199,7 +204,7 @@ export function JsonFormatter() {
             aria-label="输入 JSON"
             spellCheck={false}
             rows={20}
-            maxLength={1_000_000}
+            maxLength={toolLimits.text.jsonChars}
             placeholder={'{"name":"Eason"}'}
             value={text}
             onChange={(e) => {
@@ -210,13 +215,13 @@ export function JsonFormatter() {
           <div className="utility-actions">
             <button
               type="button"
-              onClick={() => void task.run(async () => inspectJson(text))}
+              onClick={() => void task.run((signal) => runFileWorker<ReturnType<typeof inspectJson>>({ action: "json-format", text, compact: false }, signal))}
             >
               格式化 / 校验
             </button>
             <button
               type="button"
-              onClick={() => void task.run(async () => inspectJson(text, true))}
+              onClick={() => void task.run((signal) => runFileWorker<ReturnType<typeof inspectJson>>({ action: "json-format", text, compact: true }, signal))}
             >
               压缩
             </button>
@@ -368,12 +373,12 @@ export function MarkdownEditor() {
           <h2>Markdown</h2>
           <LocalUpload
             accept=".md,.markdown,.txt"
-            hint="Markdown / TXT · 最大 2 MB"
+            hint="Markdown / TXT · 最大 32 MB"
             onFiles={async (files) => {
               try {
                 const next = await readTextFile(files[0]);
-                if (next.length > 200000)
-                  throw new Error("Markdown 最多 20 万字符。");
+                if (next.length > toolLimits.text.markdownChars)
+                  throw new Error("Markdown 最多 200 万字符。");
                 task.reset();
                 setText(next);
               } catch (cause) {
@@ -385,7 +390,7 @@ export function MarkdownEditor() {
             aria-label="Markdown 编辑内容"
             rows={24}
             spellCheck={false}
-            maxLength={200000}
+            maxLength={toolLimits.text.markdownChars}
             value={text}
             onChange={(e) => {
               task.reset();
@@ -413,15 +418,17 @@ export function MarkdownEditor() {
   );
 }
 export function UnicodeInspector() {
+  const [page, setPage] = useState(0);
   const [text, setText] = useState(""),
     [onlyHidden, setOnlyHidden] = useState(false);
+  const deferredText = useDeferredValue(text);
   const data = useMemo(() => {
     try {
-      return { rows: inspectUnicode(text), error: "" };
+      return { rows: inspectUnicode(deferredText), error: "" };
     } catch (cause) {
       return { rows: [], error: (cause as Error).message };
     }
-  }, [text]);
+  }, [deferredText]);
   const rows = onlyHidden ? data.rows.filter((row) => row.hidden) : data.rows;
   return (
     <UtilityShell
@@ -434,22 +441,22 @@ export function UnicodeInspector() {
           <textarea
             aria-label="Unicode 检查文本"
             rows={7}
-            maxLength={10000}
+            maxLength={toolLimits.text.unicodePoints * 2}
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => { setText(e.target.value); setPage(0); }}
           />
         </label>
         <label className="utility-checkbox">
           <input
             type="checkbox"
             checked={onlyHidden}
-            onChange={(e) => setOnlyHidden(e.target.checked)}
+            onChange={(e) => { setOnlyHidden(e.target.checked); setPage(0); }}
           />
           只显示隐藏与特殊字符
         </label>
         <p className="utility-muted">
           共 {data.rows.length} 个字符 · 隐藏 / 特殊字符{" "}
-          {data.rows.filter((row) => row.hidden).length} 个 · 最多 5000 个字符
+          {data.rows.filter((row) => row.hidden).length} 个 · 最多 100000 个字符
         </p>
         <button
           type="button"
@@ -483,7 +490,7 @@ export function UnicodeInspector() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
+            {rows.slice(page * toolLimits.pageRows, (page + 1) * toolLimits.pageRows).map((row) => (
               <tr
                 key={row.position}
                 className={row.hidden ? "unicode-hidden" : ""}
@@ -504,6 +511,7 @@ export function UnicodeInspector() {
           </tbody>
         </table>
       </div>
+      <WorkbenchPagination total={rows.length} page={page} onPage={setPage} />
     </UtilityShell>
   );
 }

@@ -1,3 +1,4 @@
+import { toolLimits, checkImagePixels, checkRasterWork } from "./resource-limits";
 import { checkFiles } from "./local-files";
 import { detectImageMime } from "./image-base64";
 export function inspectRasterHeader(bytes: Uint8Array, maxPixels: number) {
@@ -83,9 +84,9 @@ export function inspectRasterHeader(bytes: Uint8Array, maxPixels: number) {
 export async function loadRaster(
   file: File,
   signal: AbortSignal,
-  maxPixels = 16_777_216,
+  maxPixels: number = toolLimits.image.pixels,
 ) {
-  checkFiles([file], 25 * 1048576, 1);
+  checkFiles([file], toolLimits.image.fileBytes, 1);
   signal.throwIfAborted();
   if (!/\.(png|jpe?g|webp|avif|bmp)$/i.test(file.name))
     throw new Error("请选择 PNG、JPG、WebP、AVIF 或 BMP 图片。");
@@ -105,6 +106,8 @@ export async function loadRaster(
       `图片像素超过 ${Math.round(maxPixels / 1_000_000)} MP，请先缩小图片。`,
     );
   }
+  try { checkImagePixels(bitmap.width, bitmap.height); }
+  catch (cause) { bitmap.close(); throw cause; }
   return bitmap;
 }
 export async function rasterPixels(
@@ -113,8 +116,11 @@ export async function rasterPixels(
   width?: number,
   height?: number,
 ) {
+  const header = inspectRasterHeader(new Uint8Array(await file.slice(0, 65536).arrayBuffer()), toolLimits.image.pixels);
+  if (header.width && header.height) checkRasterWork(header.width, header.height, 1 + 2 * ((width ?? header.width) * (height ?? header.height)) / (header.width * header.height));
   const bitmap = await loadRaster(file, signal);
   try {
+    checkRasterWork(bitmap.width, bitmap.height, 1 + 2 * ((width ?? bitmap.width) * (height ?? bitmap.height)) / (bitmap.width * bitmap.height));
     const canvas = document.createElement("canvas");
     canvas.width = width ?? bitmap.width;
     canvas.height = height ?? bitmap.height;

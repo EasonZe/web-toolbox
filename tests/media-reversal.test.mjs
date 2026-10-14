@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import vm from "node:vm";
+import { runToolTest } from "./helpers/vm-modules.mjs";
 import ts from "typescript";
 
 const source = await readFile(new URL("../app/lib/media-reversal.ts", import.meta.url), "utf8");
@@ -9,7 +9,7 @@ const compiled = ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText;
 const helpers = {};
-vm.runInNewContext(compiled, { exports: helpers, ArrayBuffer, Blob, DataView, Error, Math, Number, setTimeout, Uint8Array });
+runToolTest(compiled, { exports: helpers, ArrayBuffer, Blob, DataView, Error, Math, Number, setTimeout, Uint8Array });
 
 test("倒放工具校验媒体文件并生成清晰的下载文件名", () => {
   assert.equal(helpers.validateAudioReverseFile({ name: "voice.mp3", size: 1024, type: "audio/mpeg" }), "");

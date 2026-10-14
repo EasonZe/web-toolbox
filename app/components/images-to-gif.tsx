@@ -1,15 +1,16 @@
 "use client";
+import { checkImagePixels, checkGifWork } from "../lib/resource-limits";
 
 /* eslint-disable @next/next/no-img-element -- All previews use local Blob URLs. */
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FiArrowDown, FiArrowUp, FiDownload, FiImage, FiTrash2, FiUploadCloud } from "react-icons/fi";
 import { FileDropZone } from "./file-drop-zone";
-import { gifCanvasSize, gifFrameRect, imagesToGifLimits, supportedGifImageText, validateGifImages } from "../lib/images-to-gif";
+import { gifCanvasSize, gifFrameRect, supportedGifImageText, validateGifImages } from "../lib/images-to-gif";
 
 type ImageItem = { id: string; file: File; url: string };
 type GifResult = { url: string; name: string; size: number; width: number; height: number };
-const widths = [320, 480, 720, 1080];
+const widths = [320, 480, 720, 1080, 1280, 1920];
 const fileSize = (bytes: number) => bytes < 1048576 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : `${(bytes / 1048576).toFixed(2)} MB`;
 
 export default function ImagesToGif() {
@@ -83,36 +84,36 @@ export default function ImagesToGif() {
     if (!canvas) { setError("浏览器无法创建GIF画布"); return; }
     clearResult(); setError(""); setWorking(true); setProgress(0);
     const job = ++jobRef.current;
-    const bitmaps: ImageBitmap[] = [];
+    let activeBitmap: ImageBitmap | null = null;
     try {
-      for (let index = 0; index < items.length; index++) {
-        setStatus(`正在读取第 ${index + 1} / ${items.length} 张图片`);
-        const bitmap = await createImageBitmap(items[index].file, { imageOrientation: "from-image" });
-        if (job !== jobRef.current) { bitmap.close(); return; }
-        if (!bitmap.width || !bitmap.height || bitmap.width * bitmap.height > imagesToGifLimits.maxPixels) {
-          bitmap.close(); throw new Error(`${items[index].file.name}：图片尺寸无效或超过4000万像素`);
-        }
-        bitmaps.push(bitmap);
-      }
-      const size = gifCanvasSize(bitmaps[0].width, bitmaps[0].height, requestedWidth);
+      activeBitmap = await createImageBitmap(items[0].file, { imageOrientation: "from-image" });
+      if (job !== jobRef.current) return;
+      checkImagePixels(activeBitmap.width, activeBitmap.height);
+      const size = gifCanvasSize(activeBitmap.width, activeBitmap.height, requestedWidth);
+      activeBitmap.close(); activeBitmap = null;
+      checkGifWork(size.width, size.height, items.length);
       canvas.width = size.width; canvas.height = size.height;
       const context = canvas.getContext("2d", { alpha: false, willReadFrequently: true });
       if (!context) throw new Error("浏览器无法创建GIF画布");
       context.imageSmoothingEnabled = true; context.imageSmoothingQuality = "high";
       const { GIFEncoder, applyPalette, quantize } = await import("gifenc");
       const gif = GIFEncoder();
-      for (let index = 0; index < bitmaps.length; index++) {
+      for (let index = 0; index < items.length; index++) {
         if (job !== jobRef.current) return;
+        activeBitmap = await createImageBitmap(items[index].file, { imageOrientation: "from-image" });
+        if (job !== jobRef.current) return;
+        checkImagePixels(activeBitmap.width, activeBitmap.height);
         context.fillStyle = background; context.fillRect(0, 0, size.width, size.height);
-        const rect = gifFrameRect(bitmaps[index].width, bitmaps[index].height, size.width, size.height, fit);
-        context.drawImage(bitmaps[index], rect.x, rect.y, rect.width, rect.height);
+        const rect = gifFrameRect(activeBitmap.width, activeBitmap.height, size.width, size.height, fit);
+        context.drawImage(activeBitmap, rect.x, rect.y, rect.width, rect.height);
+        activeBitmap.close(); activeBitmap = null;
         const rgba = context.getImageData(0, 0, size.width, size.height).data;
         const palette = quantize(rgba, 192);
         gif.writeFrame(applyPalette(rgba, palette), size.width, size.height, {
           palette, delay, repeat: repeat ? 0 : -1,
         });
-        setProgress(Math.round((index + 1) / bitmaps.length * 100));
-        setStatus(`正在合成第 ${index + 1} / ${bitmaps.length} 帧`);
+        setProgress(Math.round((index + 1) / items.length * 100));
+        setStatus(`正在合成第 ${index + 1} / ${items.length} 帧`);
         await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
       }
       if (job !== jobRef.current) return;
@@ -127,7 +128,7 @@ export default function ImagesToGif() {
     } catch (cause) {
       if (job === jobRef.current) { setError(cause instanceof Error ? cause.message : "GIF合成失败，请减少图片或降低输出宽度"); setStatus(""); setProgress(0); }
     } finally {
-      bitmaps.forEach((bitmap) => bitmap.close());
+      activeBitmap?.close();
       if (job === jobRef.current) setWorking(false);
     }
   }
@@ -137,7 +138,7 @@ export default function ImagesToGif() {
     <header className="tool-header images-gif-header"><h1>多张图片合成GIF工具</h1><p>按顺序将多张图片合成为GIF动画。</p></header>
     <section className="converter-card images-gif-card" aria-label="多张图片合成GIF" aria-busy={working}>
       <FileDropZone className="image-compressor-picker" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,image/avif,.png,.jpg,.jpeg,.webp,.gif,.bmp,.avif" multiple disabled={busy} onFiles={addFiles} ariaLabel="选择或拖入多张图片">
-        <FiUploadCloud aria-hidden="true" /><strong>选择图片</strong><span>点击选择或拖入多张图片 · {supportedGifImageText} · 最多30张</span>
+        <FiUploadCloud aria-hidden="true" /><strong>选择图片</strong><span>点击选择或拖入多张图片 · {supportedGifImageText} · 最多200张 · 总计512 MB</span>
       </FileDropZone>
       {error && <p className="images-gif-error" role="alert">{error}</p>}
       <div className="images-gif-layout">

@@ -1,3 +1,4 @@
+import { toolLimits } from "./resource-limits";
 const DIGITS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 export function normalizeBase(value: number) {
@@ -9,7 +10,7 @@ export function parseBaseInteger(raw: string, base: number) {
   normalizeBase(base);
   const compact = raw.trim().replace(/[\s_]/g, "").toUpperCase();
   if (!compact) throw new Error("请输入需要转换的整数。");
-  if (compact.length > 4096) throw new Error("输入过长，最多支持 4096 位。");
+  if (compact.length > toolLimits.text.baseDigits) throw new Error("输入过长，最多支持 10000 位。");
   const negative = compact.startsWith("-");
   const positive = compact.startsWith("+");
   let body = negative || positive ? compact.slice(1) : compact;

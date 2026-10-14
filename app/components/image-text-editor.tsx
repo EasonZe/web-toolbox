@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FiDownload, FiImage, FiMove, FiUploadCloud } from "react-icons/fi";
@@ -204,8 +205,8 @@ export default function ImageTextEditor() {
   async function selectImage(file: File) {
     setMessage("");
     const supported = /^image\/(png|jpeg|webp|bmp|avif|gif)$/i.test(file.type) || (!file.type && /\.(png|jpe?g|webp|bmp|avif|gif)$/i.test(file.name));
-    if (!file.size || file.size > 25 * 1024 * 1024 || !supported) {
-      setMessage("请选择 25 MB 以内的 PNG、JPG、WebP、BMP、AVIF 或 GIF 图片。");
+    if (!file.size || file.size > toolLimits.image.fileBytes || !supported) {
+      setMessage("请选择 100 MB 以内的 PNG、JPG、WebP、BMP、AVIF 或 GIF 图片。");
       return;
     }
     const currentJob = ++imageJobRef.current;
@@ -216,7 +217,7 @@ export default function ImageTextEditor() {
         URL.revokeObjectURL(url);
         return;
       }
-      if (image.naturalWidth * image.naturalHeight > 40_000_000) throw new Error("图片像素过大，请缩小到 4000 万像素以内。");
+      if (image.naturalWidth * image.naturalHeight > toolLimits.image.pixels) throw new Error("图片像素过大，请缩小到 10000 万像素以内。");
       if (sourceUrlRef.current) URL.revokeObjectURL(sourceUrlRef.current);
       sourceUrlRef.current = url;
       setSourceFile(file);
@@ -265,7 +266,7 @@ export default function ImageTextEditor() {
       <FileDropZone className="video-file-picker" accept="image/png,image/jpeg,image/webp,image/bmp,image/avif,image/gif" ariaLabel="选择或拖入图片" onFile={selectImage}>
         <FiUploadCloud aria-hidden="true" />
         <strong>{sourceFile ? "重新选择图片" : "选择图片 / 拖入文件"}</strong>
-        <span>{sourceFile ? sourceFile.name : "支持 PNG、JPG、WebP 等格式，最大 25 MB"}</span>
+        <span>{sourceFile ? sourceFile.name : "支持 PNG、JPG、WebP 等格式，最大 100 MB"}</span>
       </FileDropZone>
 
       <div className="utility-columns image-text-columns">

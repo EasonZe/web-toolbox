@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 
 import Link from "next/link";
 import {
@@ -29,8 +30,8 @@ type Stroke = {
   color: string;
 };
 
-const maxFileSize = 25 * 1024 * 1024;
-const maxImagePixels = 24_000_000;
+const maxFileSize = toolLimits.image.fileBytes;
+const maxImagePixels = toolLimits.image.pixels;
 
 function formatFileSize(bytes: number) {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
@@ -260,7 +261,7 @@ export default function SensitiveRedactor() {
       return;
     }
     if (file.size > maxFileSize) {
-      setMessage("图片不能超过25 MB。");
+      setMessage("图片不能超过100 MB。");
       return;
     }
 
@@ -269,7 +270,7 @@ export default function SensitiveRedactor() {
       const image = await loadImage(nextUrl);
       if (image.naturalWidth * image.naturalHeight > maxImagePixels) {
         URL.revokeObjectURL(nextUrl);
-        setMessage("图片像素过大，请使用不超过2400万像素的图片。");
+        setMessage("图片像素过大，请使用不超过1亿像素的图片。");
         return;
       }
 
@@ -432,7 +433,7 @@ export default function SensitiveRedactor() {
         >
           <FiUploadCloud aria-hidden="true" />
           <strong>{sourceFile ? "重新选择图片" : "选择图片"}</strong>
-          <span>点击选择或拖入图片，支持PNG、JPG、WebP等格式，最大25 MB</span>
+          <span>点击选择或拖入图片，支持PNG、JPG、WebP等格式，最大100 MB</span>
         </FileDropZone>
 
         <div className="sensitive-redactor-workbench">

@@ -1,8 +1,9 @@
+import { toolLimits } from "./resource-limits";
 import { PDFDocument, degrees } from "pdf-lib";
 export type PdfPageChoice = { source: number; page: number; rotation: number };
 export async function inspectPdf(bytes: Uint8Array) {
   const doc = await PDFDocument.load(bytes, { updateMetadata: false });
-  if (doc.getPageCount() > 300) throw new Error("最多支持 300 页 PDF。");
+  if (doc.getPageCount() > toolLimits.pdf.sourcePages) throw new Error("最多支持 1000 页 PDF。");
   return doc.getPages().map((page) => ({
     width: page.getWidth(),
     height: page.getHeight(),
@@ -17,7 +18,7 @@ export function parsePageSelection(text: string, total: number) {
     if (!match) throw new Error(`页码格式无效：${group}`);
     const start = Number(match[1]),
       end = Number(match[2] ?? match[1]);
-    if (start < 1 || end < start || end > total || end - start > 300)
+    if (start < 1 || end < start || end > total || end - start > toolLimits.pdf.outputPages)
       throw new Error("页码超出范围。");
     for (let page = start; page <= end; page++) {
       if (pages.includes(page - 1)) throw new Error("页码不能重复。");

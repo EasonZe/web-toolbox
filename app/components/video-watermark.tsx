@@ -1,4 +1,6 @@
 "use client";
+import { createMediaBlobTarget } from "../lib/media-blob-target";
+import { toolLimits } from "../lib/resource-limits";
 
 import { useEffect, useRef, useState } from "react";
 import { FiUploadCloud, FiDownload } from "react-icons/fi";
@@ -16,6 +18,8 @@ export default function VideoWatermark() {
   const [format, setFormat] = useState("mp4");
   const [quality, setQuality] = useState(75);
   const [keepAudio, setKeepAudio] = useState(true);
+  const [outputEdge, setOutputEdge] = useState(0);
+  const [outputFrameRate, setOutputFrameRate] = useState(30);
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState(0);
   const [message, setMessage] = useState("");
@@ -48,7 +52,7 @@ export default function VideoWatermark() {
   function change(patch: Partial<WatermarkSettings>) { clearResult(); setSettings((v) => ({ ...v, ...patch })); }
   function selectVideo(selected: File) {
     if (converting.current) return;
-    if (!selected.size || selected.size > 300 * 1024 * 1024) { setMessage("请选择300 MB以内的视频。"); return; }
+    if (!selected.size || selected.size > toolLimits.media.fileBytes) { setMessage("请选择2 GB以内的视频。"); return; }
     if (!selected.type.startsWith("video/") && !/\.(mp4|webm|mov|mkv|m4v)$/i.test(selected.name)) { setMessage("请选择MP4、WebM、MOV等视频文件。"); return; }
     clearResult(); setDimensions({ width: 0, height: 0 });
     if (sourceRef.current) URL.revokeObjectURL(sourceRef.current);
@@ -60,11 +64,11 @@ export default function VideoWatermark() {
     setLogo(null); setLogoName("正在读取图片…"); clearResult();
     let nextUrl = "";
     try {
-      if (file.size > 10 * 1024 * 1024 || !/^image\/(png|jpeg|webp)$/.test(file.type)) throw new Error("请使用10 MB以内的PNG、JPG或WebP图片。");
+      if (file.size > toolLimits.image.fileBytes || !/^image\/(png|jpeg|webp)$/.test(file.type)) throw new Error("请使用100 MB以内的PNG、JPG或WebP图片。");
       nextUrl = URL.createObjectURL(file);
       const image = new Image(); image.src = nextUrl; await image.decode();
       if (current !== logoJob.current) { URL.revokeObjectURL(nextUrl); return; }
-      if (image.naturalWidth * image.naturalHeight > 40_000_000) throw new Error("水印图片过大，请缩小后重试。");
+      if (image.naturalWidth * image.naturalHeight > toolLimits.image.pixels) throw new Error("水印图片过大，请缩小后重试。");
       if (logoRef.current) URL.revokeObjectURL(logoRef.current);
       logoRef.current = nextUrl; setLogo(image); setLogoName(file.name); clearResult();
     } catch (e) { if (nextUrl) URL.revokeObjectURL(nextUrl); if (current === logoJob.current) { setLogoName(""); setMessage(e instanceof Error ? e.message : "无法读取水印图片。"); } }
@@ -89,7 +93,7 @@ export default function VideoWatermark() {
       const track = await mediaInput.getPrimaryVideoTrack(); checkCancelled();
       if (!track || !await track.canDecode()) throw new Error("当前浏览器无法解码这个视频，请更换视频后重试。");
       const originalWidth = await track.getDisplayWidth(), originalHeight = await track.getDisplayHeight();
-      const scale = Math.min(1, 1920 / Math.max(originalWidth, originalHeight));
+      const scale = outputEdge ? Math.min(1, outputEdge / Math.max(originalWidth, originalHeight)) : 1;
       const width = Math.max(2, Math.floor(originalWidth * scale / 2) * 2), height = Math.max(2, Math.floor(originalHeight * scale / 2) * 2);
       const codec = await media.getFirstEncodableVideoCodec(format === "mp4" ? ["avc"] : ["vp9", "vp8"], { width, height });
       if (!codec) throw new Error("当前浏览器不支持此输出格式，请切换MP4/WebM后重试。");
@@ -99,11 +103,11 @@ export default function VideoWatermark() {
       checkCancelled();
       const frame = document.createElement("canvas"); frame.width = width; frame.height = height;
       const ctx = frame.getContext("2d"); if (!ctx) throw new Error("无法创建画面。");
-      const target = new media.BufferTarget();
-      const output = new media.Output({ format: format === "mp4" ? new media.Mp4OutputFormat() : new media.WebMOutputFormat(), target });
+      const targetStore = createMediaBlobTarget(media.StreamTarget); const target = targetStore.target;
+      const output = new media.Output({ format: format === "mp4" ? new media.Mp4OutputFormat({ fastStart: false }) : new media.WebMOutputFormat(), target });
       const task = await media.Conversion.init({
         input: mediaInput, output, tracks: "primary", showWarnings: false,
-        video: { codec, width, height, fit: "fill", frameRate: 30, bitrate: Math.round(Math.max(500000, width * height * (0.7 + quality / 25))), forceTranscode: true,
+        video: { codec, width, height, fit: "fill", frameRate: outputFrameRate, bitrate: Math.round(Math.max(500000, width * height * (0.7 + quality / 25))), forceTranscode: true,
           process: (sample) => { checkCancelled(); sample.draw(ctx, 0, 0, width, height); drawWatermark(ctx, width, height, settings, logo); return frame; } },
         audio: keepAudio && audioTrack ? { codec: audioCodec, bitrate: 128000, sampleRate: 48000, numberOfChannels: 2, forceTranscode: true } : { discard: true },
       });
@@ -111,8 +115,8 @@ export default function VideoWatermark() {
       if (!task.isValid || task.discardedTracks.some((v) => v.track.type === "video" || (keepAudio && audioTrack && v.track.type === "audio"))) throw new Error("视频或音轨无法转换，请尝试其他格式。");
       task.onProgress = (value) => { lastProgress = performance.now(); if (current === job.current && !cancelled.current) { setProgress(Math.min(99, Math.round(value * 100))); setMessage("正在写入水印…"); } };
       await task.execute(); checkCancelled();
-      if (!target.buffer?.byteLength) throw new Error("没有生成视频，请重试。");
-      const blob = new Blob([target.buffer], { type: format === "mp4" ? "video/mp4" : "video/webm" });
+      if (!targetStore.size) throw new Error("没有生成视频，请重试。");
+      const blob = targetStore.blob(format === "mp4" ? "video/mp4" : "video/webm");
       const url = URL.createObjectURL(blob); resultRef.current = url;
       setResult({ url, size: blob.size, name: file.name.replace(/\.[^.]+$/, "") + `-水印.${format}` }); setProgress(100); setMessage("水印添加完成");
     } catch (e) { if (current === job.current) setMessage(cancelled.current ? (timedOut ? "处理超时，请换用WebM格式或缩短视频后重试。" : "已取消处理") : e instanceof Error ? e.message : "视频处理失败，请重试。"); }
@@ -122,10 +126,10 @@ export default function VideoWatermark() {
     }
   }
   return <UtilityShell title="视频加水印工具" description="为视频添加文字或图片水印，支持单点、平铺与网格布局。">
-    <FileDropZone className="video-file-picker" accept="video/*,.mkv,.mov" disabled={busy} onFile={selectVideo}><FiUploadCloud /><strong>{file ? "重新选择视频" : "选择视频 / 拖入文件"}</strong><span>{file ? file.name : "支持MP4、WebM、MOV等，最大300 MB"}</span></FileDropZone>
+    <FileDropZone className="video-file-picker" accept="video/*,.mkv,.mov" disabled={busy} onFile={selectVideo}><FiUploadCloud /><strong>{file ? "重新选择视频" : "选择视频 / 拖入文件"}</strong><span>{file ? file.name : "支持MP4、WebM、MOV等，最大2 GB"}</span></FileDropZone>
     <div className="utility-columns">
       <div className="utility-panel utility-controls"><h2>水印预览</h2>{source ? <div className="watermark-preview" style={{ aspectRatio: dimensions.width ? `${dimensions.width}/${dimensions.height}` : "16/9" }}><video key={source} src={source} controls playsInline onLoadedMetadata={(e) => { const video = e.currentTarget; setDimensions({ width: video.videoWidth, height: video.videoHeight }); }} onError={() => { setDimensions({ width: 0, height: 0 }); setMessage("浏览器无法播放这个视频，请更换文件。"); }} /><canvas ref={canvas} /></div> : <div className="utility-empty">选择视频后在这里预览水印</div>}
-        <p className="utility-muted">导出最长边不超过1920像素，最高30帧/秒。</p>
+        <p className="utility-muted">可保留原尺寸，或选择 4K / 1080P；编码能力取决于浏览器。</p>
         <h2>处理结果</h2>{result ? <><video className="utility-video" controls playsInline src={result.url} /><a className="primary-button" href={result.url} download={result.name}><FiDownload />下载视频（{(result.size / 1048576).toFixed(1)} MB）</a></> : <div className="utility-empty compact">处理后的视频会显示在这里</div>}
       </div>
       <div className="utility-panel utility-controls"><h2>水印设置</h2><fieldset disabled={busy} className="utility-controls">
@@ -139,6 +143,8 @@ export default function VideoWatermark() {
         <label className="utility-range-control"><span>垂直位置 <output>{settings.y}%</output></span><input type="range" min={0} max={100} value={settings.y} onChange={(e) => change({ y: +e.target.value })} /></label></> : <label className="utility-range-control"><span>水印间距 <output>{settings.spacing}%</output></span><input type="range" min={4} max={40} value={settings.spacing} onChange={(e) => change({ spacing: +e.target.value })} /></label>}
         <label>输出格式<select value={format} onChange={(e) => { clearResult(); setFormat(e.target.value); }}><option value="mp4">MP4</option><option value="webm">WebM</option></select></label>
         <label>输出画质 {quality}%<input type="range" min={10} max={100} value={quality} onChange={(e) => { clearResult(); setQuality(+e.target.value); }} /></label>
+        <label>输出尺寸<select value={outputEdge} onChange={(e) => { clearResult(); setOutputEdge(Number(e.target.value)); }}><option value="0">保持原尺寸</option><option value="3840">最长边 3840px（4K）</option><option value="1920">最长边 1920px</option></select></label>
+        <label>输出帧率<select value={outputFrameRate} onChange={(e) => { clearResult(); setOutputFrameRate(Number(e.target.value)); }}><option value="30">30 FPS</option><option value="60">60 FPS</option></select></label>
         <label className="utility-checkbox"><input type="checkbox" checked={keepAudio} onChange={(e) => { clearResult(); setKeepAudio(e.target.checked); }} />保留原声音</label>
       </fieldset>
       <button className="primary-button" disabled={busy || !dimensions.width || (settings.type === "image" ? !logo : !settings.text.trim())} onClick={() => void processVideo()}>{busy ? `正在处理 ${progress}%` : "添加水印并导出"}</button>

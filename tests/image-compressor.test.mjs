@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import vm from "node:vm";
+import { runToolTest } from "./helpers/vm-modules.mjs";
 import ts from "typescript";
 
 const source = await readFile(
@@ -37,7 +37,7 @@ function compile(code) {
   }).outputText;
 }
 const qualityExports = {};
-vm.runInNewContext(compile(qualitySource), { exports: qualityExports });
+runToolTest(compile(qualitySource), { exports: qualityExports });
 const { normalizeCompressionQuality, pngColorTable } = qualityExports;
 
 test("质量范围为1到100，保留每个整数档位并校正非法数值", () => {
@@ -85,7 +85,7 @@ function harness() {
   };
   const jsx = (type, props) => ({ type, props });
   const exports = {};
-  vm.runInNewContext(compile(source + "\nexport { compressImage, optimizePngPixels };"), {
+  runToolTest(compile(source + "\nexport { compressImage, optimizePngPixels };"), {
     exports,
     require(name) {
       if (name === "react") return hooks;

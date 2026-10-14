@@ -1,11 +1,12 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 
 import { useMemo, useRef, useState } from "react";
 import { FiClipboard, FiCopy, FiDownload, FiFileText, FiRefreshCw, FiTrash2 } from "react-icons/fi";
 import { textTransformGroups, transformText, type TextTransformId } from "../lib/text-format";
 import { UtilityShell } from "./utility-shell";
 
-const maxTextLength = 500_000;
+const maxTextLength = toolLimits.text.formatChars;
 
 function downloadText(value: string, name: string) {
   const url = URL.createObjectURL(new Blob([value], { type: "text/plain;charset=utf-8" }));
@@ -26,8 +27,9 @@ export default function TextFormatConverter() {
   const output = useMemo(() => transformText(input, transform), [input, transform]);
 
   function updateInput(value: string) {
-    setInput(value.slice(0, maxTextLength));
-    setMessage(value.length > maxTextLength ? "文字过长，仅保留前50万个字符。" : "");
+    if (value.length > maxTextLength) { setMessage("文字超过 500 万字符，未替换当前内容；请分段处理。"); return; }
+    setInput(value);
+    setMessage("");
   }
 
   async function pasteText() {
@@ -51,8 +53,8 @@ export default function TextFormatConverter() {
 
   async function importFile(file: File | undefined) {
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      setMessage("文本文件不能超过5 MB。");
+    if (file.size > toolLimits.text.fileBytes) {
+      setMessage("文本文件不能超过32 MB。");
       return;
     }
     try {

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import vm from "node:vm";
+import { runToolTest } from "./helpers/vm-modules.mjs";
 import ts from "typescript";
 
 const component = await readFile(new URL("../app/components/video-tool.tsx", import.meta.url), "utf8");
@@ -15,7 +15,7 @@ function compile(source, fileName) {
 }
 
 const linkExports = {};
-vm.runInNewContext(compile(links, "video-links.ts"), { exports: linkExports, URL });
+runToolTest(compile(links, "video-links.ts"), { exports: linkExports, URL });
 const componentCode = compile(component, "video-tool.tsx");
 
 // Execute the actual component handlers with isolated hooks and clipboard APIs.
@@ -41,7 +41,7 @@ function harness(config, readText) {
   };
   const jsx = (type, props) => ({ type, props });
   const exports = {};
-  vm.runInNewContext(componentCode, {
+  runToolTest(componentCode, {
     exports,
     require(name) {
       if (name === "react") return hooks;

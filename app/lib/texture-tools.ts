@@ -1,3 +1,4 @@
+import { toolLimits, checkRasterWork } from "./resource-limits";
 export type ChannelSource = {
   pixels: Uint8ClampedArray | null;
   channel: number | "luma";
@@ -14,12 +15,13 @@ export function packTextureChannels(
     !Number.isInteger(height) ||
     width < 1 ||
     height < 1 ||
-    width > 4096 ||
-    height > 4096 ||
-    width * height > 16_777_216 ||
+    width > toolLimits.raster.edge ||
+    height > toolLimits.raster.edge ||
+    width * height > toolLimits.image.pixels ||
     channels.length !== 4
   )
-    throw new Error("输出尺寸须为 1–4096 像素。");
+    throw new Error("输出尺寸须为 1–8192 像素。");
+  checkRasterWork(width, height, channels.filter((channel) => channel.pixels).length + 2);
   const result = new Uint8ClampedArray(width * height * 4);
   channels.forEach((source, index) => {
     if (

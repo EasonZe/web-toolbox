@@ -6,7 +6,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "node:util";
 import test from "node:test";
-import vm from "node:vm";
+import { runToolTest } from "./helpers/vm-modules.mjs";
 import { Document, Packer, Paragraph } from "docx";
 
 const require = createRequire(import.meta.url);
@@ -134,6 +134,6 @@ test("PDF 工作线程在没有 window 的真实 Worker 全局环境中能够初
   assert.equal(files.length, 1);
   const scope = { Blob, URL, fetch, atob, btoa, TextEncoder, TextDecoder, setTimeout, clearTimeout };
   scope.self = scope;
-  assert.doesNotThrow(() => vm.runInNewContext(require("node:fs").readFileSync(new URL(files[0], base), "utf8"), scope, { timeout: 5000 }));
+  assert.doesNotThrow(() => runToolTest(require("node:fs").readFileSync(new URL(files[0], base), "utf8"), scope, { timeout: 5000 }));
   assert.equal(typeof scope.self.onmessage, "function");
 });

@@ -146,7 +146,7 @@ export default function AudioCompressor() {
           ariaLabel="选择或拖入音频" disabled={busy} onFile={selectFile}>
           <FiUploadCloud aria-hidden="true" />
           <strong>{phase === "reading" ? "正在读取音频…" : source ? "重新选择音频" : "选择音频"}</strong>
-          <span>点击选择或拖入文件 · MP3、WAV、M4A、AAC、FLAC、OGG、WebM · 最大500 MB</span>
+          <span>点击选择或拖入文件 · MP3、WAV、M4A、AAC、FLAC、OGG、WebM · 最大2 GB</span>
         </FileDropZone>
 
         <div className="audio-compressor-workbench">

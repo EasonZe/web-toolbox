@@ -1,8 +1,9 @@
+import { toolLimits } from "./resource-limits";
 export type VideoOutputFormat = "mp4" | "webm" | "mov" | "mkv";
 export type VideoResolution = "original" | "2160" | "1080" | "720" | "480";
 export type VideoFrameRate = "original" | "60" | "30" | "24";
 
-export const maxVideoConversionFileSize = 500 * 1024 * 1024;
+export const maxVideoConversionFileSize = toolLimits.media.fileBytes;
 
 export const videoOutputProfiles = {
   mp4: {
@@ -46,7 +47,7 @@ export function validateVideoConversionFile(file: File) {
     return "请选择常见的视频文件";
   }
   if (file.size === 0) return "视频文件为空";
-  if (file.size > maxVideoConversionFileSize) return "视频文件不能超过500 MB";
+  if (file.size > maxVideoConversionFileSize) return "视频文件不能超过2 GB";
   return "";
 }
 

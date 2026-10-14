@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 
 import QRCode from "qrcode";
 import NextImage from "next/image";
@@ -238,8 +239,8 @@ export default function QrGenerator() {
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      setMessage("装饰图片不能超过10 MB。");
+    if (file.size > toolLimits.image.fileBytes) {
+      setMessage("装饰图片不能超过100 MB。");
       return;
     }
 

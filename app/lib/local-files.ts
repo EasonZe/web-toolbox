@@ -1,8 +1,9 @@
-export const MAX_BATCH_BYTES = 200 * 1024 * 1024;
+import { toolLimits } from "./resource-limits";
+export const MAX_BATCH_BYTES = toolLimits.archive.expandedBytes;
 export function checkFiles(
   files: readonly { name: string; size: number }[],
-  maxBytes = MAX_BATCH_BYTES,
-  count = 200,
+  maxBytes: number = MAX_BATCH_BYTES,
+  count: number = toolLimits.archive.entries,
 ) {
   if (!files.length || files.length > count)
     throw new Error(`请选择 1–${count} 个文件。`);
@@ -55,7 +56,7 @@ export function fileSize(bytes: number) {
     : `${(bytes / 1048576).toFixed(2)} MB`;
 }
 export async function readTextFile(file: File, extensions?: RegExp) {
-  checkFiles([file], 2 * 1024 * 1024, 1);
+  checkFiles([file], toolLimits.text.fileBytes, 1);
   if (extensions && !extensions.test(file.name))
     throw new Error("请选择支持的文本文件。");
   try {
