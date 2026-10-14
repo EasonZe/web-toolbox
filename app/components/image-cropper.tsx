@@ -172,7 +172,7 @@ export default function ImageCropper() {
       decoded = await decodeImage(file, url);
       if (job !== jobRef.current) return;
       if (!decoded.width || !decoded.height || decoded.width * decoded.height > imageCropLimits.maxPixels) {
-        throw new Error("图片尺寸无效或超过4000万像素");
+        throw new Error("图片尺寸无效或超过1亿像素");
       }
 
       const sourceCanvas = document.createElement("canvas");
@@ -411,7 +411,7 @@ export default function ImageCropper() {
         <FileDropZone className="image-compressor-picker" accept={acceptedImages} disabled={busy} onFile={selectImage} ariaLabel="选择或拖入图片">
           <FiUploadCloud aria-hidden="true" />
           <strong>{image ? "重新选择图片" : "选择图片"}</strong>
-          <span>点击选择或拖入图片 · {supportedCropImageText} · 最大25 MB</span>
+          <span>点击选择或拖入图片 · {supportedCropImageText} · 最大100 MB</span>
         </FileDropZone>
 
         {error && <p className="image-crop-error" role="alert">{error}</p>}

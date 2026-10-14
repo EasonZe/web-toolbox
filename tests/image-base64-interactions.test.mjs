@@ -1,12 +1,12 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import vm from "node:vm";
+import { runToolTest } from "./helpers/vm-modules.mjs";
 import ts from "typescript";
 const compile = (source) => ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText;
 const source = compile(await readFile(new URL("../app/components/image-base64.tsx", import.meta.url), "utf8"));
 const helpers = {};
-vm.runInNewContext(compile(await readFile(new URL("../app/lib/image-base64.ts", import.meta.url), "utf8")), { exports: helpers });
+runToolTest(compile(await readFile(new URL("../app/lib/image-base64.ts", import.meta.url), "utf8")), { exports: helpers });
 const content = (node) => node == null || typeof node === "boolean" ? "" : typeof node !== "object" ? String(node) : Array.isArray(node) ? node.map(content).join("") : content(node.props?.children);
 
 function harness() {
@@ -20,7 +20,7 @@ function harness() {
   };
   const exports = {}, jsx = (type, props) => ({ type, props });
   const convert = (input, signal) => new Promise((resolve, reject) => requests.push({ input, signal, resolve, reject }));
-  vm.runInNewContext(source, {
+  runToolTest(source, {
     exports, AbortController, Error, Blob, navigator: { clipboard },
     URL: { createObjectURL(blob) { const url = `blob:test-${++nextUrl}`; blobs.set(url, blob); return url; }, revokeObjectURL(url) { if (url) revoked.push(url); } },
     require(name) {

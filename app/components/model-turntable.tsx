@@ -383,7 +383,7 @@ export default function ModelTurntable() {
 
   return <UtilityShell title="3D模型预览与转台动画" description="导入常见3D模型，自由查看材质与动画，并导出360°转台视频。">
     <FileDropZone className="video-file-picker" accept=".glb,.gltf,.obj,.stl,.fbx,model/gltf-binary,model/gltf+json" disabled={busy || !ready} onFile={loadModel} ariaLabel="选择或拖入3D模型">
-      <FiUploadCloud aria-hidden="true" /><strong>{phase === "loading" ? "正在解析模型…" : model ? "重新选择模型" : "选择或拖入3D模型"}</strong><span>GLB、GLTF（内嵌资源）、OBJ、STL、FBX，最大 120 MB，文件只在本地处理</span>
+      <FiUploadCloud aria-hidden="true" /><strong>{phase === "loading" ? "正在解析模型…" : model ? "重新选择模型" : "选择或拖入3D模型"}</strong><span>GLB、GLTF（内嵌资源）、OBJ、STL、FBX，最大 512 MB，文件只在本地处理</span>
     </FileDropZone>
     <div className="model-turntable-layout">
       <section className="utility-panel model-viewer-panel">
@@ -414,7 +414,7 @@ export default function ModelTurntable() {
         </section>
         <section className="utility-panel utility-controls">
           <h2>转台动画导出</h2>
-          <label>导出画布<select value={resolution} disabled={busy} onChange={(event) => setResolution(event.target.value)}><option value="512x512">方形 512×512</option><option value="720x720">方形 720×720</option><option value="1280x720">横屏 1280×720</option><option value="720x1280">竖屏 720×1280</option><option value="1920x1080">全高清 1920×1080</option></select></label>
+          <label>导出画布<select value={resolution} disabled={busy} onChange={(event) => setResolution(event.target.value)}><option value="512x512">方形 512×512</option><option value="720x720">方形 720×720</option><option value="1280x720">横屏 1280×720</option><option value="720x1280">竖屏 720×1280</option><option value="1920x1080">全高清 1920×1080</option><option value="3840x2160">4K 3840×2160</option><option value="2160x3840">竖屏 4K 2160×3840</option></select></label>
           <label className="utility-range-control"><span>一圈时长<output>{duration}秒</output></span><input type="range" min="2" max="12" step="1" value={duration} disabled={busy} onChange={(event) => setDuration(+event.target.value)} /></label>
           <div className="model-export-row"><label>帧率<select value={fps} disabled={busy} onChange={(event) => setFps(+event.target.value)}><option value="24">24 FPS</option><option value="30">30 FPS</option><option value="60">60 FPS</option></select></label><label>码率<select value={bitrate} disabled={busy} onChange={(event) => setBitrate(+event.target.value)}><option value="4">4 Mbps</option><option value="8">8 Mbps</option><option value="12">12 Mbps</option></select></label></div>
           <button className="primary-button" type="button" disabled={!model || busy} onClick={() => void exportVideo()}><FiVideo aria-hidden="true" />{phase === "exporting" ? `正在导出 ${progress}%` : "导出360°转台动画"}</button>

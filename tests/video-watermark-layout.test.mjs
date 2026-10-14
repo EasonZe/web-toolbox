@@ -2,12 +2,12 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import ts from "typescript";
-import vm from "node:vm";
+import { runToolTest } from "./helpers/vm-modules.mjs";
 
 const librarySource = await readFile(new URL("../app/lib/video-watermark.ts", import.meta.url), "utf8");
 const componentSource = await readFile(new URL("../app/components/video-watermark.tsx", import.meta.url), "utf8");
 const exports = {};
-vm.runInNewContext(ts.transpileModule(librarySource, {
+runToolTest(ts.transpileModule(librarySource, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText, { exports, Math });
 

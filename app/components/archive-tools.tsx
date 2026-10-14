@@ -53,7 +53,7 @@ export function BatchRename() {
         multiple
         disabled={task.busy}
         title="批量选择文件 / 拖入文件"
-        hint="最多 200 个文件 · 总大小不超过 200 MB · 不修改原文件"
+        hint="最多 2000 个文件 · 总大小不超过 512 MB · 不修改原文件"
         onFiles={(next) => {
           task.reset();
           try {
@@ -330,7 +330,7 @@ export function ZipTool() {
           <LocalUpload
             multiple
             disabled={busy}
-            hint="最多 200 个文件 · 总大小不超过 200 MB"
+            hint="最多 2000 个文件 · 总大小不超过 512 MB"
             onFiles={(next) => {
               task.reset();
               try {
@@ -380,7 +380,7 @@ export function ZipTool() {
           <LocalUpload
             accept=".zip"
             disabled={busy}
-            hint="ZIP · 最大 200 MB · 最多 200 个条目 · 不支持加密、分卷或 ZIP64"
+            hint="ZIP · 最大 512 MB · 最多 2000 个条目 · 不支持加密、分卷或 ZIP64"
             onFiles={async (next) => {
               task.reset();
               setArchive(null);

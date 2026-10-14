@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import vm from "node:vm";
+import { runToolTest } from "./helpers/vm-modules.mjs";
 import ts from "typescript";
 
 const code = ts.transpileModule(await readFile(new URL("../app/components/home-scroll-restorer.tsx", import.meta.url), "utf8"), {
@@ -11,7 +11,7 @@ const code = ts.transpileModule(await readFile(new URL("../app/components/home-s
 function run(stored, now = 10_000) {
   const scrolls = [], frames = [], timers = [], removed = [], attributes = [];
   const exports = {};
-  vm.runInNewContext(code, {
+  runToolTest(code, {
     exports, Date: { now: () => now }, JSON, Number,
     document: {
       documentElement: {

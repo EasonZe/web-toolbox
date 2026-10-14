@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -21,8 +22,8 @@ type WatermarkPosition =
   | "grid";
 type OutputFormat = "image/png" | "image/jpeg";
 
-const maxFileSize = 25 * 1024 * 1024;
-const maxImagePixels = 24_000_000;
+const maxFileSize = toolLimits.image.fileBytes;
+const maxImagePixels = toolLimits.image.pixels;
 
 const positionOptions: Array<{
   value: WatermarkPosition;
@@ -273,7 +274,7 @@ export default function ImageWatermark() {
       return;
     }
     if (file.size > maxFileSize) {
-      setMessage("图片不能超过25 MB。");
+      setMessage("图片不能超过100 MB。");
       return;
     }
 
@@ -284,7 +285,7 @@ export default function ImageWatermark() {
     try {
       const image = await loadImage(url);
       if (image.naturalWidth * image.naturalHeight > maxImagePixels) {
-        throw new Error("图片像素不能超过2400万");
+        throw new Error("图片像素不能超过1亿");
       }
       setSourceFile(file);
       setSourceImage(image);
@@ -305,7 +306,7 @@ export default function ImageWatermark() {
       return;
     }
     if (file.size > maxFileSize) {
-      setMessage("水印图片不能超过25 MB。");
+      setMessage("水印图片不能超过100 MB。");
       return;
     }
 
@@ -399,7 +400,7 @@ export default function ImageWatermark() {
         >
           <FiUploadCloud aria-hidden="true" />
           <strong>{sourceFile ? "重新选择原图" : "选择原图"}</strong>
-          <span>点击选择或拖入原图，支持PNG、JPG、WebP等格式，最大25 MB</span>
+          <span>点击选择或拖入原图，支持PNG、JPG、WebP等格式，最大100 MB</span>
         </FileDropZone>
 
         <div className="image-watermark-workbench">

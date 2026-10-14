@@ -1,3 +1,4 @@
+import { toolLimits } from "./resource-limits";
 import { parse } from "@plussub/srt-vtt-parser";
 export type SubtitleCue = {
   id: string;
@@ -6,7 +7,7 @@ export type SubtitleCue = {
   text: string;
 };
 export function parseSubtitles(text: string): SubtitleCue[] {
-  if (text.length > 1_000_000) throw new Error("字幕最多 100 万字符。");
+  if (text.length > toolLimits.text.editorChars) throw new Error("字幕最多 800 万字符。");
   const clean = text.replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
   const timingLines = clean.split("\n").filter((line) => line.includes("-->"));
   const validTime = /^(?:\d{2,}:)?[0-5]\d:[0-5]\d[,.]\d{3}$/;
@@ -27,8 +28,8 @@ export function parseSubtitles(text: string): SubtitleCue[] {
   } catch {
     throw new Error("字幕格式无效，请检查时间行与分段。");
   }
-  if (!cues.length || cues.length > 2000)
-    throw new Error("请选择包含 1–2000 条有效字幕的 SRT 或 VTT 文件。");
+  if (!cues.length || cues.length > toolLimits.text.subtitleCues)
+    throw new Error("请选择包含 1–50000 条有效字幕的 SRT 或 VTT 文件。");
   // Upstream parsers can skip malformed blocks. Never silently drop a cue.
   if (timingLines.length !== cues.length)
     throw new Error("部分字幕时间格式无效，请修正后重新导入。");

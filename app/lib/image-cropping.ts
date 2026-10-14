@@ -1,3 +1,4 @@
+import { toolLimits } from "./resource-limits";
 export type CropRect = {
   x: number;
   y: number;
@@ -16,8 +17,8 @@ export type CropImageSize = {
 };
 
 export const imageCropLimits = {
-  maxFileSize: 25 * 1024 * 1024,
-  maxPixels: 40_000_000,
+  maxFileSize: toolLimits.image.fileBytes,
+  maxPixels: toolLimits.image.pixels,
   minCropSize: 8,
 } as const;
 
@@ -55,7 +56,7 @@ function normalizedType(file: File) {
 export function validateCropImage(file: File) {
   if (!normalizedType(file)) return "不支持这种图片格式";
   if (file.size === 0) return "图片文件为空";
-  if (file.size > imageCropLimits.maxFileSize) return "图片不能超过25 MB";
+  if (file.size > imageCropLimits.maxFileSize) return "图片不能超过100 MB";
   return "";
 }
 

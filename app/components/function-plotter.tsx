@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 
 import { useEffect, useRef, useState } from "react";
 import { UtilityShell } from "./utility-shell";
@@ -85,7 +86,7 @@ export default function FunctionPlotter() {
         <h2>函数设置</h2>
         <div className="function-formulas">{formulas.map((formula, index) => <div className="function-formula" key={index}>
           <label className="utility-checkbox"><input type="checkbox" checked={formula.enabled} onChange={(event) => updateFormula(index, { enabled: event.target.checked })} /><i style={{ background: colors[index] }} />y{index + 1}</label>
-          <input aria-label={`函数 y${index + 1}`} value={formula.expression} maxLength={500} spellCheck={false} placeholder="例如：sin(x)" onChange={(event) => updateFormula(index, { expression: event.target.value })} />
+          <input aria-label={`函数 y${index + 1}`} value={formula.expression} maxLength={toolLimits.math.expressionChars} spellCheck={false} placeholder="例如：sin(x)" onChange={(event) => updateFormula(index, { expression: event.target.value })} />
         </div>)}</div>
         <div className="function-bounds">
           {(["xMin", "xMax", "yMin", "yMax"] as const).map((key) => <label key={key}>{key.replace("Min", " 最小").replace("Max", " 最大")}<input type="number" aria-label={key} value={bounds[key]} step="1" onChange={(event) => setBounds((current) => ({ ...current, [key]: Number(event.target.value) }))} /></label>)}

@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -40,7 +41,7 @@ export default function FancyTextConverter() {
             {value ? <button type="button" onClick={() => setValue("")}><FiX aria-hidden="true" />清空</button> : null}
           </div>
         </div>
-        <textarea id="fancy-text-input" value={value} maxLength={200} placeholder="请输入要转换的文字" onChange={(event) => setValue(event.target.value)} />
+        <textarea id="fancy-text-input" value={value} maxLength={toolLimits.text.shortChars} placeholder="请输入要转换的文字" onChange={(event) => setValue(event.target.value)} />
         <p className="fancy-text-tip">英文字母和数字会转换样式，中文、空格与普通符号会原样保留。</p>
 
         <div className="fancy-text-results-heading">

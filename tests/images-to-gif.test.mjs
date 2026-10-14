@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import vm from "node:vm";
+import { runToolTest } from "./helpers/vm-modules.mjs";
 import ts from "typescript";
 
 const source = await readFile(new URL("../app/components/images-to-gif.tsx", import.meta.url), "utf8");
@@ -9,7 +9,7 @@ const libCode = ts.transpileModule(await readFile(new URL("../app/lib/images-to-
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText;
 const lib = {};
-vm.runInNewContext(libCode, { exports: lib });
+runToolTest(libCode, { exports: lib });
 
 test("图片合成GIF提供批量选择、排序、参数和下载流程", () => {
   assert.match(source, /<FileDropZone[\s\S]*?multiple[\s\S]*?onFiles=\{addFiles\}/);
@@ -21,7 +21,7 @@ test("图片合成GIF提供批量选择、排序、参数和下载流程", () =>
   assert.match(source, /下移\$\{item\.file\.name\}/);
   assert.match(source, /移除\$\{item\.file\.name\}/);
   assert.match(source, /下载GIF/);
-  assert.match(source, /finally \{[\s\S]*?bitmap\.close\(\)/);
+  assert.match(source, /finally \{[\s\S]*?activeBitmap\?\.close\(\)/);
 });
 
 test("文件验证限制格式、数量、单张和总大小", () => {
@@ -31,9 +31,9 @@ test("文件验证限制格式、数量、单张和总大小", () => {
   assert.equal(lib.isSupportedGifImage(image("a.tiff", 10, "image/tiff")), false);
   assert.equal(lib.isSupportedGifImage(image("a.txt", 10, "text/plain")), false);
   assert.equal(lib.validateGifImages([image("a.png", 0)]).accepted.length, 0);
-  assert.match(lib.validateGifImages([image("big.png", lib.imagesToGifLimits.maxFileBytes + 1)]).errors[0], /20 MB/);
+  assert.match(lib.validateGifImages([image("big.png", lib.imagesToGifLimits.maxFileBytes + 1)]).errors[0], /100 MB/);
   const total = lib.validateGifImages([image("b.png", 2)], [image("a.png", lib.imagesToGifLimits.maxTotalBytes)]);
-  assert.equal(total.accepted.length, 0); assert.match(total.errors[0], /100 MB/);
+  assert.equal(total.accepted.length, 0); assert.match(total.errors[0], /512 MB/);
   const full = Array.from({ length: lib.imagesToGifLimits.maxFiles }, (_, i) => image(`${i}.png`));
   assert.match(lib.validateGifImages([image("more.png")], full).errors[0], /最多/);
 });
@@ -43,5 +43,5 @@ test("画布按首张比例限宽，完整显示和铺满裁剪的矩形正确",
   assert.deepEqual({ ...lib.gifCanvasSize(300, 150, 720) }, { width: 300, height: 150 });
   assert.deepEqual({ ...lib.gifFrameRect(100, 100, 200, 100, "contain") }, { x: 50, y: 0, width: 100, height: 100 });
   assert.deepEqual({ ...lib.gifFrameRect(100, 100, 200, 100, "cover") }, { x: 0, y: -50, width: 200, height: 200 });
-  assert.throws(() => lib.gifCanvasSize(100000, 100000, 720), /4000万/);
+  assert.throws(() => lib.gifCanvasSize(100000, 100000, 720), /1亿/);
 });

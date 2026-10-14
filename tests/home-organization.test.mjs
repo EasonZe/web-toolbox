@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { loadLocalModule } from "./helpers/load-local-module.mjs";
 import { readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import test from "node:test";
@@ -24,7 +25,7 @@ test("首页偏好能校验视图并安全解析收藏夹", async () => {
   const exports = {};
   const source = await read("../app/lib/home-preferences.ts");
   const code = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
-  vm.runInThisContext(`(function(exports, require) { ${code}\n })`)(exports, createRequire(import.meta.url));
+  vm.runInThisContext(`(function(exports, require) { ${code}\n })`)(exports, ((id) => id.endsWith("/resource-limits") ? loadLocalModule("app/lib/resource-limits.ts") : createRequire(import.meta.url)(id)));
   assert.equal(exports.isToolViewMode("cards"), true);
   assert.equal(exports.isToolViewMode("unknown"), false);
   assert.deepEqual([...exports.parseFavoriteHrefs('["/color",7,"/calculator"]')], ["/color", "/expression-calculator"]);

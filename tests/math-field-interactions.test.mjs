@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import vm from "node:vm";
+import { runToolTest } from "./helpers/vm-modules.mjs";
 import ts from "typescript";
 
 const source = ts.transpileModule(await readFile(new URL("../app/components/math-field.tsx", import.meta.url), "utf8"), {
@@ -35,7 +35,7 @@ async function harness(initial) {
     if (props.ref) props.ref.current ??= { appendChild() {} };
     return { type, props };
   };
-  vm.runInNewContext(source, {
+  runToolTest(source, {
     exports,
     require(name) {
       if (name === "react") return hooks;
@@ -65,7 +65,7 @@ test("公式输入只通知实际变化，回车的重复输入事件不取消�
   assert.equal(submitted, 1);
   assert.equal(prevented, true);
   assert.equal(changes.length, 1);
-  ui.field.value = "x".repeat(501); ui.field.dispatch("input");
+  ui.field.value = "x".repeat(2001); ui.field.dispatch("input");
   assert.equal(ui.field.value, "x+2");
   assert.equal(changes.length, 1);
   ui.unmount(); assert.equal(ui.field.removed, true); assert.equal(ui.field.listeners.size, 0);

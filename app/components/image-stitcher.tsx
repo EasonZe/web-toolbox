@@ -1,4 +1,5 @@
 "use client";
+import { checkImagePixels } from "../lib/resource-limits";
 
 /* eslint-disable @next/next/no-img-element -- 预览图来自用户本地选择的 Blob URL。 */
 import Link from "next/link";
@@ -13,7 +14,6 @@ import {
 } from "react-icons/fi";
 import {
   calculateStitchLayout,
-  imageStitchingLimits,
   supportedStitchImageText,
   validateStitchImages,
   validateStitchLayout,
@@ -83,7 +83,7 @@ async function decodeImage(item: ImageItem): Promise<DecodedImage> {
     source: image,
     width: image.naturalWidth,
     height: image.naturalHeight,
-    close: () => undefined,
+    close: () => { image.src = ""; },
   };
 }
 
@@ -200,7 +200,7 @@ export default function ImageStitcher() {
     }
 
     const job = ++jobRef.current;
-    const decoded: DecodedImage[] = [];
+    const decoded: Pick<DecodedImage, "width" | "height">[] = [];
     clearResult();
     setError("");
     setWorking(true);
@@ -213,11 +213,8 @@ export default function ImageStitcher() {
           image.close();
           return;
         }
-        if (!image.width || !image.height || image.width * image.height > imageStitchingLimits.maxInputPixels) {
-          image.close();
-          throw new Error(`${items[index].file.name}：图片尺寸无效或超过4000万像素`);
-        }
-        decoded.push(image);
+        try { checkImagePixels(image.width, image.height); decoded.push({ width: image.width, height: image.height }); }
+        finally { image.close(); }
       }
 
       const layout = calculateStitchLayout(decoded, {
@@ -230,6 +227,7 @@ export default function ImageStitcher() {
       });
       const layoutError = validateStitchLayout(layout);
       if (layoutError) throw new Error(layoutError);
+      checkImagePixels(layout.width, layout.height);
 
       canvas.width = layout.width;
       canvas.height = layout.height;
@@ -243,9 +241,13 @@ export default function ImageStitcher() {
       context.imageSmoothingEnabled = true;
       context.imageSmoothingQuality = "high";
 
-      layout.rects.forEach((rect, index) => {
-        context.drawImage(decoded[index].source, rect.x, rect.y, rect.width, rect.height);
-      });
+      for (let index = 0; index < items.length; index++) {
+        if (job !== jobRef.current) return;
+        const rect = layout.rects[index], image = await decodeImage(items[index]);
+        try { if (job !== jobRef.current) return; context.drawImage(image.source, rect.x, rect.y, rect.width, rect.height); }
+        finally { image.close(); }
+        await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
+      }
       setStatus("正在导出拼接图片");
       await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
       if (job !== jobRef.current) return;
@@ -268,7 +270,6 @@ export default function ImageStitcher() {
         setStatus("");
       }
     } finally {
-      decoded.forEach((image) => image.close());
       if (job === jobRef.current) setWorking(false);
     }
   }
@@ -297,7 +298,7 @@ export default function ImageStitcher() {
         >
           <FiUploadCloud aria-hidden="true" />
           <strong>选择图片</strong>
-          <span>点击选择或拖入多张图片 · {supportedStitchImageText} · 最多30张</span>
+          <span>点击选择或拖入多张图片 · {supportedStitchImageText} · 最多200张</span>
         </FileDropZone>
 
         {error && <p className="image-stitch-error" role="alert">{error}</p>}
@@ -321,7 +322,7 @@ export default function ImageStitcher() {
                 {items.map((item, index) => (
                   <article className="image-stitch-item" key={item.id}>
                     <span className="image-stitch-index">{index + 1}</span>
-                    <img src={item.url} alt="" />
+                    <img loading="lazy" decoding="async" src={item.url} alt="" />
                     <div className="image-stitch-file">
                       <strong title={item.file.name}>{item.file.name}</strong>
                       <span>{formatFileSize(item.file.size)}</span>

@@ -41,7 +41,7 @@ test("文本对比真实区分新增、删除、修改和字符差异", () => {
   assert.ok(rows[1].oldParts.some((part) => part.changed));
   assert.ok(rows[1].nextParts.some((part) => part.changed));
   assert.equal(text.compareTexts("gone\n", "")[0].kind, "removed");
-  assert.throws(() => text.compareTexts("a".repeat(100001), ""), /10 万/);
+  assert.throws(() => text.compareTexts("a".repeat(2_000_001), ""), /200 万/);
 });
 test("Unicode 按码点迭代并标记零宽、隐藏空格、控制符与非法代理项", () => {
   const rows = text.inspectUnicode("A😀\u200B\u00A0\u202E\uD800");

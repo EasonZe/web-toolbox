@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 
 import Link from "next/link";
 import type { BackgroundRemovalPipeline } from "@huggingface/transformers";
@@ -20,7 +21,7 @@ type ProgressInfo = {
   progress?: number;
 };
 
-const maxImagePixels = 25_000_000;
+const maxImagePixels = toolLimits.image.pixels;
 
 const removerModels: Record<
   RemovalMode,
@@ -142,8 +143,8 @@ export default function BackgroundRemover() {
       setMessage("请选择PNG、JPG、WebP等常见图片。");
       return;
     }
-    if (file.size > 20 * 1024 * 1024) {
-      setMessage("图片不能超过20 MB。");
+    if (file.size > toolLimits.image.fileBytes) {
+      setMessage("图片不能超过100 MB。");
       return;
     }
 
@@ -157,7 +158,7 @@ export default function BackgroundRemover() {
     try {
       const image = await loadImage(nextSourceUrl);
       if (image.naturalWidth * image.naturalHeight > maxImagePixels) {
-        throw new Error("图片像素不能超过2500万");
+        throw new Error("图片像素不能超过1亿");
       }
       setSourceFile(file);
       setSourceImage(image);
@@ -282,7 +283,7 @@ export default function BackgroundRemover() {
         >
           <FiUploadCloud aria-hidden="true" />
           <strong>{sourceFile ? "重新选择图片" : "选择图片"}</strong>
-          <span>点击选择或拖入图片，支持PNG、JPG、WebP等格式，最大20 MB</span>
+          <span>点击选择或拖入图片，支持PNG、JPG、WebP等格式，最大100 MB</span>
         </FileDropZone>
 
         <div className="background-remover-workbench">

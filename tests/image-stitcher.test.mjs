@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import vm from "node:vm";
+import { runToolTest } from "./helpers/vm-modules.mjs";
 import ts from "typescript";
 
 const libSource = await readFile(new URL("../app/lib/image-stitching.ts", import.meta.url), "utf8");
@@ -12,7 +12,7 @@ const compiled = ts.transpileModule(libSource, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText;
 const helpers = {};
-vm.runInNewContext(compiled, { exports: helpers, Set, Math, Number });
+runToolTest(compiled, { exports: helpers, Set, Math, Number });
 
 test("横向统一高度会保持比例并正确计算间距和边距", () => {
   const layout = helpers.calculateStitchLayout(
@@ -46,7 +46,7 @@ test("纵向原尺寸支持右侧对齐", () => {
 
 test("过大的输出画布会被阻止", () => {
   assert.match(helpers.validateStitchLayout({ width: 20_000, height: 100, rects: [] }), /16384/);
-  assert.match(helpers.validateStitchLayout({ width: 10_000, height: 10_000, rects: [] }), /像素过大/);
+  assert.match(helpers.validateStitchLayout({ width: 10_001, height: 10_000, rects: [] }), /像素过大/);
 });
 
 test("图片拼接组件支持拖入、排序、画布导出和本地下载", () => {

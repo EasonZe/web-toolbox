@@ -44,7 +44,7 @@ export default function ImageBase64() {
 
   function changeInput(value: string) {
     clearResult();
-    if (value.length > maxBase64InputChars) { setError("编码过长，最多支持还原10 MB的图片。"); return; }
+    if (value.length > maxBase64InputChars) { setError("编码过长，最多支持还原50 MB的图片。"); return; }
     setInput(value);
   }
 
@@ -109,11 +109,11 @@ export default function ImageBase64() {
       {encoding ? <FileDropZone className="video-file-picker" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,image/x-icon,image/vnd.microsoft.icon,image/avif,.ico"
         ariaLabel="选择或拖入图片" disabled={busy} onFile={(file) => convert(file)}>
         <FiUploadCloud aria-hidden="true" /><strong>{busy ? "正在读取图片…" : result ? "重新选择图片" : "选择图片"}</strong>
-        <span>点击选择或拖入图片 · {supportedImageFormats} · 最大10 MB</span>
+        <span>点击选择或拖入图片 · {supportedImageFormats} · 最大50 MB</span>
       </FileDropZone> : <div className="image-base64-input">
         <div className="image-base64-label"><label htmlFor="image-base64-input">Base64编码</label><div><button type="button" disabled={busy} onClick={paste}><FiClipboard aria-hidden="true" />粘贴</button><button type="button" disabled={busy || !input} onClick={() => changeInput("")}>清空</button></div></div>
         <textarea id="image-base64-input" value={input} disabled={busy} spellCheck={false} autoCapitalize="off" autoCorrect="off" placeholder="粘贴 data:image/png;base64,... 或纯Base64编码" onChange={(event) => changeInput(event.target.value)} />
-        <p className="image-base64-hint">支持Data URL、纯Base64和换行编码 · 还原图片最大10 MB</p>
+        <p className="image-base64-hint">支持Data URL、纯Base64和换行编码 · 还原图片最大50 MB</p>
         <button type="button" className="convert-button" disabled={busy || !input.trim()} onClick={() => convert()}>{busy ? "正在还原图片…" : "还原图片"}</button>
       </div>}
       {busy && <button type="button" className="image-base64-cancel" onClick={() => { clearResult(); setMessage("已取消转换。"); }}>取消转换</button>}

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import vm from "node:vm";
+import { runToolTest } from "./helpers/vm-modules.mjs";
 import ts from "typescript";
 
 const source = await readFile(new URL("../app/lib/scientific-client.ts", import.meta.url), "utf8");
@@ -22,7 +22,7 @@ function client(options = {}) {
     postMessage(request) { if (options.failPost) throw new Error("cannot send"); this.request = request; }
     terminate() { this.terminated = true; }
   }
-  vm.runInNewContext(code, {
+  runToolTest(code, {
     exports, Worker, URL, DOMException,
     setTimeout: (callback, delay) => { const key = Symbol(); timers.set(key, { callback, delay }); return key; },
     clearTimeout: (key) => timers.delete(key),

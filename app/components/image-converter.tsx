@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -19,10 +20,10 @@ type ConversionItem = {
   error: string;
 };
 
-const maxFileSize = 25 * 1024 * 1024;
-const maxTotalSize = 150 * 1024 * 1024;
-const maxFiles = 20;
-const maxImagePixels = 30_000_000;
+const maxFileSize = toolLimits.image.fileBytes;
+const maxTotalSize = toolLimits.image.batchBytes;
+const maxFiles = toolLimits.image.batchFiles;
+const maxImagePixels = toolLimits.image.pixels;
 const formatOptions: Array<{ value: OutputFormat; label: string; extension: string }> = [
   { value: "image/png", label: "PNG", extension: "png" },
   { value: "image/jpeg", label: "JPG", extension: "jpg" },
@@ -140,7 +141,7 @@ export default function ImageConverter() {
 
     skipped += Math.max(0, files.length - remainingCount);
     if (accepted.length) setItems((current) => [...current, ...accepted]);
-    setMessage(skipped ? `已跳过${skipped}个文件；单张最大25 MB，一次最多20张，总计不超过150 MB。` : "");
+    setMessage(skipped ? `已跳过${skipped}个文件；单张最大100 MB，一次最多200张，总计不超过1 GB。` : "");
   }
 
   function removeItem(id: string) {
@@ -243,7 +244,7 @@ export default function ImageConverter() {
         <FileDropZone className="image-converter-picker" accept="image/*" multiple onFiles={addFiles} disabled={converting} ariaLabel="选择或拖入多张图片">
           <FiUploadCloud aria-hidden="true" />
           <strong>{items.length ? "继续添加图片" : "选择多张图片"}</strong>
-          <span>点击选择或直接拖入，支持PNG、JPG、WebP、BMP、AVIF等常见格式；单张最大25 MB，最多20张</span>
+          <span>点击选择或直接拖入，支持PNG、JPG、WebP、BMP、AVIF等常见格式；单张最大100 MB，最多200张</span>
         </FileDropZone>
 
         <div className="image-converter-workbench">
@@ -258,7 +259,7 @@ export default function ImageConverter() {
                   <article className="image-converter-item" key={item.id}>
                     <div className="image-converter-thumb">
                       {/* eslint-disable-next-line @next/next/no-img-element -- Blob URLs are created in this page. */}
-                      <img src={item.resultUrl || item.previewUrl} alt={`${item.file.name}预览`} />
+                      <img loading="lazy" decoding="async" src={item.resultUrl || item.previewUrl} alt={`${item.file.name}预览`} />
                     </div>
                     <div className="image-converter-item-info">
                       <strong title={item.file.name}>{item.file.name}</strong>

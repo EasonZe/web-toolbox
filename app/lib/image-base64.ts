@@ -1,4 +1,5 @@
-export const maxBase64ImageBytes = 10 * 1024 * 1024;
+import { toolLimits } from "./resource-limits";
+export const maxBase64ImageBytes = toolLimits.base64.fileBytes;
 export const maxBase64InputChars = Math.ceil(maxBase64ImageBytes / 3) * 4 + 200_000;
 export const supportedImageFormats = "PNG、JPG、WebP、GIF、BMP、ICO、AVIF";
 
@@ -27,7 +28,7 @@ export function detectImageMime(bytes: Uint8Array): string {
 
 export function validateImageSize(size: number) {
   if (!size) throw new Error("图片内容为空，请重新选择。");
-  if (size > maxBase64ImageBytes) throw new Error("图片不能超过10 MB。");
+  if (size > maxBase64ImageBytes) throw new Error("图片不能超过50 MB。");
 }
 
 export function encodeImageBytes(bytes: Uint8Array): string {
@@ -43,7 +44,7 @@ export function formatImageBase64(base64: string, mime: string, format: "data-ur
 
 export function decodeImageBase64(input: string): { bytes: Uint8Array; mime: string } {
   if (!input.trim()) throw new Error("请先输入Base64编码。");
-  if (input.length > maxBase64InputChars) throw new Error("编码过长，最多支持还原10 MB的图片。");
+  if (input.length > maxBase64InputChars) throw new Error("编码过长，最多支持还原50 MB的图片。");
   let value = input.trim(), declared = "";
   if (/^data:/i.test(value)) {
     const comma = value.indexOf(",");
@@ -81,7 +82,7 @@ export function inspectImageBlob(blob: Blob, signal: AbortSignal): Promise<{ wid
     image.onload = () => {
       const width = image.naturalWidth, height = image.naturalHeight;
       cleanup();
-      if (!width || !height || width * height > 40_000_000) reject(new Error("图片尺寸无效或超过4000万像素，请缩小图片后重试。"));
+      if (!width || !height || width * height > toolLimits.image.pixels) reject(new Error("图片尺寸无效或超过1亿像素，请缩小图片后重试。"));
       else resolve({ width, height });
     };
     image.onerror = () => { cleanup(); reject(new Error("图片已损坏，或当前浏览器不支持预览此格式，请换用PNG、JPG或WebP。")); };

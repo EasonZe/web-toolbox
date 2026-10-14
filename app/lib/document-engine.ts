@@ -1,3 +1,4 @@
+import { toolLimits } from "./resource-limits";
 import type { DocumentSettings } from "./document-conversion";
 import { validateDocumentFile } from "./document-conversion";
 
@@ -28,11 +29,11 @@ export function checkDocxArchive(buffer: ArrayBuffer) {
   if (end < 0) throw new Error("DOCX文件不完整或已损坏。");
   const count = view.getUint16(end + 10, true);
   let offset = view.getUint32(end + 16, true), expanded = 0;
-  if (count > 3000 || count === 0) throw new Error("文档内部文件数量过多或文档无效。");
+  if (count > 10000 || count === 0) throw new Error("文档内部文件数量过多或文档无效。");
   for (let i = 0; i < count; i++) {
     if (offset + 46 > end || view.getUint32(offset, true) !== 0x02014b50) throw new Error("DOCX文件结构异常。");
     expanded += view.getUint32(offset + 24, true);
-    if (expanded > 80 * 1024 * 1024) throw new Error("文档解压后超过80 MB，请缩小内嵌图片后再试。");
+    if (expanded > toolLimits.document.expandedBytes) throw new Error("文档解压后超过512 MB，请缩小内嵌图片后再试。");
     offset += 46 + view.getUint16(offset + 28, true) + view.getUint16(offset + 30, true) + view.getUint16(offset + 32, true);
   }
 }

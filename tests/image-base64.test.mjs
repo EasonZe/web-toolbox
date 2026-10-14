@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import vm from "node:vm";
+import { runToolTest } from "./helpers/vm-modules.mjs";
 import ts from "typescript";
 
 const source = ts.transpileModule(await readFile(new URL("../app/lib/image-base64.ts", import.meta.url), "utf8"), {
@@ -16,7 +16,7 @@ function load() {
     constructor() { images.push(this); }
     set src(value) { this.url = value; }
   }
-  vm.runInNewContext(source, {
+  runToolTest(source, {
     exports, atob, btoa, Blob, Uint8Array, DataView, DOMException, Image: MockImage,
     URL: { createObjectURL() { return `blob:test-${++next}`; }, revokeObjectURL(url) { revoked.push(url); } },
     setTimeout(callback) { const id = ++next; timers.set(id, callback); return id; },
@@ -60,8 +60,8 @@ test("拒绝空内容、损坏编码、伪装格式、网址、HTML、SVG和超�
   const lib = load();
   for (const input of ["", "  ", "A", "A===", "AA=A", "AB==", "AA=", "@@@@", "https://example.com/a.png", "<img>", "data:image/png,abc", "data:text/html;base64,PGI+", btoa("<svg></svg>"), `data:image/jpeg;base64,${btoa(String.fromCharCode(...png))}`]) assert.throws(() => lib.decodeImageBase64(input), undefined, input);
   assert.throws(() => lib.validateImageSize(0), /为空/);
-  assert.throws(() => lib.validateImageSize(lib.maxBase64ImageBytes + 1), /10 MB/);
-  assert.throws(() => lib.decodeImageBase64("A".repeat(Math.ceil((lib.maxBase64ImageBytes + 3) / 3) * 4)), /10 MB/);
+  assert.throws(() => lib.validateImageSize(lib.maxBase64ImageBytes + 1), /50 MB/);
+  assert.throws(() => lib.decodeImageBase64("A".repeat(Math.ceil((lib.maxBase64ImageBytes + 3) / 3) * 4)), /50 MB/);
   assert.throws(() => lib.decodeImageBase64("A".repeat(lib.maxBase64InputChars + 1)), /编码过长/);
 });
 
@@ -85,7 +85,7 @@ test("图片损坏、像素超限、取消与超时均清理预览和计时器",
   lib.images.at(-1).onerror(); await assert.rejects(broken, /损坏/);
   const huge = lib.inspectImageBlob(blob, new AbortController().signal);
   lib.images.at(-1).naturalWidth = 100000; lib.images.at(-1).naturalHeight = 100000;
-  lib.images.at(-1).onload(); await assert.rejects(huge, /4000万/);
+  lib.images.at(-1).onload(); await assert.rejects(huge, /1亿/);
   const controller = new AbortController();
   const cancelled = lib.inspectImageBlob(blob, controller.signal); controller.abort(); await assert.rejects(cancelled, { name: "AbortError" });
   const timeout = lib.inspectImageBlob(blob, new AbortController().signal);

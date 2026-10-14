@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -46,9 +47,9 @@ const allowedMimeTypes = new Set([
   "image/png",
   "image/webp",
 ]);
-const maxFileSize = 25 * 1024 * 1024;
-const maxFiles = 50;
-const maxImagePixels = 30_000_000;
+const maxFileSize = toolLimits.image.fileBytes;
+const maxFiles = toolLimits.image.batchFiles;
+const maxImagePixels = toolLimits.image.pixels;
 
 function formatFileSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
@@ -146,7 +147,7 @@ async function compressImage(file: File, quality: number): Promise<CompressedIma
     const height = bitmap.height;
     if (!width || !height) throw new Error("无法读取图片尺寸");
     if (width * height > maxImagePixels) {
-      throw new Error("图片像素不能超过3000万");
+      throw new Error("图片像素不能超过1亿");
     }
 
     const canvas = document.createElement("canvas");
@@ -210,6 +211,8 @@ function setUint32(view: DataView, offset: number, value: number) {
 async function createZip(
   entries: Array<{ name: string; blob: Blob }>,
 ): Promise<Blob> {
+  if (entries.length > toolLimits.archive.entries || entries.reduce((sum, entry) => sum + entry.blob.size, 0) > toolLimits.archive.expandedBytes)
+    throw new Error("打包结果超过 512 MB 的内存保护范围，请分批压缩或逐张下载；原结果不会被删除。");
   const encoder = new TextEncoder();
   const localParts: BlobPart[] = [];
   const centralParts: BlobPart[] = [];
@@ -382,7 +385,7 @@ export default function ImageCompressor() {
     const omitted = Math.max(0, files.length - remaining);
     if (rejected || omitted) {
       setMessage(
-        `已跳过${rejected + omitted}个文件；仅支持JPG、PNG、WebP，单张最大25 MB，一次最多${maxFiles}张。`,
+        `已跳过${rejected + omitted}个文件；仅支持JPG、PNG、WebP，单张最大100 MB，一次最多${maxFiles}张。`,
       );
     } else {
       setMessage("");
@@ -514,7 +517,7 @@ export default function ImageCompressor() {
         >
           <FiUploadCloud aria-hidden="true" />
           <strong>选择图片</strong>
-          <span>点击选择或拖入多张图片，支持JPG、PNG、WebP，单张最大25 MB</span>
+          <span>点击选择或拖入多张图片，支持JPG、PNG、WebP，单张最大100 MB</span>
         </FileDropZone>
 
         <section
@@ -665,7 +668,7 @@ export default function ImageCompressor() {
                   <article className="image-compressor-item" key={item.id}>
                     <div className="image-compressor-thumbnail">
                       {/* eslint-disable-next-line @next/next/no-img-element -- The preview uses a local blob URL. */}
-                      <img src={item.resultUrl || item.previewUrl} alt="" />
+                      <img loading="lazy" decoding="async" src={item.resultUrl || item.previewUrl} alt="" />
                     </div>
                     <div className="image-compressor-item-copy">
                       <strong title={item.file.name}>{item.file.name}</strong>

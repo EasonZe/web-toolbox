@@ -34,7 +34,7 @@ test("纯文本编辑器使用CodeMirror并支持完整本地编辑流程", () =
   assert.match(editor, /openSearchPanel/);
   assert.match(editor, /自动保存草稿/);
   assert.match(editor, /downloadText\(text, fileName\)/);
-  assert.match(editor, /maxFileSize = 5 \* 1024 \* 1024/);
+  assert.match(editor, /maxFileSize = toolLimits.text.fileBytes/);
 });
 
 test("两个文本工具已加入首页文字与文档分类", () => {

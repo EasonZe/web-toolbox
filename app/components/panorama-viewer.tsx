@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 import { useEffect, useRef, useState } from "react";
 import { UtilityShell } from "./utility-shell";
 import { LocalUpload } from "./local-workbench";
@@ -21,7 +22,7 @@ export default function PanoramaViewer() {
       const [THREE, { OrbitControls }, bitmap] = await Promise.all([
         import("three"),
         import("three/addons/controls/OrbitControls.js"),
-        loadRaster(file, controller.signal, 40_000_000),
+        loadRaster(file, controller.signal, toolLimits.image.pixels),
       ]);
       if (controller.signal.aborted) {
         bitmap.close();
@@ -148,7 +149,7 @@ export default function PanoramaViewer() {
     >
       <LocalUpload
         accept="image/png,image/jpeg,image/webp"
-        hint="约 2:1 全景图 · 最大 25 MB · 最多 40 MP · 需要 WebGL"
+        hint="约 2:1 全景图 · 最大 100 MB · 最多 100 MP · 需要 WebGL"
         onFiles={(files) => {
           setBusy(true);
           setError("");

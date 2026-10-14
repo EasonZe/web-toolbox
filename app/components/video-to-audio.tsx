@@ -1,4 +1,6 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
+import { extractAudioWave } from "../lib/audio-extraction";
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -21,8 +23,7 @@ type AudioResult = {
   channels: number;
 };
 
-const maxVideoFileSize = 300 * 1024 * 1024;
-const maxOutputSize = 400 * 1024 * 1024;
+const maxVideoFileSize = toolLimits.media.fileBytes;
 
 function formatDuration(seconds: number) {
   if (!Number.isFinite(seconds)) return "0:00";
@@ -50,7 +51,7 @@ function writeAscii(view: DataView, offset: number, value: string) {
   }
 }
 
-function encodeWav(audioBuffer: AudioBuffer, channelMode: ChannelMode) {
+export function encodeWav(audioBuffer: AudioBuffer, channelMode: ChannelMode) {
   const sourceChannels = audioBuffer.numberOfChannels;
   const outputChannels = channelMode === "mono" ? 1 : sourceChannels > 1 ? 2 : 1;
   const frameCount = audioBuffer.length;
@@ -119,6 +120,7 @@ export default function VideoToAudio() {
   const sourceUrlRef = useRef("");
   const resultUrlRef = useRef("");
   const videoRef = useRef<HTMLVideoElement>(null);
+  const extractionJob = useRef<AbortController | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [sourceUrl, setSourceUrl] = useState("");
   const [videoDuration, setVideoDuration] = useState(0);
@@ -132,6 +134,7 @@ export default function VideoToAudio() {
 
   useEffect(() => {
     return () => {
+      extractionJob.current?.abort();
       if (sourceUrlRef.current) URL.revokeObjectURL(sourceUrlRef.current);
       if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current);
     };
@@ -154,7 +157,7 @@ export default function VideoToAudio() {
       return;
     }
     if (selectedFile.size > maxVideoFileSize) {
-      setMessage("视频文件不能超过300 MB。");
+      setMessage("视频文件不能超过2 GB。");
       return;
     }
 
@@ -169,14 +172,22 @@ export default function VideoToAudio() {
     setMessage("");
   }
 
-  function handleLoadedMetadata() {
+  async function handleLoadedMetadata() {
     const video = videoRef.current;
-    if (!video || !Number.isFinite(video.duration)) {
-      setMessage("无法读取这个视频的信息，请更换文件后重试。");
-      return;
-    }
-    setVideoDuration(video.duration);
-    setMessage("");
+    if (!video || !file) return;
+    if (Number.isFinite(video.duration) && video.duration > 0) { setVideoDuration(video.duration); setMessage(""); return; }
+    const current = sourceUrlRef.current;
+    let input: { dispose: () => void } | undefined;
+    try {
+      setMessage("正在读取媒体时间轴…");
+      const media = await import("mediabunny");
+      const source = new media.Input({ source: new media.BlobSource(file), formats: media.ALL_FORMATS }); input = source;
+      const duration = await source.computeDuration();
+      if (sourceUrlRef.current !== current) return;
+      if (!Number.isFinite(duration) || duration <= 0) throw new Error("无法读取完整的媒体时间轴。");
+      setVideoDuration(duration); setMessage("");
+    } catch (cause) { if (sourceUrlRef.current === current) setMessage(cause instanceof Error ? cause.message : "无法读取这个视频的信息。"); }
+    finally { input?.dispose(); }
   }
 
   async function handleExtract(event: FormEvent<HTMLFormElement>) {
@@ -186,48 +197,16 @@ export default function VideoToAudio() {
       return;
     }
 
-    const estimatedChannels = channelMode === "mono" ? 1 : 2;
-    const estimatedOutputSize =
-      videoDuration * sampleRate * estimatedChannels * 2 + 44;
-    if (estimatedOutputSize > maxOutputSize) {
-      setMessage("预计生成的WAV超过400 MB，请选择单声道或更短的视频。");
-      return;
-    }
-
     videoRef.current?.pause();
     clearResult();
     setExtracting(true);
     setMessage("");
-
-    let audioContext: AudioContext | null = null;
-
     try {
-      setStatus("正在读取视频文件…");
-      setProgress(15);
-      const fileBuffer = await file.arrayBuffer();
-
-      setStatus("正在解析视频中的声音…");
-      setProgress(45);
-      audioContext = new AudioContext({ sampleRate });
-      const decodedAudio = await audioContext.decodeAudioData(fileBuffer);
-
-      if (!decodedAudio.length || !decodedAudio.numberOfChannels) {
-        throw new Error("这个视频中没有可识别的音频");
-      }
-
-      const outputChannels =
-        channelMode === "mono" ? 1 : decodedAudio.numberOfChannels > 1 ? 2 : 1;
-      const estimatedSize = decodedAudio.length * outputChannels * 2 + 44;
-      if (estimatedSize > maxOutputSize) {
-        throw new Error(
-          "预计生成的WAV超过400MB，请选择单声道或先缩短视频",
-        );
-      }
-
-      setStatus("正在生成WAV音频…");
-      setProgress(78);
-      await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
-      const encoded = encodeWav(decodedAudio, channelMode);
+      setStatus("正在逐段提取音轨并生成 WAV…");
+      setProgress(1);
+      const controller = new AbortController(); extractionJob.current = controller;
+      const encoded = await extractAudioWave(file, sampleRate, channelMode === "mono", controller.signal, setProgress);
+      if (controller.signal.aborted) return;
       const resultUrl = URL.createObjectURL(encoded.blob);
       const baseName = file.name.replace(/\.[^.]+$/, "") || "audio";
       const name = `${baseName}.wav`;
@@ -237,13 +216,14 @@ export default function VideoToAudio() {
         url: resultUrl,
         size: encoded.blob.size,
         name,
-        duration: decodedAudio.duration,
-        sampleRate: decodedAudio.sampleRate,
+        duration: encoded.duration,
+        sampleRate: encoded.sampleRate,
         channels: encoded.channels,
       });
       setStatus("提取完成");
       setProgress(100);
     } catch (error) {
+      if (extractionJob.current?.signal.aborted) { setStatus("已取消提取。"); setProgress(0); return; }
       const fallbackMessage =
         "提取失败，当前浏览器可能不支持这个视频的音频编码。";
       setMessage(
@@ -256,7 +236,7 @@ export default function VideoToAudio() {
       setStatus("");
       setProgress(0);
     } finally {
-      if (audioContext) await audioContext.close().catch(() => undefined);
+      extractionJob.current = null;
       setExtracting(false);
     }
   }
@@ -286,7 +266,7 @@ export default function VideoToAudio() {
         >
           <FiUploadCloud aria-hidden="true" />
           <strong>{file ? "重新选择视频" : "选择视频"}</strong>
-          <span>点击选择或拖入视频，支持MP4、WebM、MOV等格式，最大300 MB</span>
+          <span>点击选择或拖入视频，支持MP4、WebM、MOV等格式，最大2 GB</span>
         </FileDropZone>
 
         <div className="video-source-preview">
@@ -362,6 +342,7 @@ export default function VideoToAudio() {
               >
                 {extracting ? "正在提取…" : "提取音频"}
               </button>
+              {extracting && <button type="button" className="back-link" onClick={() => { extractionJob.current?.abort(); setStatus("已取消提取。"); }}>取消提取</button>}
         </form>
 
         {status ? (

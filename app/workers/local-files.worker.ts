@@ -1,10 +1,13 @@
 import { inspectZip, extractZip, packZip } from "../lib/local-archive";
 import { inspectPdf, buildPdf } from "../lib/pdf-pages";
+import { compareTexts, inspectJson } from "../lib/text-inspection";
 import type { FileWorkerRequest } from "../lib/file-worker-client";
 self.onmessage = async ({ data }: MessageEvent<FileWorkerRequest>) => {
   try {
     let result: unknown;
-    if (data.action === "zip-pack") result = packZip(data.entries);
+    if (data.action === "text-diff") result = compareTexts(data.left, data.right);
+    else if (data.action === "json-format") result = inspectJson(data.text, data.compact);
+    else if (data.action === "zip-pack") result = packZip(data.entries);
     else if (data.action === "zip-inspect") result = inspectZip(data.data);
     else if (data.action === "zip-extract")
       result = extractZip(data.data, data.name);

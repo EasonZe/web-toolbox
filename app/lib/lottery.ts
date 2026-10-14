@@ -1,7 +1,8 @@
+import { toolLimits } from "./resource-limits";
 export function parseNames(text: string) {
   const names = text.replace(/^\uFEFF/, "").split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
-  if (names.length > 500) throw new Error("名单最多支持500项，请缩减后重试。");
-  if (names.some((s) => Array.from(s).length > 40)) throw new Error("每个名字或选项最多40字。");
+  if (names.length > toolLimits.lottery.entries) throw new Error("名单最多支持5000项，请缩减后重试。");
+  if (names.some((s) => Array.from(s).length > toolLimits.lottery.nameChars)) throw new Error("每个名字或选项最多200字。");
   return names;
 }
 

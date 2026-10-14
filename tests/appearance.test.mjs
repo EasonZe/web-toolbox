@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import vm from "node:vm";
+import { runToolTest } from "./helpers/vm-modules.mjs";
 import ts from "typescript";
 
 const source = ts.transpileModule(await readFile(new URL("../app/components/floating-dock.tsx", import.meta.url), "utf8"), {
@@ -13,7 +13,7 @@ function renderDock({ savedTheme, savedAccent, savedCustomAccent, osDark = true,
     ["eason-toolbox-custom-accent", savedCustomAccent],
   ]);
   const exports = {}, jsx = (type, props) => ({ type, props });
-  vm.runInNewContext(source, {
+  runToolTest(source, {
     exports,
     window: {
       localStorage: { getItem(key) { if (storageBlocked) throw new Error("denied"); return storage.get(key) ?? null; }, setItem(key, value) { if (storageBlocked) throw new Error("denied"); storage.set(key, value); } },

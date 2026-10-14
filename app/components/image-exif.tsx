@@ -37,7 +37,7 @@ export default function ImageExif() {
       <LocalUpload
         accept="image/png,image/jpeg,image/webp,image/avif,image/bmp"
         disabled={busy}
-        hint="PNG / JPG / WebP / AVIF / BMP · 最大 25 MB · 最多 16 MP"
+        hint="PNG / JPG / WebP / AVIF / BMP · 最大 100 MB · 最多 100 MP"
         onFiles={async (files) => {
           task.reset();
           setFile(null);

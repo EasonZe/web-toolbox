@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 
 import { useMemo, useState } from "react";
 import { commonBaseValues, convertBaseInteger } from "../lib/base-converter";
@@ -33,7 +34,7 @@ export default function BaseConverter() {
       <div className="utility-panel utility-controls">
         <h2>转换设置</h2>
         <label>原始进制<select aria-label="原始进制" value={fromBase} onChange={(event) => setFromBase(Number(event.target.value))}>{bases.map((base) => <option key={base.value} value={base.value}>{base.label}</option>)}</select></label>
-        <label>输入整数<textarea aria-label="需要转换的整数" rows={5} value={input} maxLength={4096} placeholder="例如：FF、101101 或 255" spellCheck={false} onChange={(event) => { setInput(event.target.value); setMessage(""); }} /></label>
+        <label>输入整数<textarea aria-label="需要转换的整数" rows={5} value={input} maxLength={toolLimits.text.baseDigits} placeholder="例如：FF、101101 或 255" spellCheck={false} onChange={(event) => { setInput(event.target.value); setMessage(""); }} /></label>
         <div className="utility-actions">
           <button type="button" onClick={() => { setFromBase(toBase); setToBase(fromBase); setInput(result.value || input); setMessage(""); }}>交换进制</button>
           <button type="button" onClick={() => { setInput(""); setMessage(""); }}>清空</button>

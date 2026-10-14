@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits, checkDecodedAudio } from "../lib/resource-limits";
 import { useEffect, useRef, useState } from "react";
 import { UtilityShell } from "./utility-shell";
 import {
@@ -186,14 +187,14 @@ export default function AudioEditor() {
         accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.webm"
         disabled={busy}
         title="导入音频（可追加）"
-        hint="最多 20 段 · 文件总大小 100 MB · 总采样点不超过 3000 万"
+        hint="最多 200 段 · 总大小 512 MB · 解码预算按设备、声道和采样率计算"
         onFiles={async (files) => {
           task.reset();
           const added = await loading.run(async (signal, report) => {
             checkFiles(
               [...clips.map((c) => c.file), ...files],
-              100 * 1048576,
-              20,
+              toolLimits.decodedAudio.fileBytes,
+              toolLimits.decodedAudio.files,
             );
             const context = new AudioContext({ sampleRate: 44100 });
             const abort = () => {
@@ -214,21 +215,12 @@ export default function AudioEditor() {
                 const { readAudioInfo } =
                   await import("../lib/audio-compression");
                 const info = await readAudioInfo(files[i], signal);
-                if (
-                  info.duration > 600 ||
-                  samples +
-                    Math.ceil(info.duration * 44100) *
-                      Math.min(2, info.channels) >
-                    30_000_000
-                )
-                  throw new Error("音频时长或采样量超限，请裁剪后再导入。");
+                checkDecodedAudio(info.duration, 44100, info.channels, samples);
                 const buffer = await context.decodeAudioData(
                   await files[i].arrayBuffer(),
                 );
                 signal.throwIfAborted();
-                samples += buffer.length * Math.min(2, buffer.numberOfChannels);
-                if (samples > 30_000_000 || buffer.duration > 600)
-                  throw new Error("音频过长或采样点过多，请减少文件或时长。");
+                samples += checkDecodedAudio(buffer.duration, buffer.sampleRate, buffer.numberOfChannels, samples);
                 next.push({
                   id: crypto.randomUUID(),
                   file: files[i],

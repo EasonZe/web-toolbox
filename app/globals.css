@@ -9439,3 +9439,6 @@ body:has(.science-tool) { --keyboard-zindex: 1000; --keyboard-background: var(--
   from { opacity: 0; transform: translateY(-6px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+.resource-warning { margin: 12px 0; padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-subtle); color: var(--text); font-size: .9rem; }
+.resource-warning p { margin: 0 0 12px; line-height: 1.7; }

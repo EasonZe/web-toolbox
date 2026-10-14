@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 import { useState } from "react";
 import { UtilityShell } from "./utility-shell";
 import {
@@ -53,7 +54,7 @@ export default function SubtitleEditor() {
     >
       <LocalUpload
         accept=".srt,.vtt"
-        hint="SRT / VTT · 最大 2 MB · 最多 2000 条字幕"
+        hint="SRT / VTT · 最大 32 MB · 最多 50000 条字幕"
         disabled={task.busy}
         onFiles={async (files) => {
           try {
@@ -71,7 +72,7 @@ export default function SubtitleEditor() {
           <textarea
             aria-label="字幕原文"
             rows={5}
-            maxLength={1_000_000}
+            maxLength={toolLimits.text.editorChars}
             value={raw}
             onChange={(e) => {
               setRaw(e.target.value);

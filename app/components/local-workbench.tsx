@@ -47,7 +47,7 @@ export function useLocalTask<T>() {
       setStatus("正在处理…");
       const timer = setTimeout(
         () => controller.abort(new Error("处理超时，请缩小文件后重试。")),
-        240000,
+        900000,
       );
       let rejectAbort: (() => void) | undefined;
       const aborted = new Promise<T>((_, reject) => {

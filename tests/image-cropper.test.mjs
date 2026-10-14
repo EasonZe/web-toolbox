@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import vm from "node:vm";
+import { runToolTest } from "./helpers/vm-modules.mjs";
 import ts from "typescript";
 
 const libSource = await readFile(new URL("../app/lib/image-cropping.ts", import.meta.url), "utf8");
@@ -13,7 +13,7 @@ const compiled = ts.transpileModule(libSource, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText;
 const helpers = {};
-vm.runInNewContext(compiled, { exports: helpers, Set, Math, Number });
+runToolTest(compiled, { exports: helpers, Set, Math, Number });
 
 test("固定比例会居中生成裁剪框", () => {
   const crop = helpers.createInitialCrop({ width: 1000, height: 500 }, 1);

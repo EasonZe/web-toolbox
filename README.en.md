@@ -103,4 +103,6 @@ Created and maintained by [EasonZe](https://github.com/EasonZe). Issues and pull
 
 ## License
 
+See [local processing limits](docs/resource-limits.md) for workload budgets and large-file behavior.
+
 Project code is available under the [MIT License](LICENSE). Third-party components, fonts, models and bundled assets remain subject to their own licenses.

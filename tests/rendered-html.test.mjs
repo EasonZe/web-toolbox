@@ -180,7 +180,7 @@ test("图片文字工具初始显示预览、多种字体、对话框和导出�
   const response = await render("/image-text");
   assert.equal(response.status, 200);
   const html = await response.text();
-  for (const text of ["图片加文字与对话框工具", "选择图片 / 拖入文件", "实时预览", "文字内容", "楷体", "仿宋", "圆体", "Arial", "Georgia", "无对话框", "圆角框", "左尾气泡", "右尾气泡", "思考气泡", "字幕框", "水平位置", "垂直位置", "导出格式", "下载图片", "最大 25 MB"]) assert.ok(html.includes(text), text);
+  for (const text of ["图片加文字与对话框工具", "选择图片 / 拖入文件", "实时预览", "文字内容", "楷体", "仿宋", "圆体", "Arial", "Georgia", "无对话框", "圆角框", "左尾气泡", "右尾气泡", "思考气泡", "字幕框", "水平位置", "垂直位置", "导出格式", "下载图片", "最大 100 MB"]) assert.ok(html.includes(text), text);
   assert.doesNotMatch(html, /描边/);
   assert.match(html, /disabled="">.*下载图片/s);
   assert.doesNotMatch(html, /不会上传|浏览器本地运行/);
@@ -318,7 +318,7 @@ test("图片Base64页面初始显示双向转换、预览和输出格式", async
   const response = await render("/image-base64");
   assert.equal(response.status, 200);
   const html = await response.text();
-  for (const text of ["图片与Base64互转工具", "图片 → Base64", "Base64 → 图片", "图片预览", "Base64输出", "Data URL（含前缀）", "纯Base64", "复制完整编码", "下载TXT", "最大10 MB"]) assert.ok(html.includes(text), text);
+  for (const text of ["图片与Base64互转工具", "图片 → Base64", "Base64 → 图片", "图片预览", "Base64输出", "Data URL（含前缀）", "纯Base64", "复制完整编码", "下载TXT", "最大50 MB"]) assert.ok(html.includes(text), text);
   assert.match(html, /aria-label="生成的Base64编码" readOnly=""/i);
   assert.match(html, /class="convert-button" disabled=""/);
   assert.doesNotMatch(html, /不会上传|浏览器本地运行/);
@@ -357,7 +357,7 @@ test("文档互转页面初始显示方向、预览、设置和兼容性说明",
   const response = await render("/document-converter");
   assert.equal(response.status, 200);
   const html = await response.text();
-  for (const text of ["Word与PDF互转工具", "转换方向", "Word → PDF", "PDF → Word", "转换预览", "转换设置", "纸张大小", "页面方向", "等待转换", "最大20 MB", "DOCX"]) assert.ok(html.includes(text), text);
+  for (const text of ["Word与PDF互转工具", "转换方向", "Word → PDF", "PDF → Word", "转换预览", "转换设置", "纸张大小", "页面方向", "等待转换", "最大200 MB", "DOCX"]) assert.ok(html.includes(text), text);
   assert.match(html, /disabled="">开始转换/);
   assert.doesNotMatch(html, /不会上传|浏览器本地运行/);
 });
@@ -461,7 +461,7 @@ test("renders the local video audio extractor", async () => {
   assert.match(html, /采样率/);
   assert.match(html, /音频预览/);
   assert.match(html, /音频会显示在这里/);
-  assert.match(html, /最大300 MB/);
+  assert.match(html, /最大2 GB/);
   assert.match(html, /WAV/);
   assert.match(html, /多功能工具箱/);
 });
@@ -474,7 +474,7 @@ test("renders the local video compressor", async () => {
   assert.match(html, /调节画质、分辨率和帧率压缩视频/);
   assert.doesNotMatch(html, /浏览器本地处理|不会上传/);
   assert.match(html, /选择视频/);
-  assert.match(html, /最大300 MB/);
+  assert.match(html, /最大2 GB/);
   assert.match(html, /视频预览/);
   assert.match(html, /最大分辨率/);
   assert.match(html, /压缩质量/);
@@ -487,7 +487,7 @@ test("renders the local video format converter with all settings visible", async
   const response = await render("/video-converter");
   assert.equal(response.status, 200);
   const html = await response.text();
-  for (const text of ["视频格式转换工具", "支持批量导入视频", "批量选择视频", "原视频预览", "目标格式", "MP4", "WebM", "MOV", "MKV", "转换设置", "输出分辨率", "输出帧率", "输出画质", "保留视频声音", "转换结果", "转换后的视频会显示在这里", "单个最大500 MB"]) assert.ok(html.includes(text), text);
+  for (const text of ["视频格式转换工具", "支持批量导入视频", "批量选择视频", "原视频预览", "目标格式", "MP4", "WebM", "MOV", "MKV", "转换设置", "输出分辨率", "输出帧率", "输出画质", "保留视频声音", "转换结果", "转换后的视频会显示在这里", "单个最大2 GB"]) assert.ok(html.includes(text), text);
   assert.match(html, /multiple=""/);
   assert.match(html, /disabled="">.*批量转换 0 个视频为MP4/s);
   assert.doesNotMatch(html, /浏览器本地处理|不会上传/);
@@ -540,7 +540,7 @@ test("renders the local image watermark tool", async () => {
   assert.doesNotMatch(html, /浏览器本地处理|不会上传/);
   assert.match(html, /为图片添加文字或图片水印/);
   assert.match(html, /选择原图/);
-  assert.match(html, /最大25 MB/);
+  assert.match(html, /最大100 MB/);
   assert.match(html, /支持单点水印、平铺水印与网格水印/);
   for (const text of ["平铺水印", "网格水印", "透明度", "水印效果", "水印间距"]) assert.ok(html.includes(text), text);
   assert.match(html, /实时预览/);
@@ -557,8 +557,8 @@ test("renders the local image format converter", async () => {
   assert.match(html, /支持批量转换PNG、JPG和WebP格式/);
   assert.doesNotMatch(html, /浏览器本地处理|不会上传/);
   assert.match(html, /选择多张图片/);
-  assert.match(html, /单张最大25 MB/);
-  assert.match(html, /最多20张/);
+  assert.match(html, /单张最大100 MB/);
+  assert.match(html, /最多200张/);
   assert.match(html, /支持PNG、JPG、WebP、BMP、AVIF等常见格式/);
   assert.match(html, /multiple=""/);
   assert.match(html, /图片列表/);
@@ -579,7 +579,7 @@ test("renders the local batch image compressor", async () => {
   assert.match(html, /选择图片/);
   assert.match(html, /压缩质量/);
   assert.match(html, /下载全部/);
-  assert.match(html, /单张最大25 MB/);
+  assert.match(html, /单张最大100 MB/);
   assert.match(html, /多功能工具箱/);
 });
 

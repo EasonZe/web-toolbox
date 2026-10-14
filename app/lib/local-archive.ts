@@ -1,3 +1,4 @@
+import { toolLimits } from "./resource-limits";
 import { strFromU8, unzipSync, zipSync } from "fflate";
 import { validateArchivePath, MAX_BATCH_BYTES } from "./local-files";
 export type ArchiveEntry = {
@@ -10,7 +11,7 @@ export type ArchiveEntry = {
 };
 export function inspectZip(data: Uint8Array): ArchiveEntry[] {
   if (data.length < 22 || data.length > MAX_BATCH_BYTES)
-    throw new Error("ZIP 文件无效或超过 200 MB。");
+    throw new Error("ZIP 文件无效或超过 512 MB。");
   const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
   let end = data.length - 22;
   for (; end >= Math.max(0, data.length - 65557); end--)
@@ -31,8 +32,8 @@ export function inspectZip(data: Uint8Array): ArchiveEntry[] {
     directorySize = view.getUint32(end + 12, true);
   let cursor = view.getUint32(end + 16, true),
     total = 0;
-  if (count > 200 || cursor + directorySize !== end)
-    throw new Error("最多支持 200 个条目，不支持 ZIP64 或损坏的 ZIP。");
+  if (count > toolLimits.archive.entries || cursor + directorySize !== end)
+    throw new Error("最多支持 2000 个条目，不支持 ZIP64 或损坏的 ZIP。");
   const entries: ArchiveEntry[] = [],
     names = new Set<string>();
   for (let i = 0; i < count; i++) {
@@ -72,7 +73,7 @@ export function inspectZip(data: Uint8Array): ArchiveEntry[] {
     names.add(name);
     total += size;
     if (
-      size > 100 * 1048576 ||
+      size > toolLimits.archive.entryBytes ||
       total > MAX_BATCH_BYTES ||
       size > Math.max(1048576, compressed * 1000)
     )
@@ -125,10 +126,10 @@ export function extractZip(data: Uint8Array, selected?: string) {
 }
 export function packZip(entries: { name: string; data: Uint8Array }[]) {
   if (
-    entries.length > 200 ||
+    entries.length > toolLimits.archive.entries ||
     entries.reduce((sum, entry) => sum + entry.data.length, 0) > MAX_BATCH_BYTES
   )
-    throw new Error("最多 200 个文件，总大小不超过 200 MB。");
+    throw new Error("最多 2000 个文件，总大小不超过 512 MB。");
   const files: Record<string, Uint8Array> = Object.create(null),
     used = new Set<string>();
   for (const entry of entries) {

@@ -130,7 +130,7 @@ export default function FileHash() {
         <p>计算文件哈希值，快速核对文件是否一致。</p>
       </header>
       <section className="converter-card file-hash-card">
-        <FileDropZone className="image-compressor-picker file-hash-picker" ariaLabel="选择或拖入文件" onFile={chooseFile}>
+        <FileDropZone className="image-compressor-picker file-hash-picker" resourceMode="stream" ariaLabel="选择或拖入文件" onFile={chooseFile}>
           <FiUploadCloud aria-hidden="true" />
           <strong>{file ? "重新选择文件" : "选择文件"}</strong>
           <span>点击选择或将文件拖入这里，支持任意格式</span>

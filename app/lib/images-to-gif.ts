@@ -1,9 +1,10 @@
+import { toolLimits } from "./resource-limits";
 export const imagesToGifLimits = {
-  maxFiles: 30,
-  maxFileBytes: 20 * 1024 * 1024,
-  maxTotalBytes: 100 * 1024 * 1024,
-  maxPixels: 40_000_000,
-  maxOutputWidth: 1080,
+  maxFiles: toolLimits.gif.files,
+  maxFileBytes: toolLimits.image.fileBytes,
+  maxTotalBytes: toolLimits.gif.batchBytes,
+  maxPixels: toolLimits.image.pixels,
+  maxOutputWidth: toolLimits.gif.width,
 } as const;
 
 export const supportedGifImageText = "PNG、JPG、WebP、GIF、BMP、AVIF";
@@ -42,11 +43,11 @@ export function validateGifImages(files: File[], existing: File[] = []) {
       continue;
     }
     if (file.size > imagesToGifLimits.maxFileBytes) {
-      errors.push(`${file.name}：单张图片不能超过20 MB`);
+      errors.push(`${file.name}：单张图片不能超过100 MB`);
       continue;
     }
     if (total + file.size > imagesToGifLimits.maxTotalBytes) {
-      errors.push("图片总大小不能超过100 MB");
+      errors.push("图片总大小不能超过512 MB");
       break;
     }
     accepted.push(file);
@@ -57,7 +58,7 @@ export function validateGifImages(files: File[], existing: File[] = []) {
 
 export function gifCanvasSize(sourceWidth: number, sourceHeight: number, requestedWidth: number) {
   if (!sourceWidth || !sourceHeight || sourceWidth * sourceHeight > imagesToGifLimits.maxPixels) {
-    throw new Error("首张图片尺寸无效或超过4000万像素");
+    throw new Error("首张图片尺寸无效或超过1亿像素");
   }
   const width = Math.max(1, Math.min(sourceWidth, requestedWidth || sourceWidth, imagesToGifLimits.maxOutputWidth));
   return { width, height: Math.max(1, Math.round(width * sourceHeight / sourceWidth)) };

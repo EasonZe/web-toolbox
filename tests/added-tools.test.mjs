@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { loadLocalModule } from "./helpers/load-local-module.mjs";
 import { readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import vm from "node:vm";
@@ -13,7 +14,7 @@ async function load(path) {
   const exports = {};
   const source = await read(path);
   const code = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
-  vm.runInThisContext(`(function(exports, require) { ${code}\n })`)(exports, createRequire(import.meta.url));
+  vm.runInThisContext(`(function(exports, require) { ${code}\n })`)(exports, ((id) => id.endsWith("/resource-limits") ? loadLocalModule("app/lib/resource-limits.ts") : createRequire(import.meta.url)(id)));
   return exports;
 }
 
@@ -40,7 +41,7 @@ test("首页加入三个新工具及其搜索关键词", async () => {
 
 test("图片文字工具提供多种字体、对话框、拖动预览和导出", async () => {
   const source = await read("../app/components/image-text-editor.tsx");
-  for (const value of ["楷体", "仿宋", "圆体", "Arial", "Georgia", "圆角框", "左尾气泡", "右尾气泡", "思考气泡", "字幕框", "onPointerMove", "image/png", "image/jpeg", "下载图片", "最大 25 MB"]) assert.ok(source.includes(value), value);
+  for (const value of ["楷体", "仿宋", "圆体", "Arial", "Georgia", "圆角框", "左尾气泡", "右尾气泡", "思考气泡", "字幕框", "onPointerMove", "image/png", "image/jpeg", "下载图片", "最大 100 MB"]) assert.ok(source.includes(value), value);
   assert.doesNotMatch(source, /描边|strokeText/);
   assert.match(source, /URL\.revokeObjectURL/);
 });

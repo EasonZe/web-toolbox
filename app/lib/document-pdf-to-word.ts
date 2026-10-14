@@ -1,3 +1,4 @@
+import { toolLimits } from "./resource-limits";
 import type { DocumentSettings } from "./document-conversion";
 import { groupPdfText } from "./document-conversion";
 import type { ConversionProgress, DocumentResult } from "./document-engine";
@@ -12,7 +13,7 @@ export async function pdfToWord(file: File, settings: DocumentSettings, signal: 
   signal.addEventListener("abort", abort, { once: true });
   try {
     signal.throwIfAborted();
-    if (settings.mode === "layout" && pdf.numPages > 30) throw new Error("保留版式模式最多支持30页，请拆分文件后再试。");
+    if (settings.mode === "layout" && pdf.numPages > toolLimits.document.layoutPages) throw new Error("保留版式模式最多支持200页，请拆分文件后再试。");
     const sections: ConstructorParameters<typeof docx.Document>[0]["sections"][number][] = [];
     const emptyPages: number[] = [];
     let preview: Blob | undefined, textCharacters = 0, imageBytes = 0;
@@ -30,7 +31,7 @@ export async function pdfToWord(file: File, settings: DocumentSettings, signal: 
         const rendered = await renderPdfPage(pdf, index, signal, 1.6);
         preview ??= rendered.blob;
         imageBytes += rendered.blob.size;
-        if (imageBytes > 60 * 1024 * 1024) throw new Error("页面图片超过60 MB，请减少页数后再转换。");
+        if (imageBytes > toolLimits.document.expandedBytes) throw new Error("页面图片超过512 MB，请减少页数后再转换。");
         const image = new docx.ImageRun({ type: "png", data: await rendered.blob.arrayBuffer(),
           transformation: { width: viewport.width * 96 / 72, height: viewport.height * 96 / 72 },
           floating: { horizontalPosition: { relative: docx.HorizontalPositionRelativeFrom.PAGE, offset: 0 },

@@ -1,11 +1,12 @@
+import { toolLimits } from "./resource-limits";
 import { applyPalette, buildPalette, utils } from "image-q";
 
 export type RgbColor = { r: number; g: number; b: number };
 export type PaletteEntry = RgbColor & { hex: string; count: number; percentage: number; code: string };
 export type DitherMode = "nearest" | "floyd-steinberg" | "atkinson";
 
-export const maxLocalImageSize = 25 * 1024 * 1024;
-export const maxLocalImagePixels = 40_000_000;
+export const maxLocalImageSize = toolLimits.image.fileBytes;
+export const maxLocalImagePixels = toolLimits.image.pixels;
 
 export function isSupportedRasterImage(file: File) {
   return /^image\/(png|jpeg|webp|bmp|avif|gif)$/i.test(file.type)

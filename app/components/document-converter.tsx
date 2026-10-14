@@ -106,7 +106,7 @@ export default function DocumentConverter() {
       <FileDropZone className="video-file-picker" accept={toPdf ? ".docx" : ".pdf"} ariaLabel="选择或拖入文档" disabled={busy} onFile={selectFile}>
         <FiUploadCloud aria-hidden="true" />
         <strong>{file ? "重新选择文件" : toPdf ? "选择Word文档" : "选择PDF文档"}</strong>
-        <span>点击选择或拖入文件 · {toPdf ? "DOCX（不支持旧版DOC）" : "PDF"} · 最大20 MB</span>
+        <span>点击选择或拖入文件 · {toPdf ? "DOCX（不支持旧版DOC）" : "PDF"} · 最大200 MB</span>
       </FileDropZone>
       {file && <div className="document-source"><FiFileText aria-hidden="true" /><span title={file.name}>{file.name}</span><small>{sizeLabel(file.size)}</small><button type="button" disabled={busy} onClick={() => { setFile(null); clearResult(); }}>移除</button></div>}
       <div className="document-workbench">
@@ -127,8 +127,8 @@ export default function DocumentConverter() {
             <p className="document-note">适合正文、标题、列表、表格及PNG/JPG图片。使用统一中文字体重新排版；页眉页脚、原字体、复杂版式和原分页可能无法保留。</p>
           </> : <>
             <fieldset disabled={busy}><legend>转换模式</legend><div className="document-modes">
-              <button type="button" aria-pressed={settings.mode === "text"} onClick={() => changeSettings({ mode: "text" })}><strong>可编辑文字</strong><span>提取文字，可修改内容 · 最多100页</span></button>
-              <button type="button" aria-pressed={settings.mode === "layout"} onClick={() => changeSettings({ mode: "layout" })}><strong>保留版式</strong><span>每页转成图片，文字不可编辑 · 最多30页</span></button>
+              <button type="button" aria-pressed={settings.mode === "text"} onClick={() => changeSettings({ mode: "text" })}><strong>可编辑文字</strong><span>提取文字，可修改内容 · 最多1000页</span></button>
+              <button type="button" aria-pressed={settings.mode === "layout"} onClick={() => changeSettings({ mode: "layout" })}><strong>保留版式</strong><span>每页转成图片，文字不可编辑 · 最多200页</span></button>
             </div></fieldset>
             <p className="document-note">{settings.mode === "text" ? "仅提取已有文字，不保留图片、表格结构和多栏排版。扫描件不支持OCR识别，请选择“保留版式”。" : "适合扫描件或复杂版式。以整页图片放入Word，文件可能较大，文字不可直接编辑。"}</p>
           </>}

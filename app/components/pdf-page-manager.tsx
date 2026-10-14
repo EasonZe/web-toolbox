@@ -1,4 +1,5 @@
 "use client";
+import { toolLimits } from "../lib/resource-limits";
 /* eslint-disable @next/next/no-img-element -- Local PDF preview is a revocable Blob URL. */
 import { useEffect, useState } from "react";
 import { UtilityShell } from "./utility-shell";
@@ -12,6 +13,7 @@ import {
 import { checkFiles } from "../lib/local-files";
 import { parsePageSelection, type PdfPageChoice } from "../lib/pdf-pages";
 import { runFileWorker } from "../lib/file-worker-client";
+import { WorkbenchPagination } from "./workbench-pagination";
 type Source = { file: File; bytes: Uint8Array; pages: number };
 function PdfPreview({
   file,
@@ -124,14 +126,14 @@ export default function PdfPageManager() {
         multiple
         disabled={busy}
         title="导入 PDF（可追加）"
-        hint="最多 10 个 PDF · 总大小 50 MB · 单文件 100 页 · 合计 200 页"
+        hint="最多 100 个 PDF · 总大小 200 MB · 单文件 1000 页 · 合计 2000 页"
         onFiles={async (files) => {
           task.reset();
           const added = await loading.run(async (signal) => {
             checkFiles(
               [...sources.map((s) => s.file), ...files],
-              50 * 1048576,
-              10,
+              toolLimits.pdf.bytes,
+              toolLimits.pdf.files,
             );
             const next = [];
             for (const file of files) {
@@ -142,13 +144,13 @@ export default function PdfPageManager() {
                 { action: "pdf-inspect", data: bytes },
                 signal,
               );
-              if (info.length > 100) throw new Error("单个 PDF 最多 100 页。");
+              if (info.length > toolLimits.pdf.sourcePages) throw new Error("单个 PDF 最多 1000 页。");
               next.push({ file, bytes, pages: info.length });
             }
             if (
-              [...sources, ...next].reduce((sum, s) => sum + s.pages, 0) > 200
+              [...sources, ...next].reduce((sum, s) => sum + s.pages, 0) > toolLimits.pdf.outputPages
             )
-              throw new Error("合计最多 200 页。");
+              throw new Error("合计最多 2000 页。");
             return next;
           });
           if (added) {
@@ -232,7 +234,9 @@ export default function PdfPageManager() {
               </button>
             </div>
             <div className="pdf-page-grid">
-              {pages.map((item, i) => (
+              {pages.slice(Math.floor(selected / toolLimits.pageRows) * toolLimits.pageRows, (Math.floor(selected / toolLimits.pageRows) + 1) * toolLimits.pageRows).map((item, visibleIndex) => {
+                const i = Math.floor(selected / toolLimits.pageRows) * toolLimits.pageRows + visibleIndex;
+                return (
                 <article
                   key={`${item.source}-${item.page}`}
                   className={selected === i ? "is-selected" : ""}
@@ -289,8 +293,9 @@ export default function PdfPageManager() {
                     </button>
                   </div>
                 </article>
-              ))}
+              ); })}
             </div>
+            <WorkbenchPagination total={pages.length} page={Math.floor(selected / toolLimits.pageRows)} onPage={(page) => setSelected(page * toolLimits.pageRows)} />
           </section>
           <section className="utility-panel">
             <h2>页面预览</h2>

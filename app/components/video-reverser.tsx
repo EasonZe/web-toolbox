@@ -1,4 +1,6 @@
 "use client";
+import { createMediaBlobTarget } from "../lib/media-blob-target";
+import { toolLimits, checkDecodedAudio } from "../lib/resource-limits";
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -23,21 +25,37 @@ type VideoInfo = {
 
 type VideoSource = VideoInfo & { file: File; url: string };
 
-async function decodeReversedAudio(file: File) {
+async function decodeReversedAudio(file: File, signal: AbortSignal) {
   const context = new AudioContext();
+  const media = await import("mediabunny");
+  const input = new media.Input({ source: new media.BlobSource(file), formats: media.ALL_FORMATS });
+  const abort = () => input.dispose();
+  signal.addEventListener("abort", abort, { once: true });
   try {
-    const decoded = await context.decodeAudioData(await file.arrayBuffer());
-    const channels = Math.min(2, decoded.numberOfChannels);
-    const reversed = context.createBuffer(channels, decoded.length, decoded.sampleRate);
-    for (let channel = 0; channel < channels; channel += 1) {
-      const input = decoded.getChannelData(channel);
-      const output = reversed.getChannelData(channel);
-      for (let index = 0; index < input.length; index += 1) {
-        output[index] = input[input.length - index - 1];
+    signal.throwIfAborted();
+    const track = await input.getPrimaryAudioTrack();
+    if (!track) throw new Error("没有可倒放的音轨。");
+    const rate = await track.getSampleRate(), channels = Math.min(2, await track.getNumberOfChannels()), duration = await track.computeDuration();
+    checkDecodedAudio(duration, rate, channels);
+    const reversed = context.createBuffer(channels, Math.ceil(duration * rate), rate);
+    let packets = 0;
+    for await (const packet of new media.AudioBufferSink(track).buffers()) {
+      signal.throwIfAborted();
+      if (packet.buffer.sampleRate !== rate) throw new Error("音轨采样率变化，无法保持正确的倒放时间轴。");
+      const offset = Math.round(packet.timestamp * rate);
+      for (let channel = 0; channel < channels; channel++) {
+        const source = packet.buffer.getChannelData(Math.min(channel, packet.buffer.numberOfChannels - 1)), output = reversed.getChannelData(channel);
+        for (let n = 0; n < source.length; n++) {
+          const position = reversed.length - 1 - offset - n;
+          if (position >= 0 && position < output.length) output[position] = source[n];
+        }
       }
+      if (++packets % 100 === 0) await new Promise<void>((resolve) => setTimeout(resolve, 0));
     }
+    signal.throwIfAborted();
     return reversed;
   } finally {
+    signal.removeEventListener("abort", abort); input.dispose();
     await context.close().catch(() => undefined);
   }
 }
@@ -116,7 +134,7 @@ export default function VideoReverser() {
         track.computePacketStats(120),
       ]);
       if (!duration || !width || !height) throw new Error("无法读取这个视频的完整信息");
-      if (duration > 600) throw new Error("视频倒放目前支持最长10分钟的视频");
+      if (duration > toolLimits.media.videoReverseSeconds) throw new Error("视频倒放目前支持最长1小时的视频");
       if (controller.signal.aborted) return;
       const url = URL.createObjectURL(file);
       urls.current.source = url;
@@ -171,7 +189,7 @@ export default function VideoReverser() {
       if (keepAudio && source.hasAudio) {
         setStatus("正在准备倒放音轨…");
         try {
-          reversedAudio = await decodeReversedAudio(source.file);
+          reversedAudio = await decodeReversedAudio(source.file, controller.signal);
           const canEncode = await media.canEncodeAudio("opus", {
             numberOfChannels: reversedAudio.numberOfChannels,
             sampleRate: reversedAudio.sampleRate,
@@ -194,7 +212,7 @@ export default function VideoReverser() {
       const context = canvas.getContext("2d", { alpha: false });
       if (!context) throw new Error("当前浏览器无法创建视频处理画布");
 
-      const target = new media.BufferTarget();
+      const targetStore = createMediaBlobTarget(media.StreamTarget); const target = targetStore.target;
       const output = new media.Output({ format: new media.WebMOutputFormat(), target });
       outputRef.current = output;
       const videoSource = new media.CanvasSource(canvas, {
@@ -257,9 +275,9 @@ export default function VideoReverser() {
       await audioPromise;
       setStatus("正在封装倒放视频…");
       await output.finalize();
-      if (!target.buffer) throw new Error("没有生成倒放视频");
+      if (!targetStore.size) throw new Error("没有生成倒放视频");
 
-      const blob = new Blob([target.buffer], { type: "video/webm" });
+      const blob = targetStore.blob("video/webm");
       const url = URL.createObjectURL(blob);
       urls.current.result = url;
       setResult({ url, size: blob.size, name: createReversedName(source.file.name, "video") });
@@ -301,7 +319,7 @@ export default function VideoReverser() {
         <FileDropZone className="video-file-picker" accept="video/*,.mkv,.mov,.m4v,.ogv,.avi,.mpeg,.mpg,.ts,.mts,.m2ts" ariaLabel="选择或拖入视频" disabled={busy} onFile={selectVideo}>
           <FiUploadCloud aria-hidden="true" />
           <strong>{phase === "reading" ? "正在读取视频…" : source ? "重新选择视频" : "选择视频"}</strong>
-          <span>点击选择或拖入视频，支持MP4、WebM、MOV、MKV等格式，最大500 MB</span>
+          <span>点击选择或拖入视频，支持MP4、WebM、MOV、MKV等格式，最大2 GB</span>
         </FileDropZone>
 
         <div className="reverse-tool-grid">

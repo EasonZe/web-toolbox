@@ -31,7 +31,8 @@ test("video compressor transcodes, reports progress, and downloads locally", () 
   assert.match(source, /forceTranscode: true/);
   assert.match(source, /conversion\.onProgress/);
   assert.match(source, /await conversion\.execute\(\)/);
-  assert.match(source, /new Blob\(\[target\.buffer\]/);
+  assert.match(source, /createMediaBlobTarget\(media\.StreamTarget\)/);
+  assert.match(source, /targetStore\.blob\(mimeType\)/);
   assert.match(source, /download=\{result\.name\}/);
   assert.match(source, /下载视频/);
 });

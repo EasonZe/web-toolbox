@@ -1,10 +1,11 @@
 "use client";
+import { checkDecodedAudio } from "../lib/resource-limits";
 
 import { useEffect, useRef, useState } from "react";
 import { FiDownload, FiMusic, FiSliders, FiUploadCloud, FiX } from "react-icons/fi";
 import { FileDropZone } from "./file-drop-zone";
 import { UtilityShell } from "./utility-shell";
-import { createTransformedAudioName, encodeAudioBufferToWave, MAX_AUDIO_TRANSFORM_SECONDS, validateAudioTransformFile } from "../lib/audio-transform";
+import { createTransformedAudioName, encodeAudioBufferToWave, validateAudioTransformFile } from "../lib/audio-transform";
 import { formatMediaDuration, formatMediaSize } from "../lib/media-reversal";
 
 type Source = { file: File; url: string; buffer: AudioBuffer };
@@ -51,9 +52,13 @@ export default function AudioSpeedPitch() {
     let context: AudioContext | null = null;
     try {
       context = new AudioContext();
+      const { readAudioInfo } = await import("../lib/audio-compression");
+      const info = await readAudioInfo(file, new AbortController().signal);
+      if (current !== job.current) return;
+      checkDecodedAudio(info.duration, context.sampleRate, info.channels);
       const buffer = await context.decodeAudioData(await file.arrayBuffer());
       if (current !== job.current) return;
-      if (buffer.duration > MAX_AUDIO_TRANSFORM_SECONDS) throw new Error("音频时长不能超过30分钟");
+      checkDecodedAudio(buffer.duration, buffer.sampleRate, buffer.numberOfChannels);
       if (urls.current.source) URL.revokeObjectURL(urls.current.source);
       const url = URL.createObjectURL(file);
       urls.current.source = url;
@@ -75,6 +80,7 @@ export default function AudioSpeedPitch() {
     try {
       // SoundTouch's browser bundle extends AudioWorkletNode at module load time,
       // so keep it out of the server-rendering path and load it after a user action.
+      checkDecodedAudio(source.buffer.duration / speed, source.buffer.sampleRate, source.buffer.numberOfChannels);
       const { processOffline } = await import("@soundtouchjs/audio-worklet");
       const processed = await processOffline({
         input: source.buffer,
@@ -104,7 +110,7 @@ export default function AudioSpeedPitch() {
 
   return <UtilityShell title="音频变速与变调" description="独立调整播放速度与音高，使用 SoundTouch 高质量处理并导出 WAV。">
     <FileDropZone className="video-file-picker" accept="audio/*,.flac,.ogg,.oga,.opus,.m4a,.aac,.webm" disabled={busy} onFile={selectAudio} ariaLabel="选择或拖入音频">
-      <FiUploadCloud aria-hidden="true" /><strong>{phase === "reading" ? "正在读取音频…" : source ? "重新选择音频" : "选择音频"}</strong><span>支持 MP3、WAV、M4A、AAC、FLAC、OGG、WebM，最大150 MB、30分钟</span>
+      <FiUploadCloud aria-hidden="true" /><strong>{phase === "reading" ? "正在读取音频…" : source ? "重新选择音频" : "选择音频"}</strong><span>支持 MP3、WAV、M4A、AAC、FLAC、OGG、WebM，最大512 MB，按解码采样量保护内存</span>
     </FileDropZone>
     <div className="utility-columns audio-transform-columns">
       <section className="utility-panel utility-controls" aria-label="原音频">

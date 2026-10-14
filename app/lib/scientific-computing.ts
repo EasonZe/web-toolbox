@@ -1,3 +1,4 @@
+import { toolLimits } from "./resource-limits";
 import { CancellationError, ComputeEngine, isExpression, isFunction, isNumber, isSymbol, type Expression } from "@cortex-js/compute-engine";
 import { add, bignumberDependencies, combinationsDependencies, create, det, format, gcdDependencies, inv, isPrime, lcmDependencies, max, mean, median, min, multiply, permutationsDependencies, std, sum, transpose, variance } from "mathjs";
 import type { ScienceFormula, ScienceRequest, ScienceResult } from "./scientific-types";
@@ -19,7 +20,7 @@ function variableName(value: string) {
 }
 
 function parse(ce: ComputeEngine, source: string, allowEquation = false): Expression {
-  if (!source.trim() || source.length > 500) throw new InputError("请输入 500 字以内的完整公式。");
+  if (!source.trim() || source.length > toolLimits.math.expressionChars) throw new InputError("请输入 2000 字以内的完整公式。");
   const expression = ce.parse(source.replace(/×/g, "\\times ").replace(/÷/g, "\\div ").replace(/−/g, "-").replace(/π/g, "\\pi "));
   if (!expression.isValid) throw new InputError("公式不完整，请检查括号、分数和函数参数。");
   let nodes = 0;
@@ -44,7 +45,7 @@ function finite(value: Expression) {
   if (!value.isValid || ["NaN", "Indeterminate", "Undefined", "ComplexInfinity", "PositiveInfinity", "NegativeInfinity"].includes(value.toString()) || (isNumber(value) && !value.isFinite)) {
     throw new InputError("结果未定义或不是有限值，请检查除数、函数定义域和积分区间。");
   }
-  if (value.latex.length > 6000) throw new InputError("结果过长，请缩小数值或简化公式。");
+  if (value.latex.length > 20000) throw new InputError("结果过长，请缩小数值或简化公式。");
   return value;
 }
 
@@ -160,7 +161,7 @@ function numberText(value: number): string {
 
 function calculateMatrix(ce: ComputeEngine, request: Extract<ScienceRequest, { mode: "matrix" }>): ScienceResult {
   function matrix(source: string[][], name: string) {
-    if (!source.length || source.length > 5 || !source[0].length || source[0].length > 5 || source.some((row) => row.length !== source[0].length)) throw new InputError("矩阵行列数必须在 1 至 5 之间，且每行长度一致。");
+    if (!source.length || source.length > toolLimits.math.matrixEdge || !source[0].length || source[0].length > toolLimits.math.matrixEdge || source.some((row) => row.length !== source[0].length)) throw new InputError("矩阵行列数必须在 1 至 12 之间，且每行长度一致。");
     return source.map((row, r) => row.map((value, c) => realNumber(ce, value || "0", `${name} 的第 ${r + 1} 行、第 ${c + 1} 列`)));
   }
   const a = matrix(request.a, "矩阵 A");
@@ -185,9 +186,9 @@ function calculateMatrix(ce: ComputeEngine, request: Extract<ScienceRequest, { m
 }
 
 function calculateStatistics(request: Extract<ScienceRequest, { mode: "statistics" }>): ScienceResult {
-  if (request.data.length > 200000) throw new InputError("数据内容过长，最多支持 10000 项。");
+  if (request.data.length > toolLimits.text.formatChars) throw new InputError("数据内容过长，最多支持 100000 项。");
   const parts = request.data.trim().split(/[\s,，;；]+/).filter(Boolean);
-  if (!parts.length || parts.length > 10000) throw new InputError("请输入 1 至 10000 个数字，用逗号、空格或换行分隔。");
+  if (!parts.length || parts.length > toolLimits.math.statisticsItems) throw new InputError("请输入 1 至 100000 个数字，用逗号、空格或换行分隔。");
   const data = parts.map((part, index) => {
     if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i.test(part) || !Number.isFinite(Number(part))) throw new InputError(`第 ${index + 1} 项不是有效数字：${part.slice(0, 25)}`);
     return Number(part);

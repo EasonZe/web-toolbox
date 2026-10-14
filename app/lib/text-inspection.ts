@@ -1,3 +1,4 @@
+import { toolLimits } from "./resource-limits";
 import {
   applyEdits,
   createScanner,
@@ -11,7 +12,7 @@ import { diffLines, diffChars } from "diff";
 
 export function inspectJson(text: string, compact = false) {
   if (!text.trim()) throw new Error("请输入 JSON。");
-  if (text.length > 1_000_000) throw new Error("JSON 最多 100 万字符。");
+  if (text.length > toolLimits.text.jsonChars) throw new Error("JSON 最多 500 万字符。");
   let depth = 0;
   visit(text, {
     onObjectBegin() {
@@ -69,9 +70,9 @@ export type DiffRow = {
   nextParts?: { value: string; changed: boolean }[];
 };
 export function compareTexts(old: string, next: string): DiffRow[] {
-  if (old.length + next.length > 100_000)
-    throw new Error("两份文本合计最多 10 万字符。");
-  const changes = diffLines(old, next, { timeout: 1000, maxEditLength: 3000 });
+  if (old.length + next.length > toolLimits.text.diffChars)
+    throw new Error("两份文本合计最多 200 万字符。");
+  const changes = diffLines(old, next, { timeout: 5000, maxEditLength: 20000 });
   if (!changes) throw new Error("文本差异过多，请分段对比。");
   const rows: DiffRow[] = [],
     lines = (value: string) => value.replace(/\n$/, "").split("\n");
@@ -107,7 +108,7 @@ export function compareTexts(old: string, next: string): DiffRow[] {
           kind: change.added ? "added" : change.removed ? "removed" : "same",
         });
   }
-  if (rows.length > 10000) throw new Error("对比结果最多 1 万行，请分段处理。");
+  if (rows.length > toolLimits.text.diffRows) throw new Error("对比结果最多 10 万行，请分段处理。");
   return rows;
 }
 const invisibleNames: Record<number, string> = {
@@ -124,8 +125,8 @@ const invisibleNames: Record<number, string> = {
   0xad: "软连字符",
 };
 export function inspectUnicode(text: string) {
-  if ([...text].length > 5000)
-    throw new Error("最多检查 5000 个 Unicode 字符。");
+  if ([...text].length > toolLimits.text.unicodePoints)
+    throw new Error("最多检查 100000 个 Unicode 字符。");
   let offset = 0;
   return [...text].map((character) => {
     const code = character.codePointAt(0)!,
