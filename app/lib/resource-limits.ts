@@ -5,6 +5,7 @@ export const toolLimits = {
   media: { fileBytes: 2 * 1024 * MiB, videoReverseSeconds: 3600 },
   decodedAudio: { fileBytes: 512 * MiB, files: 200, seconds: 3 * 3600, samples: 192_000_000 },
   archive: { fileBytes: 512 * MiB, expandedBytes: 512 * MiB, entryBytes: 256 * MiB, entries: 2000 },
+  unity: { fileBytes: 512 * MiB, expandedBytes: 1024 * MiB, entryBytes: 256 * MiB, assets: 20_000, entries: 100_000, textPreviewBytes: MiB },
   document: { fileBytes: 200 * MiB, pages: 1000, layoutPages: 200, expandedBytes: 512 * MiB },
   pdf: { files: 100, bytes: 200 * MiB, sourcePages: 1000, outputPages: 2000 },
   model: { fileBytes: 512 * MiB, exportEdge: 3840 },

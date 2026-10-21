@@ -1,5 +1,15 @@
 # 新工具调研与实现
 
+## 游戏资源工具（2026-10-19）
+
+| 工具 | GitHub 调研 | 最终选择与边界 |
+| --- | --- | --- |
+| Unity 资源包预览 | [Cobertos/unitypackage_extractor](https://github.com/Cobertos/unitypackage_extractor)（MIT，Python 格式映射参考）、[Perfare/AssetStudio](https://github.com/Perfare/AssetStudio)（MIT，运行时资源浏览桌面程序）、[InvokIT/js-untar](https://github.com/InvokIT/js-untar)（MIT，浏览器 TAR 库）、[unjs/nanotar](https://github.com/unjs/nanotar)（MIT）与 [ayuhito/modern-tar](https://github.com/ayuhito/modern-tar)（MIT） | 选择 modern-tar 0.8.5 的 Web Streams 严格解码；已有依赖链使用此库，提升为明确的运行时依赖。浏览器原生 gzip 流解压，后台线程读取 GUID / pathname / asset / asset.meta / preview.png，保留资源目录和 GUID。校验 TAR 校验和、截断、重复路径、链接和展开体积。不是 AssetBundle 解码器，不运行 Unity 脚本或还原场景；FBX / GLB / OBJ / STL 仅预览原始几何，其他资源可查看内嵌缩略图、文本或下载。 |
+
+资源处理在本地 Worker 中执行，可取消；Unity 使用可折叠目录树并按可见行渲染，搜索保留父目录，勾选目录可批量选择当前筛选范围的后代资源。更换参数会清理旧下载结果。modern-tar 没有运行时传递依赖，原始许可证由构建脚本复制至 `public/vendor-licenses/`。没有嵌入第三方工具页面或发送文件到第三方服务器。
+
+## 通用工具（2026-10-13）
+
 调研日期：2026-10-13。优先复用成熟项目的浏览器 API，不嵌入第三方工具网站、不复制未知许可证的整站源码。版本以 `package-lock.json` 为准。
 
 | 工具 | 项目 / 实现依据 | 接入与边界 |

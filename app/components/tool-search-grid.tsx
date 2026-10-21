@@ -10,7 +10,7 @@ import {
   TbClock, TbColorPicker, TbColorSwatch, TbCrop, TbCurrency, TbDeviceDesktop,
   TbFileTypePdf, TbFunction, TbGif, TbGridDots, TbHash, TbHourglass,
   TbKeyboard, TbLayoutCollage, TbLink, TbMathFunction, TbMatrix, TbMusicBolt, TbMusicCog, TbMusicDown, TbNumbers,
-  TbPhoto, TbPhotoCode, TbPhotoDown, TbPhotoEdit, TbPhotoVideo, TbQrcode,
+  TbPhoto, TbPhotoCode, TbPhotoDown, TbPhotoEdit, TbPhotoVideo, TbQrcode, TbPackage,
   TbRadio, TbRewindBackward10, TbRotate360, TbScan, TbScribble, TbShieldLock,
   TbTextGrammar, TbNotes, TbTransform, TbTypography, TbVariable, TbVideo, TbWaveSine, TbWheel, TbWorldSearch,
 } from "react-icons/tb";
@@ -54,6 +54,7 @@ const tools: Tool[] = [
   { name: "音频倒放", title: "音频倒放", href: "/audio-reverser", icon: TbRewindBackward10, keywords: "声音 反向 逆向 倒序 wav", category: "音频工具" },
   { name: "音频变速变调", title: "音频变速与变调", href: "/audio-speed-pitch", icon: TbMusicBolt, keywords: "声音 速度 音高 升调 降调 半音 soundtouch wav", category: "音频工具" },
   { name: "3D模型", title: "3D模型预览与转台动画", href: "/model-turntable", icon: TbRotate360, keywords: "三维 模型 glb gltf obj stl fbx 预览 360 旋转 转台 视频 webm", category: "图片与设计" },
+  { name: "Unity资源包", title: "Unity 资源包预览", href: "/unity-package", icon: TbPackage, keywords: "unitypackage unity 资源包 游戏 素材 预览 模型 图片 音频 脚本 meta guid 解包 提取", category: "编码与开发" },
   { name: "麦克风", title: "麦克风测试与录音", href: "/microphone-recorder", icon: FiMic, keywords: "话筒 声音 音量 波形 录制 试听", category: "音频工具" },
   { name: "图片加水印", title: "图片加水印", href: "/image-watermark", icon: TbPhotoEdit, keywords: "图像 照片 文字 标记", category: "图片与设计" },
   { name: "图片文字", title: "图片加文字与对话框", href: "/image-text", icon: FiEdit3, keywords: "图像 照片 文本 字体 气泡 字幕 对话框", category: "图片与设计" },
