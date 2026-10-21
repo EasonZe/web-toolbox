@@ -25,6 +25,29 @@ async function render(path = "/") {
   );
 }
 
+test("Unity 生产页面显示完整目录，右侧资源预览位于紧凑操作区上方", async () => {
+  const response = await render("/unity-package");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  for (const value of ["Unity 资源包预览", "选择 Unity 资源包", "资源目录", "资源操作", "资源预览", "提取已选资源为 ZIP", "GUID", ".meta", "Unity 资源目录树", "全部展开", "全部收起"]) assert.ok(html.includes(value), value);
+  assert.doesNotMatch(html, /C:[/\\\\]Users[/\\\\]/i);
+  const directory = html.match(/<section class="utility-panel unity-directory"[^>]*>([\s\S]*?)<\/section>/)?.[1];
+  assert.ok(directory, "生产页面应显示独立的左侧目录面板");
+  assert.match(directory, /role="tree"/);
+  assert.doesNotMatch(directory, /搜索路径或 GUID|资源类型|筛选后|清空选择|全部展开|全部收起/);
+  const sidebarStart = html.indexOf('<div class="asset-preview-stack unity-sidebar">');
+  assert.ok(sidebarStart > html.indexOf('aria-label="资源目录"'));
+  const sidebar = html.slice(sidebarStart);
+  for (const value of ["全部展开", "搜索路径或 GUID"]) assert.ok(sidebar.includes(value));
+  const previewStart = sidebar.indexOf('aria-label="资源预览"'), controlsStart = sidebar.indexOf('aria-label="资源操作"');
+  assert.ok(previewStart >= 0 && controlsStart > previewStart);
+  const home = await (await render("/")).text();
+  assert.ok(home.includes('href="/unity-package"'));
+  assert.ok(!home.includes('href="/sprite-sheet"'));
+  assert.doesNotMatch(await readFile(new URL("../public/sitemap.xml", import.meta.url), "utf8"), /sprite-sheet/);
+  assert.equal((await render("/sprite-sheet")).status, 404);
+});
+
 test("renders the multifunction toolbox homepage with internal and third-party tools", async () => {
   const response = await render("/");
   assert.equal(response.status, 200);

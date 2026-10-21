@@ -39,6 +39,7 @@ Web Toolbox is built with React, Next.js, vinext and Cloudflare Workers. It prov
 - **Scientific computing:** six independent tools for expressions, equations, calculus, matrices, statistics, and number theory / combinatorics; visual math input powered by MathLive, Cortex Compute Engine and Math.js in a browser Web Worker.
 - **Development and daily life:** file hashes, base conversion, function plotting, Morse code, short links, exchange rates, world clocks, date calculations, timers and device tests.
 - **Experience:** search, categories, favorites, four list layouts, light/dark modes, custom theme colors, and responsive desktop, tablet and mobile layouts.
+- **Game assets:** local Unity `.unitypackage` browsing, resource/model previews and `.meta` extraction.
 
 ## Quick start
 

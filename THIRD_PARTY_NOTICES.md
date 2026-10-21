@@ -81,6 +81,9 @@
 
 ## 参考实现
 
+- Unity 资源包读取使用 [ayuhito/modern-tar](https://github.com/ayuhito/modern-tar) 0.8.5（MIT）流式解码与校验，格式映射参考 [Cobertos/unitypackage_extractor](https://github.com/Cobertos/unitypackage_extractor)（MIT）；没有复制其 Python 源码。gzip 使用浏览器 DecompressionStream，ZIP 导出复用 fflate。
+- 模型预览复用 Three.js。modern-tar 的原始许可证随站点构建分发。
+
 - Bilibili Worker 的流程设计参考 [iawia002/lux](https://github.com/iawia002/lux) 的成熟下载器结构；本项目基于公开播放接口独立实现 Cloudflare Worker，没有复制其 Go 源码。
 - 短链接设计参考 [miantiao-me/Sink](https://github.com/miantiao-me/Sink)；本项目独立实现 D1 存储、短码、有效期和跳转逻辑，没有复制其源码。
 

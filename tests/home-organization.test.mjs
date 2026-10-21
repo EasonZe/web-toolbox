@@ -32,6 +32,7 @@ test("首页偏好能校验视图并安全解析收藏夹", async () => {
   assert.deepEqual([...exports.parseFavoriteHrefs('["/calculator","/expression-calculator"]')], ["/expression-calculator"]);
   assert.deepEqual([...exports.parseFavoriteHrefs("broken")], []);
   assert.deepEqual([...exports.parseFavoriteHrefs('["https://wyapi.toubiec.cn/","/image-ocr"]')], ["/image-ocr"]);
+  assert.deepEqual([...exports.parseFavoriteHrefs('["/sprite-sheet","/unity-package"]')], ["/unity-package"]);
 });
 
 test("收藏入口、列表设置、个人卡片和默认参考网格均已接入", async () => {
