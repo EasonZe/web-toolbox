@@ -11,7 +11,7 @@ import {
   useLocalTask,
 } from "./local-workbench";
 import { checkFiles } from "../lib/local-files";
-import { parsePageSelection, type PdfPageChoice } from "../lib/pdf-pages";
+import { parsePageSelection, type PdfPageChoice } from "../lib/pdf-selection";
 import { runFileWorker } from "../lib/file-worker-client";
 import { WorkbenchPagination } from "./workbench-pagination";
 type Source = { file: File; bytes: Uint8Array; pages: number };

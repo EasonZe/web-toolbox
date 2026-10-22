@@ -8,6 +8,7 @@ import { highlightSelectionMatches, openSearchPanel, searchKeymap } from "@codem
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FiClipboard, FiCopy, FiDownload, FiFileText, FiRotateCcw, FiRotateCw, FiSearch, FiTrash2 } from "react-icons/fi";
 import { countText } from "../lib/word-count";
+import { createDraftAutosave } from "../lib/draft-autosave";
 import { UtilityShell } from "./utility-shell";
 
 const draftStorageKey = "eason-toolbox-plain-text-draft";
@@ -36,6 +37,7 @@ export default function PlainTextEditor() {
   const editorView = useRef<EditorView | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const autosaveRef = useRef(true);
+  const draftWriter = useRef<ReturnType<typeof createDraftAutosave> | null>(null);
   const wrapCompartment = useRef(new Compartment());
   const fontCompartment = useRef(new Compartment());
   const [text, setText] = useState("");
@@ -57,6 +59,14 @@ export default function PlainTextEditor() {
     } catch { /* Storage can be disabled. */ }
 
     setText(initialText);
+    const writer = createDraftAutosave((value) => {
+      try { window.localStorage.setItem(draftStorageKey, value); } catch { /* Storage may be blocked or full. */ }
+    });
+    draftWriter.current = writer;
+    const flushDraft = () => writer.flush();
+    const handleVisibility = () => { if (document.visibilityState === "hidden") flushDraft(); };
+    window.addEventListener("pagehide", flushDraft);
+    document.addEventListener("visibilitychange", handleVisibility);
     const view = new EditorView({
       parent: editorHost.current,
       state: EditorState.create({
@@ -82,7 +92,7 @@ export default function PlainTextEditor() {
               const nextText = update.state.doc.toString();
               setText(nextText);
               if (autosaveRef.current) {
-                try { window.localStorage.setItem(draftStorageKey, nextText); } catch { /* Ignore unavailable storage. */ }
+                writer.schedule(nextText);
               }
             }
             if (update.docChanged || update.transactions.length) {
@@ -97,6 +107,10 @@ export default function PlainTextEditor() {
     setCanUndo(undoDepth(view.state) > 0);
     setCanRedo(redoDepth(view.state) > 0);
     return () => {
+      writer.flush();
+      draftWriter.current = null;
+      window.removeEventListener("pagehide", flushDraft);
+      document.removeEventListener("visibilitychange", handleVisibility);
       view.destroy();
       editorView.current = null;
     };
@@ -105,6 +119,7 @@ export default function PlainTextEditor() {
   useEffect(() => {
     autosaveRef.current = autosave;
     if (!autosave) {
+      draftWriter.current?.cancel();
       try { window.localStorage.removeItem(draftStorageKey); } catch { /* Ignore unavailable storage. */ }
     } else if (editorView.current) {
       try { window.localStorage.setItem(draftStorageKey, editorView.current.state.doc.toString()); } catch { /* Ignore unavailable storage. */ }

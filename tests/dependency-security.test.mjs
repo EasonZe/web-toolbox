@@ -28,7 +28,7 @@ test("依赖锁使用已修复安全告警的补丁版本", async () => {
     next: "16.3.8", dompurify: "3.4.16", sharp: "0.35.5",
     "source-map-js": "1.2.2", "fast-uri": "3.1.8", undici: "7.29.1",
     "@huggingface/transformers": "3.8.1", "onnxruntime-node": "1.30.0", "argparse": "2.0.1",
-    "@puppeteer/browsers": "3.2.4",
+    "@puppeteer/browsers": "3.2.4", vite: "8.1.6",
   };
   for (const [name, minimum] of Object.entries(minimums)) {
     const entries = Object.entries(lock.packages).filter(([path]) => path.endsWith(`/node_modules/${name}`) || path === `node_modules/${name}`);

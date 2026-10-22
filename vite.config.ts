@@ -52,7 +52,7 @@ export default defineConfig(async () => {
     server: isCodexSeatbeltSandbox
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,
-    worker: { plugins: () => [workerEnvironment()] },
+    worker: { format: "es" as const, plugins: () => [workerEnvironment()] },
     plugins: [
       vinext(),
       cloudflare({

@@ -121,6 +121,7 @@ test("实际 Unity 页面左侧仅有目录树，空态与加载资源的预览�
       };
       if (name === "./unity-asset-tree") return exports;
       if (name === "../lib/local-files") return loadLocalModule("app/lib/local-files.ts");
+      if (name === "../lib/unity-preview") return loadLocalModule("app/lib/unity-preview.ts");
       if (name === "../lib/resource-limits") return loadLocalModule("app/lib/resource-limits.ts");
       if (name === "../lib/game-asset-client" || name === "../lib/local-images") return {};
       return nativeRequire(name);
@@ -245,8 +246,19 @@ function interactionHarness(initial) {
       pending.push(next.props?.children);
     }
   }
+  function findAll(predicate) {
+    const pending = [output], found = [];
+    while (pending.length) {
+      const next = pending.pop();
+      if (!next || typeof next !== "object") continue;
+      if (Array.isArray(next)) { pending.push(...next); continue; }
+      if (predicate(next)) found.push(next);
+      pending.push(next.props?.children);
+    }
+    return found;
+  }
   render();
-  return { render, find, get selected() { return currentProps.selected; } };
+  return { render, find, findAll, get selected() { return currentProps.selected; } };
 }
 test("目录组件实测勾选、半选与展开收起，操作后不会丢失目录或资源", () => {
   const ui = interactionHarness(props), click = { stopPropagation() {} };
@@ -284,4 +296,34 @@ test("目录组件搜索自动展示父路径，展开全部与键盘开关都�
   ui.render({ filterKey: "图片", filteredIds: new Set(["img"]) });
   assert.ok(ui.find((item) => item.props?.["aria-label"] === "Assets/Avatar/Textures/face.png，图片"));
   assert.equal(ui.find((item) => item.props?.["aria-label"] === "Assets/Other，文件夹"), undefined);
+});
+
+test("虚拟目录滚动、返回顶部及筛选后始终保留一个可见键盘入口", () => {
+  const assets = Array.from({ length: 100 }, (_, i) => make(String(i), `Assets/f${i}.txt`));
+  const ui = interactionHarness({ ...props, assets, filteredIds: new Set(assets.map((item) => item.guid)), activeId: "0", selected: new Set() });
+  const entries = () => ui.findAll((item) => item.props?.role === "treeitem" && item.props.tabIndex === 0);
+  assert.equal(entries().length, 1);
+  const rootId = entries()[0].props["aria-label"];
+  ui.find((item) => item.props?.role === "tree").props.onScroll({ currentTarget: { scrollTop: 1760 } });
+  ui.render();
+  assert.equal(entries().length, 1);
+  assert.notEqual(entries()[0].props["aria-label"], rootId);
+  assert.equal(entries()[0].props["aria-label"], "Assets/f39.txt，文本", "Tab 入口应是视口首行，而非上方预渲染的隐藏行");
+  entries()[0].props.onFocus();
+  ui.render();
+  const focusedRow = entries()[0];
+  const checkbox = ui.find((item) => item.type === "input" && item.props["aria-label"] === `选择 ${focusedRow.props["aria-label"].split("，")[0]}`);
+  assert.ok(checkbox);
+  const target = {};
+  focusedRow.props.onKeyDown({ key: " ", target, currentTarget: target, preventDefault() {} });
+  ui.render();
+  assert.equal(ui.selected.size, 1, "滚动后通过 Tab 聚焦的行仍能用空格勾选");
+  ui.find((item) => item.props?.role === "tree").props.onScroll({ currentTarget: { scrollTop: 0 } });
+  ui.render();
+  assert.equal(entries().length, 1);
+  assert.equal(entries()[0].props["aria-label"], rootId);
+  ui.render({ filterKey: "f99", filteredIds: new Set(["99"]) });
+  assert.equal(entries().length, 1);
+  ui.render({ filterKey: "no-match", filteredIds: new Set() });
+  assert.equal(entries().length, 0);
 });
