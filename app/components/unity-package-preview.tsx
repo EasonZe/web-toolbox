@@ -6,9 +6,9 @@ import { UtilityShell } from "./utility-shell";
 import { LocalDownload, LocalUpload, TaskFeedback, useBlobUrl, useLocalTask } from "./local-workbench";
 import { runAssetWorker } from "../lib/game-asset-client";
 import { fileSize, safeName } from "../lib/local-files";
-import { toolLimits } from "../lib/resource-limits";
 import { loadRaster } from "../lib/local-images";
 import { UnityAssetTree } from "./unity-asset-tree";
+import { readUnityTextPreview, unityDownloadNames, type UnityTextPreview } from "../lib/unity-preview";
 import type { UnityAsset, UnityPackage } from "../lib/game-asset-types";
 const ModelPreview = dynamic(() => import("./unity-model-preview"), { ssr: false, loading: () => <p className="utility-muted">正在加载模型预览…</p> });
 function CheckedUnityImage({ blob, name }: { blob: Blob; name: string }) {
@@ -22,17 +22,15 @@ function CheckedUnityImage({ blob, name }: { blob: Blob; name: string }) {
 }
 function AssetPreview({ asset }: { asset: UnityAsset }) {
   const url = useBlobUrl(asset.kind === "音频" ? asset.asset : null);
-  const [text, setText] = useState<{ value: string; truncated: boolean } | null>(null);
+  const [text, setText] = useState<UnityTextPreview | null>(null);
   const [showModel, setShowModel] = useState(false);
   const canModel = asset.kind === "模型" && /\.(fbx|glb|obj|stl)$/i.test(asset.path);
+  const downloadNames = unityDownloadNames(asset.path);
   useEffect(() => {
     if (asset.kind !== "文本" || !asset.asset) return;
     let disposed = false;
-    void asset.asset.slice(0, toolLimits.unity.textPreviewBytes).arrayBuffer().then((buffer) => {
-      let value: string;
-      try { value = new TextDecoder("utf-8", { fatal: true }).decode(buffer); if (value.includes("\0")) throw new Error(); }
-      catch { value = "这是二进制资源或非 UTF-8 文本，可下载后在 Unity 中查看。"; }
-      if (!disposed) setText({ value, truncated: asset.asset!.size > toolLimits.unity.textPreviewBytes });
+    void readUnityTextPreview(asset.asset).then((preview) => {
+      if (!disposed) setText(preview);
     }).catch(() => { if (!disposed) setText({ value: "读取失败，请下载原文件查看。", truncated: false }); });
     return () => { disposed = true; };
   }, [asset]);
@@ -46,8 +44,8 @@ function AssetPreview({ asset }: { asset: UnityAsset }) {
     {asset.kind === "模型" && <p className="utility-muted">几何预览支持 FBX、GLB、OBJ、STL；Unity 材质、预制体、脚本与场景效果请在编辑器中查看。</p>}
     {text?.truncated && <p className="utility-muted">仅预览前 1 MB，下载保留完整内容。</p>}
     <div className="asset-downloads">
-      {asset.asset && <LocalDownload blob={asset.asset} name={safeName(asset.path.split("/").at(-1)!)} title="下载原资源" />}
-      {asset.meta && <LocalDownload blob={asset.meta} name={safeName(`${asset.path.split("/").at(-1)}.meta`)} title="下载 .meta" />}
+      {asset.asset && <LocalDownload blob={asset.asset} name={downloadNames.resource} title="下载原资源" />}
+      {asset.meta && <LocalDownload blob={asset.meta} name={downloadNames.meta} title="下载 .meta" />}
     </div>
   </section>;
 }

@@ -267,7 +267,7 @@ export function ToolSearchGrid() {
       observer?.disconnect();
       items.forEach((item) => item.classList.remove("is-reveal-resetting"));
     };
-  }, [activeCategory, favoritesOnly, revealCycle, searching, view, visibleTools.length]);
+  }, [activeCategory, favoritesOnly, revealCycle, searching, view, visibleTools]);
 
   function toggleFavorite(href: string) {
     setFavorites((current) => {

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import type * as Three from "three";
+import { createModelObjectURLScope } from "../lib/model-object-urls";
 function dispose(root: Three.Object3D) {
   root.traverse((child) => {
     const mesh = child as Three.Mesh;
@@ -13,6 +14,13 @@ export default function UnityModelPreview({ blob, name }: { blob: Blob; name: st
   const host = useRef<HTMLDivElement>(null), [error, setError] = useState(""), [info, setInfo] = useState("正在读取模型…");
   useEffect(() => {
     let cancelled = false, cleanup: (() => void) | undefined;
+    const objectURLs = createModelObjectURLScope();
+    const release = () => {
+      const disposePreview = cleanup;
+      cleanup = undefined;
+      try { disposePreview?.(); }
+      finally { objectURLs.release(); }
+    };
     const container = host.current;
     if (!container) return;
     void (async () => {
@@ -34,10 +42,10 @@ export default function UnityModelPreview({ blob, name }: { blob: Blob; name: st
       try {
         const data = await blob.arrayBuffer();
         if (cancelled) return;
-        if (/\.fbx$/i.test(name)) { const { FBXLoader } = await import("three/addons/loaders/FBXLoader.js"); root = new FBXLoader(manager).parse(data, ""); }
-        else if (/\.obj$/i.test(name)) { const { OBJLoader } = await import("three/addons/loaders/OBJLoader.js"); root = new OBJLoader(manager).parse(new TextDecoder().decode(data)); }
-        else if (/\.stl$/i.test(name)) { const { STLLoader } = await import("three/addons/loaders/STLLoader.js"); root = new THREE.Mesh(new STLLoader(manager).parse(data), new THREE.MeshStandardMaterial({ color: 0xb5ced8 })); }
-        else { const { GLTFLoader } = await import("three/addons/loaders/GLTFLoader.js"); root = (await new GLTFLoader(manager).parseAsync(data, "")).scene; }
+        if (/\.fbx$/i.test(name)) { const { FBXLoader } = await import("three/addons/loaders/FBXLoader.js"); if (cancelled) return; root = objectURLs.capture(() => new FBXLoader(manager).parse(data, "")); }
+        else if (/\.obj$/i.test(name)) { const { OBJLoader } = await import("three/addons/loaders/OBJLoader.js"); if (cancelled) return; root = new OBJLoader(manager).parse(new TextDecoder().decode(data)); }
+        else if (/\.stl$/i.test(name)) { const { STLLoader } = await import("three/addons/loaders/STLLoader.js"); if (cancelled) return; root = new THREE.Mesh(new STLLoader(manager).parse(data), new THREE.MeshStandardMaterial({ color: 0xb5ced8 })); }
+        else { const { GLTFLoader } = await import("three/addons/loaders/GLTFLoader.js"); if (cancelled) return; root = (await new GLTFLoader(manager).parseAsync(data, "")).scene; }
         if (cancelled) { dispose(root); root = undefined; return; }
         const box = new THREE.Box3().setFromObject(root), size = box.getSize(new THREE.Vector3()), center = box.getCenter(new THREE.Vector3());
         const edge = Math.max(size.x, size.y, size.z);
@@ -49,9 +57,9 @@ export default function UnityModelPreview({ blob, name }: { blob: Blob; name: st
         root.traverse((child) => { const geometry = (child as Three.Mesh).geometry; if (geometry) triangles += (geometry.index?.count ?? geometry.attributes.position?.count ?? 0) / 3; });
         setInfo(`${Math.round(triangles).toLocaleString("zh-CN")} 个三角面 · 拖动旋转，滚轮或双指缩放`);
         renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
-      } catch (cause) { cleanup(); cleanup = undefined; if (!cancelled) setError(cause instanceof Error ? cause.message : "模型预览失败。"); }
-    })().catch(() => { cleanup?.(); cleanup = undefined; if (!cancelled) setError("无法初始化 3D 预览，请确认浏览器支持 WebGL。"); });
-    return () => { cancelled = true; cleanup?.(); };
+      } catch (cause) { release(); if (!cancelled) setError(cause instanceof Error ? cause.message : "模型预览失败。"); }
+    })().catch(() => { release(); if (!cancelled) setError("无法初始化 3D 预览，请确认浏览器支持 WebGL。"); });
+    return () => { cancelled = true; release(); };
   }, [blob, name]);
   return <div><div ref={host} className="unity-model-stage" aria-label="模型三维预览" />{error ? <p role="alert" className="utility-error">{error}</p> : <p className="utility-muted">{info}</p>}</div>;
 }

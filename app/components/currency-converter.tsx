@@ -21,10 +21,11 @@ export default function CurrencyConverter() {
     try {
       const response = await fetch(`/api/exchange-rates?base=${base}&quote=${quote}`, { signal, cache: "no-store" });
       const result = await response.json() as RateResponse;
+      if (signal?.aborted) return;
       if (!response.ok || result.error) throw new Error(result.error || "汇率请求失败");
       setData(result);
     } catch (cause) {
-      if (!(cause instanceof DOMException && cause.name === "AbortError")) setError(cause instanceof Error ? cause.message : "暂时无法取得汇率。");
+      if (!signal?.aborted) setError(cause instanceof Error ? cause.message : "暂时无法取得汇率。");
     } finally { if (!signal?.aborted) setLoading(false); }
   }, [base, quote]);
 
@@ -33,12 +34,14 @@ export default function CurrencyConverter() {
     const loader = window.setTimeout(() => void loadRate(controller.signal), 0);
     return () => { window.clearTimeout(loader); controller.abort(); };
   }, [loadRate, refresh]);
+  // Never label a previous currency pair's rate as the newly selected pair.
+  const currentData = data?.base === base && data.quote === quote ? data : null;
   const numericAmount = Number(amount);
   const converted = useMemo(() => {
-    try { return data ? convertCurrency(numericAmount, data.rate) : null; } catch { return null; }
-  }, [numericAmount, data]);
+    try { return currentData ? convertCurrency(numericAmount, currentData.rate) : null; } catch { return null; }
+  }, [numericAmount, currentData]);
 
-  function swap() { setBase(quote); setQuote(base); setData((previous) => previous ? { ...previous, base: quote, quote: base, rate: 1 / previous.rate } : null); }
+  function swap() { setBase(quote); setQuote(base); setData(currentData ? { ...currentData, base: quote, quote: base, rate: 1 / currentData.rate } : null); }
 
   return <UtilityShell title="实时汇率转换" description="使用最新机构参考汇率换算全球常用货币，并显示汇率日期。">
     <div className="currency-converter-layout">
@@ -54,8 +57,8 @@ export default function CurrencyConverter() {
       <section className="utility-panel currency-result" aria-live="polite">
         <span>{base} → {quote}</span>
         <strong>{converted == null ? "—" : formatCurrencyAmount(converted, quote)}</strong>
-        <p>{data ? `1 ${base} = ${data.rate.toLocaleString("zh-CN", { maximumFractionDigits: 8 })} ${quote}` : "正在加载汇率"}</p>
-        <dl><div><dt>参考汇率日期</dt><dd>{data?.date || "—"}</dd></div><div><dt>本次获取时间</dt><dd>{data ? new Date(data.fetchedAt).toLocaleTimeString("zh-CN") : "—"}</dd></div></dl>
+        <p>{currentData ? `1 ${base} = ${currentData.rate.toLocaleString("zh-CN", { maximumFractionDigits: 8 })} ${quote}` : "正在加载汇率"}</p>
+        <dl><div><dt>参考汇率日期</dt><dd>{currentData?.date || "—"}</dd></div><div><dt>本次获取时间</dt><dd>{currentData ? new Date(currentData.fetchedAt).toLocaleTimeString("zh-CN") : "—"}</dd></div></dl>
       </section>
     </div>
     {error ? <p className="utility-error" role="alert">{error}</p> : null}

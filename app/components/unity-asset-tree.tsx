@@ -27,7 +27,9 @@ export function UnityAssetTree({ assets, filteredIds, filterKey, activeId, selec
   const rows = useMemo(() => unityTreeRows(tree, counts, expanded, !!filterKey, searchCollapsed), [tree, counts, expanded, filterKey, searchCollapsed]);
   const indexes = useMemo(() => new Map(rows.map((row, i) => [row.node.id, i])), [rows]);
   const start = Math.min(Math.max(0, Math.floor(scrollTop / rowHeight) - 6), Math.max(0, rows.length - visibleCount));
-  const end = Math.min(rows.length, start + visibleCount), focused = indexes.has(focusId) ? focusId : rows[0]?.node.id;
+  const end = Math.min(rows.length, start + visibleCount), focusIndex = indexes.get(focusId);
+  const firstVisible = Math.min(Math.max(0, Math.floor(scrollTop / rowHeight)), Math.max(0, rows.length - 1));
+  const focused = focusIndex !== undefined && focusIndex >= start && focusIndex < end ? focusId : rows[firstVisible]?.node.id;
   function toggle(node: UnityTreeNode) {
     if (filterKey) setSearchState(() => { const next = new Set(searchCollapsed); if (next.has(node.id)) next.delete(node.id); else next.add(node.id); return { key: filterKey, collapsed: next }; });
     else setExpanded((old) => { const next = new Set(old); if (next.has(node.id)) next.delete(node.id); else next.add(node.id); return next; });

@@ -10,11 +10,15 @@ export async function GET(request: NextRequest) {
   if (base === quote) return NextResponse.json({ base, quote, rate: 1, date: new Date().toISOString().slice(0, 10), fetchedAt: Date.now() }, { headers: { "Cache-Control": "public, max-age=300" } });
 
   try {
-    const upstream = await fetch(`https://api.frankfurter.dev/v2/rates?base=${base}&quotes=${quote}`, { headers: { Accept: "application/json" } });
+    const upstream = await fetch(`https://api.frankfurter.dev/v2/rates?base=${base}&quotes=${quote}`, {
+      headers: { Accept: "application/json" },
+      signal: AbortSignal.any([request.signal, AbortSignal.timeout(8000)]),
+    });
     if (!upstream.ok) throw new Error(`上游返回 ${upstream.status}`);
     const rows = await upstream.json() as RateRow[];
-    const row = rows.find((item) => item.base === base && item.quote === quote);
-    if (!row?.rate || !row.date) throw new Error("未找到货币对");
+    const row = Array.isArray(rows) ? rows.find((item) => item?.base === base && item?.quote === quote) : undefined;
+    if (typeof row?.rate !== "number" || !Number.isFinite(row.rate) || row.rate <= 0 ||
+        typeof row.date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(row.date)) throw new Error("未找到有效货币对");
     return NextResponse.json({ base, quote, rate: row.rate, date: row.date, fetchedAt: Date.now(), source: "Frankfurter" }, {
       headers: { "Cache-Control": "public, max-age=900, s-maxage=1800, stale-while-revalidate=86400" },
     });
