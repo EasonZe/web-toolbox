@@ -2,7 +2,16 @@ import type { FileWorkerRequest } from "../lib/file-worker-client";
 self.onmessage = async ({ data }: MessageEvent<FileWorkerRequest>) => {
   try {
     let result: unknown;
-    if (data.action === "text-diff" || data.action === "json-format") {
+    if (data.action === "text-codec") {
+      result = (await import("../lib/text-codec")).convertCodec(data.text, data.mode, data.direction);
+    } else if (data.action === "text-pinyin") {
+      result = (await import("../lib/text-pinyin")).convertPinyin(data.text, data.options);
+    } else if (data.action === "table-convert") {
+      result = (await import("../lib/table-conversion")).convertTable(data.text, data.options);
+    } else if (data.action === "images-pdf") {
+      result = await (await import("../lib/images-pdf")).buildImagesPdf(data.files, data.options, new AbortController().signal,
+        (progress, status) => self.postMessage({ progress, status }));
+    } else if (data.action === "text-diff" || data.action === "json-format") {
       const { compareTexts, inspectJson } = await import("../lib/text-inspection");
       result = data.action === "text-diff" ? compareTexts(data.left, data.right) : inspectJson(data.text, data.compact);
     } else if (data.action === "zip-pack" || data.action === "zip-inspect" || data.action === "zip-extract") {

@@ -41,6 +41,6 @@ await cp(new URL("../licenses/OCR-models-NOTICE.md", import.meta.url), new URL("
 // License texts accompany the browser distribution, not just npm sources.
 const vendorLicenseRoot = new URL("../public/vendor-licenses/", import.meta.url);
 await mkdir(vendorLicenseRoot, { recursive: true });
-for (const [name, license] of [["pdf-lib", "LICENSE.md"], ["diff", "LICENSE"], ["fflate", "LICENSE"], ["marked", "LICENSE"], ["exifr", "LICENSE"], ["jsonc-parser", "LICENSE.md"], ["date-fns-tz", "LICENSE.md"], ["@plussub/srt-vtt-parser", "LICENSE"], ["tesseract.js", "LICENSE.md"], ["tesseract.js-core", "LICENSE"], ["modern-tar", "LICENSE"]]) {
+for (const [name, license] of [["pdf-lib", "LICENSE.md"], ["diff", "LICENSE"], ["fflate", "LICENSE"], ["marked", "LICENSE"], ["exifr", "LICENSE"], ["jsonc-parser", "LICENSE.md"], ["date-fns-tz", "LICENSE.md"], ["@plussub/srt-vtt-parser", "LICENSE"], ["tesseract.js", "LICENSE.md"], ["tesseract.js-core", "LICENSE"], ["modern-tar", "LICENSE"], ["jsbarcode", "MIT-LICENSE.txt"], ["jwt-decode", "LICENSE"], ["pinyin-pro", "LICENSE"], ["entities", "LICENSE"], ["papaparse", "LICENSE"]]) {
   await cp(new URL(`../node_modules/${name}/${license}`, import.meta.url), new URL(`${name.replaceAll("/", "-")}.txt`, vendorLicenseRoot));
 }

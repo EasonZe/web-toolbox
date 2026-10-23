@@ -8,7 +8,11 @@
 | --- | --- | --- |
 | React / Next.js / vinext | UI、路由与 Cloudflare 构建 | MIT |
 | CodeMirror 6 | 纯文本编辑、撤销、查找与替换 | MIT |
-| [PDF-lib](https://github.com/Hopding/pdf-lib) | PDF 合并、拆分、页序与旋转 | MIT |
+| [JsBarcode](https://github.com/lindell/JsBarcode) 3.12.3 | 条形码校验与 SVG / PNG 生成 | MIT |
+| [jwt-decode](https://github.com/auth0/jwt-decode) 4.0.0 | JWT 本地解码，不验证签名 | MIT |
+| [PDF-lib](https://github.com/Hopding/pdf-lib) | PDF 合并、拆分、页序、旋转与图片合成 PDF | MIT |
+| [pinyin-pro](https://github.com/zh-lx/pinyin-pro) 3.29.5 | 汉字拼音、声调、首字母和姓氏模式 | MIT |
+| [entities](https://github.com/fb55/entities) 8.1.0 | HTML 命名与数字实体编码解码，不执行 HTML | BSD-2-Clause |
 | [jsdiff](https://github.com/kpdecker/jsdiff) | 文本行级、字符级差异比较 | BSD-3-Clause |
 | [fflate](https://github.com/101arrowz/fflate) | 本地 ZIP 打包、解压与批量重命名下载 | MIT |
 | [Tesseract.js](https://github.com/naptha/tesseract.js) / core | 中英文图片 OCR 与 WebAssembly 引擎 | Apache-2.0 |
@@ -29,7 +33,7 @@
 | Mammoth | DOCX 内容读取 | BSD-2-Clause |
 | docx | DOCX 生成 | MIT |
 | spin-wheel | 抽签转盘绘制与动画 | MIT |
-| Papa Parse | CSV 名单读取 | MIT |
+| [Papa Parse](https://github.com/mholt/PapaParse) | CSV 名单读取、CSV / TSV / JSON 表格转换 | MIT |
 | read-excel-file | XLSX 名单读取 | MIT |
 | change-case | 英文命名格式转换 | MIT |
 | Color Thief | 图片主色提取 | MIT |
@@ -80,6 +84,10 @@
 - `public/images/eason-avatar.png`：站点维护者的个人头像素材，不属于 MIT 软件授权范围，未经原权利人许可请勿复用。
 
 ## 参考实现
+
+- 新增实用工具的功能选型参考 [Team-YM/pc-tool](https://github.com/Team-YM/pc-tool)，没有复制该项目的 HTML、CSS、JavaScript 或素材；采用本项目界面与独立实现。具体选型见 [调研记录](docs/pc-tool-research.md)。
+- 第二批功能复用现有 Math.js（Apache-2.0）、Mediabunny（MPL-2.0）和 fflate（MIT）。DPI 修改参考 [shutterstock/changeDPI](https://github.com/shutterstock/changeDPI) 的元数据处理方向，调色选型调研 [evanw/glfx.js](https://github.com/evanw/glfx.js)；均未复制上游源码，实际独立实现 PNG/JPEG 结构化元数据编辑与现有栅格 Worker 的像素调整。
+- 节拍器参考 [cwilso/metronome](https://github.com/cwilso/metronome)（MIT）介绍的 Web Audio 提前调度思路，没有复制其源码。新增的 JsBarcode、jwt-decode 原始许可证随网站构建分发。
 
 - Unity 资源包读取使用 [ayuhito/modern-tar](https://github.com/ayuhito/modern-tar) 0.8.5（MIT）流式解码与校验，格式映射参考 [Cobertos/unitypackage_extractor](https://github.com/Cobertos/unitypackage_extractor)（MIT）；没有复制其 Python 源码。gzip 使用浏览器 DecompressionStream，ZIP 导出复用 fflate。
 - 模型预览复用 Three.js。modern-tar 的原始许可证随站点构建分发。

@@ -33,6 +33,12 @@ test("真实 ES 模块文件 Worker 按需加载并完成 JSON、差异、ZIP、
   const json = await run({ action: "json-format", text: '{"id":9007199254740993123}', compact: true });
   assert.equal(json.result.output, '{"id":9007199254740993123}');
   assert.equal((await run({ action: "text-diff", left: "old\n", right: "new\n" })).result[0].kind, "changed");
+  assert.equal((await run({ action: "text-codec", text: "5Lit5paH8J+YgA==", mode: "base64", direction: "decode" })).result, "中文😀");
+  assert.match((await run({ action: "text-codec", text: "%XX", mode: "url", direction: "decode" })).error, /URL/);
+  assert.equal((await run({ action: "text-pinyin", text: "重庆", options: { tone: "symbol", separator: " ", uppercase: false, surname: false } })).result, "chóng qìng");
+  const table = await run({ action: "table-convert", text: "id,name\n001,Eason", options: { input: "csv", output: "json", header: true, safeFormulae: true, bom: false } });
+  assert.deepEqual(JSON.parse(table.result.text), [{ id: "001", name: "Eason" }]);
+  assert.match((await run({ action: "images-pdf", files: [], options: { page: "a4", orientation: "auto", margin: 10, dpi: 96, format: "jpeg", quality: 0.92, edge: 0 } })).error, /1–200/);
   const packed = await run({ action: "zip-pack", entries: [{ name: "中文.txt", data: new TextEncoder().encode("测试😀") }] });
   assert.equal(packed.transferCount, 1);
   assert.equal((await run({ action: "zip-inspect", data: packed.result })).result[0].name, "中文.txt");

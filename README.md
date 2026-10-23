@@ -25,10 +25,10 @@
   <img alt="React 19" src="https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white">
   <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white">
   <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white">
-  <img alt="70+ 工具" src="https://img.shields.io/badge/工具-70%2B-7c6fb1">
+  <img alt="80+ 工具" src="https://img.shields.io/badge/工具-80%2B-7c6fb1">
 </p>
 
-多功能工具箱基于 React、Next.js、vinext 与 Cloudflare Workers 构建，收录 70 余个视频、音频、图片、文档、开发和生活类工具。多数媒体和文本处理在浏览器本地完成，无需安装客户端。
+多功能工具箱基于 React、Next.js、vinext 与 Cloudflare Workers 构建，收录 80 余个视频、音频、图片、文档、开发和生活类工具。多数媒体和文本处理在浏览器本地完成，无需安装客户端。
 
 ## 功能
 
@@ -40,6 +40,9 @@
 - **开发与生活**：文件哈希、进制转换、函数绘图、摩斯电码、短链接、汇率、全球时间、日期计算、倒计时和设备测试。
 - **使用体验**：搜索、分类、收藏、四种列表布局、浅色/深色模式、自定义主题色，以及桌面、平板和手机适配。
 - **游戏资源**：Unity `.unitypackage` 目录与资源预览、模型几何查看及 `.meta` 提取。
+- **实用工具**：密码与 UUID、正则测试、JWT 解析、条形码、节拍器和 ICO 图标制作。选型见 [调研记录](docs/pc-tool-research.md)。
+- **图像与换算扩展**：11 类单位换算、图片调色与滤镜、无损 DPI 元数据修改、视频单帧截图与区间批量取帧。
+- **文本与文档扩展**：Base64 / URL / HTML / Unicode 编解码、汉字转拼音、CSV / TSV / JSON 表格转换、多图排序合成 PDF；均在本地处理。
 - **扩展工具**：PDF 页面管理、文本差异、批量重命名、OCR、JSON、Markdown、ZIP、字幕编辑、音频裁剪拼接、EXIF、时间戳、Unicode、无缝贴图、RGBA 通道、全景预览和高度转法线。选型与处理边界见 [GitHub 调研记录](docs/extended-tools-research.md)。
 
 ## 快速开始

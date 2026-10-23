@@ -1,5 +1,6 @@
 import { heightToNormal, packTextureChannels } from "../lib/texture-tools";
 import { composeAudio } from "../lib/audio-editing";
+import { adjustImage } from "../lib/image-adjustments";
 import type { RasterRequest } from "../lib/raster-worker-client";
 self.onmessage = ({ data }: MessageEvent<RasterRequest>) => {
   try {
@@ -11,7 +12,9 @@ self.onmessage = ({ data }: MessageEvent<RasterRequest>) => {
       );
     } else {
       const result =
-        data.action === "normal"
+        data.action === "adjust"
+          ? adjustImage(data.pixels, data.width, data.height, data.settings)
+          : data.action === "normal"
           ? heightToNormal(
               data.pixels,
               data.width,

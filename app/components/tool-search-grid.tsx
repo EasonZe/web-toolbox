@@ -6,12 +6,12 @@ import { FiChevronRight, FiEdit3, FiFileText, FiMic, FiSearch, FiStar, FiX } fro
 import type { IconType } from "react-icons";
 import { SiBilibili, SiTiktok } from "react-icons/si";
 import {
-  TbBackground, TbBinary, TbBrandMinecraft, TbCalendarStats, TbChartDots,
+  TbBackground, TbBarcode, TbBinary, TbBrandMinecraft, TbCalendarStats, TbChartDots,
   TbClock, TbColorPicker, TbColorSwatch, TbCrop, TbCurrency, TbDeviceDesktop,
   TbFileTypePdf, TbFunction, TbGif, TbGridDots, TbHash, TbHourglass,
-  TbKeyboard, TbLayoutCollage, TbLink, TbMathFunction, TbMatrix, TbMusicBolt, TbMusicCog, TbMusicDown, TbNumbers,
+  TbKeyboard, TbKey, TbLayoutCollage, TbLink, TbMathFunction, TbMatrix, TbMetronome, TbMusicBolt, TbMusicCog, TbMusicDown, TbNumbers,
   TbPhoto, TbPhotoCode, TbPhotoDown, TbPhotoEdit, TbPhotoVideo, TbQrcode, TbPackage,
-  TbRadio, TbRewindBackward10, TbRotate360, TbScan, TbScribble, TbShieldLock,
+  TbRadio, TbRegex, TbRewindBackward10, TbRotate360, TbScan, TbScribble, TbShieldLock,
   TbTextGrammar, TbNotes, TbTransform, TbTypography, TbVariable, TbVideo, TbWaveSine, TbWheel, TbWorldSearch,
 } from "react-icons/tb";
 import {
@@ -40,6 +40,20 @@ type Tool = {
 };
 
 const tools: Tool[] = [
+  { name: "文本编码", title: "文本编码与解码", href: "/text-codec", icon: TbPhotoCode, keywords: "base64 base64url URL 表单 HTML 实体 Unicode 转义 编码 解码 UTF8", category: "编码与开发" },
+  { name: "汉字拼音", title: "汉字转拼音", href: "/text-pinyin", icon: TbTextGrammar, keywords: "文字 中文 汉语 声调 数字声调 首字母 姓氏 pinyin", category: "文字与文档" },
+  { name: "表格转换", title: "CSV / JSON 表格转换", href: "/table-converter", icon: TbNotes, keywords: "csv tsv json 表格 数据 格式 转换 分隔符", category: "文字与文档" },
+  { name: "图片转PDF", title: "图片转 PDF", href: "/images-to-pdf", icon: TbFileTypePdf, keywords: "图片 文档 合并 照片 批量 png jpg webp pdf 纸张 页序", category: "文字与文档" },
+  { name: "单位换算", title: "单位换算", href: "/unit-converter", icon: TbTransform, keywords: "长度 面积 体积 质量 温度 速度 压力 能量 功率 时间 数据容量 单位 cm inch kg psi celsius unit", category: "计算与换算" },
+  { name: "图片调色", title: "图片调色与滤镜", href: "/image-adjuster", icon: TbPhotoEdit, keywords: "图像 亮度 对比度 饱和度 冷暖 黑白 反色 filter", category: "图片与设计" },
+  { name: "图片DPI", title: "图片 DPI 修改", href: "/image-dpi", icon: TbPhotoCode, keywords: "图像 分辨率 密度 打印 dpi ppi 300 png jpg 元数据", category: "图片与设计" },
+  { name: "视频截图", title: "视频截图与取帧", href: "/video-capture", icon: TbPhotoVideo, keywords: "视频 画面 截图 抽帧 截帧 帧 图片 封面 批量 png jpg zip", category: "视频工具" },
+  { name: "密码UUID", title: "密码与 UUID 生成", href: "/password-generator", icon: TbKey, keywords: "安全 随机 密码 password uuid v4 批量", category: "编码与开发" },
+  { name: "正则测试", title: "正则表达式测试", href: "/regex-tester", icon: TbRegex, keywords: "regex regexp 匹配 捕获组 高亮 javascript", category: "编码与开发" },
+  { name: "JWT", title: "JWT 解析", href: "/jwt-decoder", icon: TbShieldLock, keywords: "token bearer json 令牌 解码 载荷 过期", category: "编码与开发" },
+  { name: "条形码", title: "条形码生成", href: "/barcode-generator", icon: TbBarcode, keywords: "barcode code128 code39 ean upc itf svg png", category: "编码与开发" },
+  { name: "节拍器", title: "节拍器", href: "/metronome", icon: TbMetronome, keywords: "音乐 bpm tempo 节奏 重拍 敲击 测速 练习", category: "音频工具" },
+  { name: "ICO图标", title: "ICO 图标制作", href: "/ico-generator", icon: TbPhoto, keywords: "favicon 图标 ico icon png 透明 多尺寸", category: "图片与设计" },
   { name: "抖音", title: "抖音视频解析", href: "/douyin", icon: SiTiktok, keywords: "短视频 链接 播放 下载", category: "视频工具" },
   { name: "B站", title: "B站视频解析", href: "/bilibili", icon: SiBilibili, keywords: "哔哩哔哩 bilibili 视频 链接 下载", category: "视频工具" },
   { name: "颜色", title: "颜色格式转换", href: "/color", icon: TbColorSwatch, keywords: "色值 hex rgb hsl hsv cmyk", category: "图片与设计" },

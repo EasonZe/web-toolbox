@@ -1,4 +1,10 @@
+import type { CodecMode, PinyinOptions, ImagePdfOptions } from "./extra-tool-options";
+import type { TableOptions } from "./table-conversion";
 export type FileWorkerRequest =
+  | { action: "text-codec"; text: string; mode: CodecMode; direction: "encode" | "decode" }
+  | { action: "text-pinyin"; text: string; options: PinyinOptions }
+  | { action: "table-convert"; text: string; options: TableOptions }
+  | { action: "images-pdf"; files: File[]; options: ImagePdfOptions }
   | { action: "text-diff"; left: string; right: string }
   | { action: "json-format"; text: string; compact: boolean }
   | { action: "zip-pack"; entries: { name: string; data: Uint8Array }[] }
@@ -18,6 +24,7 @@ export type FileWorkerRequest =
 export function runFileWorker<T>(
   request: FileWorkerRequest,
   signal: AbortSignal,
+  report?: (value: number, text: string) => void,
 ): Promise<T> {
   signal.throwIfAborted();
   return new Promise((resolve, reject) => {
@@ -40,6 +47,7 @@ export function runFileWorker<T>(
     }, 900000);
     signal.addEventListener("abort", abort, { once: true });
     worker.onmessage = ({ data }) => {
+      if (typeof data.progress === "number") { report?.(data.progress, data.status ?? "正在处理…"); return; }
       finish();
       if (data.error) reject(new Error(data.error));
       else resolve(data.result as T);
