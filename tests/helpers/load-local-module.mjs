@@ -13,6 +13,7 @@ export function loadLocalModule(path) {
   const code = ts.transpileModule(readFileSync(url, "utf8"), {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS,
+      esModuleInterop: true,
       target: ts.ScriptTarget.ES2022,
     },
   }).outputText;

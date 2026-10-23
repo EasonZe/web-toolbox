@@ -1,21 +1,26 @@
 /** Local workload safeguards, not server upload quotas. */
 const MiB = 1024 * 1024;
 export const toolLimits = {
-  image: { fileBytes: 100 * MiB, pixels: 100_000_000, batchFiles: 200, batchBytes: 1024 * MiB },
+  image: { fileBytes: 100 * MiB, pixels: 100_000_000, batchFiles: 200, batchBytes: 1024 * MiB, metadataParts: 100_000 },
   media: { fileBytes: 2 * 1024 * MiB, videoReverseSeconds: 3600 },
   decodedAudio: { fileBytes: 512 * MiB, files: 200, seconds: 3 * 3600, samples: 192_000_000 },
   archive: { fileBytes: 512 * MiB, expandedBytes: 512 * MiB, entryBytes: 256 * MiB, entries: 2000 },
   unity: { fileBytes: 512 * MiB, expandedBytes: 1024 * MiB, entryBytes: 256 * MiB, assets: 20_000, entries: 100_000, textPreviewBytes: MiB },
   document: { fileBytes: 200 * MiB, pages: 1000, layoutPages: 200, expandedBytes: 512 * MiB },
-  pdf: { files: 100, bytes: 200 * MiB, sourcePages: 1000, outputPages: 2000 },
+  pdf: { files: 100, bytes: 200 * MiB, sourcePages: 1000, outputPages: 2000, imageWorkBytes: 512 * MiB },
   model: { fileBytes: 512 * MiB, exportEdge: 3840 },
-  text: { fileBytes: 32 * MiB, editorChars: 8_000_000, formatChars: 5_000_000, jsonChars: 5_000_000, diffChars: 2_000_000, diffRows: 100_000, markdownChars: 2_000_000, unicodePoints: 100_000, subtitleCues: 50_000, shortChars: 2000, morseChars: 20000, baseDigits: 10000 },
+  text: { fileBytes: 32 * MiB, editorChars: 8_000_000, formatChars: 5_000_000, jsonChars: 5_000_000, diffChars: 2_000_000, diffRows: 100_000, markdownChars: 2_000_000, unicodePoints: 100_000, subtitleCues: 50_000, shortChars: 2000, morseChars: 20000, baseDigits: 10000, codecChars: 2_000_000, pinyinChars: 200_000, resultChars: 32_000_000 },
   gif: { files: 200, batchBytes: 512 * MiB, duration: 60, width: 1920, workPixels: 200_000_000 },
   base64: { fileBytes: 50 * MiB },
   raster: { edge: 8192 },
   math: { expressionChars: 2000, matrixEdge: 12, statisticsItems: 100_000 },
   lottery: { entries: 5000, nameChars: 200, columns: 1000, cells: 1_000_000, excelExpandedBytes: 128 * MiB },
   pageRows: 200,
+  generators: { batch: 1000, passwordLength: 256 },
+  regex: { patternChars: 20_000, textChars: 2_000_000, matches: 1000, previewChars: 50_000, timeoutMs: 5000 },
+  jwt: { chars: 100_000 },
+  table: { rows: 100_000, columns: 1000, cells: 1_000_000 },
+  frameCapture: { frames: 200, bytes: 512 * MiB },
 } as const;
 export function isConstrainedDevice() {
   if (typeof navigator === "undefined") return false;

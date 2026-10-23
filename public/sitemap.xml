@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://tool.easonzhan.xyz/text-codec</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/text-pinyin</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/table-converter</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/images-to-pdf</loc></url>
   <url><loc>https://tool.easonzhan.xyz/</loc></url>
   <url><loc>https://tool.easonzhan.xyz/douyin</loc></url>
   <url><loc>https://tool.easonzhan.xyz/bilibili</loc></url>
@@ -74,4 +78,14 @@
   <url><loc>https://tool.easonzhan.xyz/panorama</loc></url>
   <url><loc>https://tool.easonzhan.xyz/height-to-normal</loc></url>
   <url><loc>https://tool.easonzhan.xyz/unity-package</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/password-generator</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/regex-tester</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/jwt-decoder</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/barcode-generator</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/metronome</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/ico-generator</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/unit-converter</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/image-adjuster</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/image-dpi</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/video-capture</loc></url>
 </urlset>

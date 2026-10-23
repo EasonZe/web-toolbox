@@ -1,6 +1,24 @@
 # 依赖与上游审查
 
-最近审查：2026-10-22。下方内容为历史快照。
+最近审查：2026-10-23。下方按日期记录审查快照。
+
+## 第三批文本与文档工具（2026-10-23）
+
+锁定 pinyin-pro 3.29.5（MIT）和 entities 8.1.0（BSD-2-Clause）；后者原先已存在于间接依赖，本次显式声明实际使用的版本。两个包均无运行时依赖。CSV / TSV 继续使用既有 Papa Parse，图片合成 PDF 继续使用既有 pdf-lib，不另加表格或 PDF 引擎。新增两个包及 Papa Parse 原始许可证由构建脚本复制。安装后 `npm audit --audit-level=low` 通过，0 项已知漏洞；这只是当前审计快照，不代表不存在未知漏洞。具体能力和限制见 [实用工具选型](pc-tool-research.md)。
+
+## 第二批工具与新增公告复核（2026-10-23）
+
+第二批单位换算、图片调色、DPI 修改和视频取帧复用既有依赖，没有新增 npm 包。
+
+复核时 `npm audit --audit-level=low` 对原有 DOMPurify 3.4.16 与 Next.js 16.3.8 报告两个 Critical 依赖组，涉及 10 月 22 日更新的公告。按上游修复范围升级为 DOMPurify 3.4.17 与 Next.js 16.4.2，同步 Next.js 自带 env / SWC 包，并提高安全回归的版本下限；未使用 `--force`、漏洞忽略或降低审计阈值。安装及再次审计通过，0 项已知漏洞。React / React DOM / RSC 版本保持一致，仍为 19.2.8。
+
+来源：[DOMPurify 模板安全公告](https://github.com/advisories/GHSA-cg2g-xh64-v4q7)、[Next.js 图像优化公告](https://github.com/advisories/GHSA-2464-fhr4-w9xw)、[缓存类型数组公告](https://github.com/advisories/GHSA-673q-mjm6-r5xr)、[Server Actions 公告](https://github.com/advisories/GHSA-p3m5-59mp-jv5r)。这些是依赖版本匹配结果，并非已证明本站在线运行方式存在可利用路径；本站使用 vinext，既有 sharp override 已为 0.35.5。本次更新用于消除已知依赖告警并继续满足 CI 审计。
+
+升级后的 ESLint、TypeScript、生产构建、85 条页面路径与全站 390 项测试均通过，`npm audit --audit-level=low` 再次通过。具体验证边界见 [实用工具调研](pc-tool-research.md)。已按后续用户请求于 2026-10-23 部署主站，版本 ID 为 `e8efe0a6-e189-4d76-a20c-0b496ac8357d`；未提交或推送 GitHub。
+
+## 实用工具依赖补充（2026-10-22）
+
+新增 JsBarcode 3.12.3 和 jwt-decode 4.0.0，均为 MIT、无运行时依赖，确切版本记录在锁文件中；原始许可证随构建分发。`npm audit --audit-level=low` 通过，0 项已知漏洞。其余依赖版本未变；功能选型、验证和局限见 [实用工具调研](pc-tool-research.md)。
 
 ## 全站优化安全补丁（2026-10-22）
 

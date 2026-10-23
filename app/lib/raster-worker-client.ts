@@ -1,5 +1,6 @@
 import type { AudioClip } from "./audio-editing";
 import type { ChannelSource } from "./texture-tools";
+import type { ImageAdjustments } from "./image-adjustments";
 export type RasterRequest =
   | {
       action: "normal";
@@ -12,7 +13,8 @@ export type RasterRequest =
       wrap: boolean;
     }
   | { action: "pack"; width: number; height: number; channels: ChannelSource[] }
-  | { action: "audio"; clips: AudioClip[] };
+  | { action: "audio"; clips: AudioClip[] }
+  | { action: "adjust"; pixels: Uint8ClampedArray; width: number; height: number; settings: ImageAdjustments };
 export function runRasterWorker<T>(
   request: RasterRequest,
   signal: AbortSignal,
@@ -47,7 +49,7 @@ export function runRasterWorker<T>(
       reject(new Error("处理引擎加载失败，请刷新后重试。"));
     };
     try {
-      const buffers = request.action === "pack" ? request.channels.flatMap((channel) => channel.pixels ? [channel.pixels.buffer as ArrayBuffer] : []) : request.action === "normal" ? [request.pixels.buffer as ArrayBuffer] : [];
+      const buffers = request.action === "pack" ? request.channels.flatMap((channel) => channel.pixels ? [channel.pixels.buffer as ArrayBuffer] : []) : request.action === "normal" || request.action === "adjust" ? [request.pixels.buffer as ArrayBuffer] : [];
       // Raster arrays are fresh per task; audio source arrays remain editable and must not detach.
       worker.postMessage(request, [...new Set(buffers)]);
     } catch (cause) {

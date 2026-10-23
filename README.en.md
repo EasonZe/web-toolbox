@@ -25,10 +25,10 @@
   <img alt="React 19" src="https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white">
   <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white">
   <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white">
-  <img alt="70+ tools" src="https://img.shields.io/badge/Tools-70%2B-7c6fb1">
+  <img alt="80+ tools" src="https://img.shields.io/badge/Tools-80%2B-7c6fb1">
 </p>
 
-Web Toolbox is built with React, Next.js, vinext and Cloudflare Workers. It provides more than 70 utilities for video, audio, images, documents, development and everyday tasks. Most media and text processing happens locally in the browser, with no desktop installation required.
+Web Toolbox is built with React, Next.js, vinext and Cloudflare Workers. It provides more than 80 utilities for video, audio, images, documents, development and everyday tasks. Most media and text processing happens locally in the browser, with no desktop installation required.
 
 ## Features
 
@@ -40,10 +40,12 @@ Web Toolbox is built with React, Next.js, vinext and Cloudflare Workers. It prov
 - **Development and daily life:** file hashes, base conversion, function plotting, Morse code, short links, exchange rates, world clocks, date calculations, timers and device tests.
 - **Experience:** search, categories, favorites, four list layouts, light/dark modes, custom theme colors, and responsive desktop, tablet and mobile layouts.
 - **Game assets:** local Unity `.unitypackage` browsing, resource/model previews and `.meta` extraction.
+- **Utilities:** password / UUID generation, regex testing, JWT decoding, barcodes, a metronome and multi-size ICO creation. See the [research notes](docs/pc-tool-research.md).
+- **Image and conversion additions:** 11 categories of unit conversion, image adjustments and filters, lossless DPI metadata editing, and single or batch video frame capture.
 
 ## Quick start
 
-New local workbenches cover PDF pages, text diffs, batch renaming, OCR, JSON, Markdown, ZIP, subtitles, audio editing, EXIF, timestamps, Unicode, seamless textures, RGBA channels, panorama previews and height-to-normal maps. See [implementation research](docs/extended-tools-research.md) for sources and limitations.
+New local workbenches cover PDF pages, text diffs, batch renaming, OCR, JSON, Markdown, ZIP, subtitles, audio editing, EXIF, timestamps, Unicode, seamless textures, RGBA channels, panorama previews and height-to-normal maps. Text encoding/decoding, Chinese pinyin, CSV/TSV/JSON conversion and ordered images-to-PDF are also processed locally. See [implementation research](docs/extended-tools-research.md) and [utility selection](docs/pc-tool-research.md) for sources and limitations.
 
 Requirements: Node.js `>= 22.13.0` and npm `>= 10`.
 
