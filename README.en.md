@@ -25,10 +25,10 @@
   <img alt="React 19" src="https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white">
   <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white">
   <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white">
-  <img alt="80+ tools" src="https://img.shields.io/badge/Tools-80%2B-7c6fb1">
+  <img alt="100+ tools" src="https://img.shields.io/badge/Tools-100%2B-7c6fb1">
 </p>
 
-Web Toolbox is built with React, Next.js, vinext and Cloudflare Workers. It provides more than 80 utilities for video, audio, images, documents, development and everyday tasks. Most media and text processing happens locally in the browser, with no desktop installation required.
+Web Toolbox is built with React, Next.js, vinext and Cloudflare Workers. It provides more than 100 utilities for video, audio, images, documents, development and everyday tasks. Most media and text processing happens locally in the browser, with no desktop installation required.
 
 ## Features
 
@@ -43,9 +43,17 @@ Web Toolbox is built with React, Next.js, vinext and Cloudflare Workers. It prov
 - **Utilities:** password / UUID generation, regex testing, JWT decoding, barcodes, a metronome and multi-size ICO creation. See the [research notes](docs/pc-tool-research.md).
 - **Image and conversion additions:** 11 categories of unit conversion, image adjustments and filters, lossless DPI metadata editing, and single or batch video frame capture.
 
-## Quick start
+Additional local utilities include PDF image/text export, image grid splitting, YAML/JSON conversion and WCAG color contrast checks. See [utility selection](docs/pc-tool-research.md) for implementation choices and verification limits.
+
+Also available: timezone-aware Cron previews, binary file signature checks, original-size image difference maps and video trimming. Source files remain local.
+
+Network and styling utilities include IPv4/IPv6 CIDR calculations, URL/query editing, CSS/SVG/PNG gradients and multi-layer CSS shadows. Entered URLs are never requested.
+
+Local document and practice tools include PDF page numbering and visible-area cropping, PPTX image/body-text extraction, image color replacement, a teleprompter and Chinese/English typing tests. Inputs are not uploaded or saved. PDF cropping is not redaction; PPTX extraction does not reconstruct slide layouts or execute macros.
 
 New local workbenches cover PDF pages, text diffs, batch renaming, OCR, JSON, Markdown, ZIP, subtitles, audio editing, EXIF, timestamps, Unicode, seamless textures, RGBA channels, panorama previews and height-to-normal maps. Text encoding/decoding, Chinese pinyin, CSV/TSV/JSON conversion and ordered images-to-PDF are also processed locally. See [implementation research](docs/extended-tools-research.md) and [utility selection](docs/pc-tool-research.md) for sources and limitations.
+
+## Quick start
 
 Requirements: Node.js `>= 22.13.0` and npm `>= 10`.
 

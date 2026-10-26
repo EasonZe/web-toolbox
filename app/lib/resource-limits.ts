@@ -19,7 +19,14 @@ export const toolLimits = {
   generators: { batch: 1000, passwordLength: 256 },
   regex: { patternChars: 20_000, textChars: 2_000_000, matches: 1000, previewChars: 50_000, timeoutMs: 5000 },
   jwt: { chars: 100_000 },
+  url: { chars: 32768, parameters: 1000 },
   table: { rows: 100_000, columns: 1000, cells: 1_000_000 },
+  structured: { depth: 100, nodes: 250_000 },
+  fileIdentification: { files: 200, sampleBytes: 64 * 1024 },
+  gridSplit: { edge: 20, tiles: 200 },
+  officeXml: { bytes: 16 * MiB },
+  practice: { promptChars: 100_000, typingChars: 20_000, typingGraphemes: 5000 },
+  pdfExport: { desktopPixels: 32_000_000, mobilePixels: 16_000_000, bytes: 512 * MiB },
   frameCapture: { frames: 200, bytes: 512 * MiB },
 } as const;
 export function isConstrainedDevice() {

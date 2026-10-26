@@ -7,12 +7,13 @@ const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
 
 function workerEnvironment(): Plugin {
   return {
-    name: "toolbox:pdf-worker-environment",
+    name: "toolbox:worker-environment",
     enforce: "pre",
     transform(code, id) {
-      if (!id.replaceAll("\\", "/").endsWith("/pdfmake/build/pdfmake.js")) return;
+      const path = id.replaceAll("\\", "/").split("?")[0];
+      if (!["/pdfmake/build/pdfmake.js", "/debug/src/browser.js"].some((suffix) => path.endsWith(suffix))) return;
       // vinext folds bare `typeof window` to "object" in client builds.
-      // Preserve pdfmake's runtime probe in Workers, which have no Window,
+      // Preserve pdfmake/debug runtime probes in Workers, which have no Window,
       // without mutating the main client environment or adding a fake Window.
       return { code: code.replace(/\btypeof window\b/g, "typeof globalThis.window"), map: null };
     },

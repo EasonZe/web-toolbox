@@ -13,6 +13,12 @@
 | [PDF-lib](https://github.com/Hopding/pdf-lib) | PDF 合并、拆分、页序、旋转与图片合成 PDF | MIT |
 | [pinyin-pro](https://github.com/zh-lx/pinyin-pro) 3.29.5 | 汉字拼音、声调、首字母和姓氏模式 | MIT |
 | [entities](https://github.com/fb55/entities) 8.1.0 | HTML 命名与数字实体编码解码，不执行 HTML | BSD-2-Clause |
+| [yaml](https://github.com/eemeli/yaml) 2.9.1 | YAML 1.2 配置解析与序列化，限制别名与转换类型 | ISC |
+| [cron-parser](https://github.com/harrisiirak/cron-parser) 5.10.2 / Luxon 3.7.2 | Cron 解析、时区与后续时间预览 | MIT |
+| [file-type](https://github.com/sindresorhus/file-type) 22.2.0 | 二进制文件头识别，不执行文件 | MIT |
+| [Pixelmatch](https://github.com/mapbox/pixelmatch) 8.0.0 | 原尺寸图片视觉像素差异比较 | ISC |
+| [ipaddr.js](https://github.com/whitequark/ipaddr.js) 2.5.0 | IPv4 / IPv6 严格地址解析与标准化 | MIT |
+| [Culori](https://github.com/Evercoder/culori) 4.0.2 | sRGB / OKLab 预乘透明度插值 | MIT |
 | [jsdiff](https://github.com/kpdecker/jsdiff) | 文本行级、字符级差异比较 | BSD-3-Clause |
 | [fflate](https://github.com/101arrowz/fflate) | 本地 ZIP 打包、解压与批量重命名下载 | MIT |
 | [Tesseract.js](https://github.com/naptha/tesseract.js) / core | 中英文图片 OCR 与 WebAssembly 引擎 | Apache-2.0 |
@@ -28,7 +34,7 @@
 | `@soundtouchjs/audio-worklet` | 音频变速与变调 | MPL-2.0 |
 | Transformers.js | 浏览器端智能抠图模型运行时 | Apache-2.0 |
 | DOMPurify | 文档转换内容净化 | MPL-2.0 OR Apache-2.0 |
-| PDF.js | PDF 读取、字体、CMap 与图像解码资源 | Apache-2.0 |
+| [PDF.js](https://github.com/mozilla/pdf.js) | PDF 读取、页面导出、文字提取、字体、CMap 与图像解码资源 | Apache-2.0 |
 | pdfmake | PDF 生成 | MIT |
 | Mammoth | DOCX 内容读取 | BSD-2-Clause |
 | docx | DOCX 生成 | MIT |
@@ -84,6 +90,15 @@
 - `public/images/eason-avatar.png`：站点维护者的个人头像素材，不属于 MIT 软件授权范围，未经原权利人许可请勿复用。
 
 ## 参考实现
+
+- 第七批只参考 [ToolKnit Desktop](https://github.com/ZihangDong/toolknit-desktop) 的功能方向，不复制其源码、素材、Tauri/Rust 程序或 PDF-to-Word 引擎。其作者代码并非本项目可直接复用的 MIT 代码；不能因仓库公开而推定可集成。PDF 复用 PDF-lib（MIT）、PDF.js（Apache-2.0）及项目内 Noto Sans SC（OFL-1.1）；`@pdf-lib/fontkit` 1.1.1 的 README / npm 元数据明确声明 MIT，但未附独立 LICENSE，构建会保留原始 README、元数据、带内嵌版权声明的完整原包及 [来源声明](licenses/pdf-lib-fontkit-NOTICE.md)，不伪造上游版权头。其内嵌 Google Brotli 的 Apache 声明与 pako 许可分别保留，不能笼统按 MIT 覆盖。
+- PPTX 只解析包内结构，使用 saxes 6.0.0（ISC）与 xmlchars 2.2.0（MIT），复用 fflate（MIT）。saxes npm 包未附独立 LICENSE，已从 [对应 v6.0.0 上游版本](https://github.com/lddubeau/saxes/blob/v6.0.0/LICENSE) 保存原始全文并随构建分发；其仓库已归档，版本锁定，DTD / 实体与工作预算由本项目额外约束。未复制提词器或 Monkeytype 的代码、词库与界面，练习文本为本项目自写。
+
+- 第六批使用 ipaddr.js 与 Culori 的原始 MIT 许可证并随站点分发，Culori 按 `culori/fn` 只注册所需颜色空间；`@types/culori` 仅用于开发。URL 选型调研 [jsdom/whatwg-url](https://github.com/jsdom/whatwg-url)，实际使用浏览器原生 URL / URLSearchParams，不打包额外解析器。阴影按 CSS 标准独立生成，没有复制外部生成器界面或源码。Nzh 发布包只附许可标识、未附完整许可正文，本期未采用、未分发其代码。
+
+- 第五批依赖锁定 cron-parser、file-type、pixelmatch 的精确版本；它们及打包进入浏览器的 Luxon、strtok3、token-types、@borewit/text-codec、uint8array-extras、@tokenizer/inflate、debug、ms（MIT）、ieee754（BSD-3-Clause）原始许可证随站点分发。@tokenizer/token 仅提供类型声明，pixelmatch 的 pngjs 仅用于未打包的 CLI。视频裁剪复用未经修改的 Mediabunny（MPL-2.0），不复制参考项目源码；原有 MPL 声明继续适用。
+
+- 第四批工具复用 PDF.js / fflate；图片网格选型调研 [Cropper.js](https://github.com/fengyuanchen/cropperjs)，没有引入另一套裁剪界面或复制其源码。颜色对比度调研 [contrast-ratio](https://github.com/siege-media/contrast-ratio) 与 [Culori](https://github.com/Evercoder/culori)，本期使用独立的 HEX / sRGB 计算，规则依据 W3C WCAG 2.2；不复制参考项目源码、不宣称整页无障碍达标。yaml 的 ISC 原始许可证随站点分发。
 
 - 新增实用工具的功能选型参考 [Team-YM/pc-tool](https://github.com/Team-YM/pc-tool)，没有复制该项目的 HTML、CSS、JavaScript 或素材；采用本项目界面与独立实现。具体选型见 [调研记录](docs/pc-tool-research.md)。
 - 第二批功能复用现有 Math.js（Apache-2.0）、Mediabunny（MPL-2.0）和 fflate（MIT）。DPI 修改参考 [shutterstock/changeDPI](https://github.com/shutterstock/changeDPI) 的元数据处理方向，调色选型调研 [evanw/glfx.js](https://github.com/evanw/glfx.js)；均未复制上游源码，实际独立实现 PNG/JPEG 结构化元数据编辑与现有栅格 Worker 的像素调整。
