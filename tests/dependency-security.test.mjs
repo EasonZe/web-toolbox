@@ -26,7 +26,7 @@ test("依赖锁使用已修复安全告警的补丁版本", async () => {
   const lock = JSON.parse(await read("package-lock.json"));
   const minimums = {
     next: "16.4.2", dompurify: "3.4.17", sharp: "0.35.5",
-    "source-map-js": "1.2.2", "fast-uri": "3.1.8", undici: "7.29.1",
+    "source-map-js": "1.2.2", "fast-uri": "3.1.9", undici: "7.30.1", zod: "4.6.6",
     "@huggingface/transformers": "3.8.1", "onnxruntime-node": "1.30.0", "argparse": "2.0.1",
     "@puppeteer/browsers": "3.2.4", vite: "8.1.6",
   };

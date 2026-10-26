@@ -1,6 +1,10 @@
 # 依赖与上游审查
 
-最近审查：2026-10-23。下方按日期记录审查快照。
+最近审查：2026-10-26。下方按日期记录审查快照。
+
+## 第四批本地工具（2026-10-23）
+
+新增精确锁定的 yaml 2.9.1（ISC，无运行时依赖），原始许可证由构建脚本复制分发。PDF 导出继续复用既有 PDF.js，ZIP 继续使用 fflate；图片固定网格及小型 HEX / sRGB 对比度规则独立实现，不引入另一套裁剪或颜色引擎。安装时 npm 审计为 0 项已知漏洞；最终检查与局限见 [实用工具选型](pc-tool-research.md)。
 
 ## 第三批文本与文档工具（2026-10-23）
 
@@ -151,6 +155,18 @@
 - 后续新增 Worker 密钥时必须使用 Cloudflare Worker Secret，不得硬编码或提交到仓库。
 
 ## 发布检查清单
+
+2026-10-26 第七批依赖增量：`@pdf-lib/fontkit` 1.1.1（上游 README 与元数据声明 MIT）用于 PDF 中文页码字体子集，`saxes` 6.0.0（ISC）用于有深度、节点和单文件预算的命名空间 XML 解析。其依赖 pako 1.0.11 与 xmlchars 2.2.0 的原始许可随构建分发。其余四项复用现有工具库或平台 API，无新增编辑器框架，也没有从 ToolKnit 复制受限制的源码。
+
+两项发布包都未附独立 LICENSE：saxes 从 v6.0.0 标签取回原始全文；fontkit 的上游仓库也未找到独立全文，因此保留其明确链接 MIT 的原始 README、包元数据、原始 ES 文件内的第三方声明与本项目的来源说明，不补造上游版权日期。不能把 npm 的 MIT 字段当作对内嵌依赖的重新授权；Google Brotli 的 Apache-2.0 与 pako 声明继续保留。该记录并非法律意见，后续依赖升级仍需复核原始归属。
+
+saxes 仓库已归档，选用其成熟的严格 SAX / 命名空间行为而不自动解引用实体；输入不使用远程资源、DOM 或 XML 样式转换。测试覆盖 DTD / XXE、异常编码、节点与深度、ZIP 路径 / CRC、关系顺序、取消等。未将“审计无已知漏洞”当作安全或维护状态保证。
+
+2026-10-26 增量复核：新增直接依赖 ipaddr.js 2.5.0、culori 4.0.2（均 MIT，无运行时子依赖），开发类型 @types/culori 4.0.1。ipaddr.js 原先已作为间接依赖存在，现显式声明与锁定。Nzh 1.0.14 调研时发现发布包缺少完整许可正文，已排除，不留在依赖锁。URL 使用平台原生 API，阴影独立生成，无额外解析/渲染库。
+
+本次 npm 审计新增报告来自既有工具链的 fast-uri / undici / zod，不是上述两项新库。仅升级到 fast-uri 3.1.9、undici 7.30.1、zod 4.6.6，并更新所有锁定实例的最低安全版本测试；没有执行 `npm audit fix --force` 或采用审计建议的 Cloudflare 大幅降级。修复依据：[fast-uri 公告](https://github.com/advisories/GHSA-w74x-v6f9-j3xg)、[undici 公告](https://github.com/advisories/GHSA-4qv8-2p9j-2685)、[zod 公告](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)。补丁安装后的 `npm audit --audit-level=low` 返回 0 项已知漏洞；历史审查记录保留当时版本，不覆盖历史事实。
+
+2026-10-23 第五批工具的依赖增量：cron-parser 5.10.2（MIT）、file-type 22.2.0（MIT）、pixelmatch 8.0.0（ISC），均为精确版本；视频裁剪复用既有 Mediabunny，不新增媒体引擎。前两者带入 Luxon 和文件头 tokenizer 的宽松许可依赖，构建脚本分发相应原始许可；@tokenizer/token 仅含类型声明，pngjs 属于未打包的 Pixelmatch CLI。file-type 使用浏览器入口，不引入文件系统访问；本工具只提供 64 KiB 样本，并单独处理 ZIP/GZIP 容器，避免为了确认内部格式解压不可信内容。三项引擎只在对应 Worker 任务中动态加载，视频引擎仅在导入/导出时加载。
 
 ```bash
 npm ci

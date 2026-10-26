@@ -41,6 +41,26 @@ await cp(new URL("../licenses/OCR-models-NOTICE.md", import.meta.url), new URL("
 // License texts accompany the browser distribution, not just npm sources.
 const vendorLicenseRoot = new URL("../public/vendor-licenses/", import.meta.url);
 await mkdir(vendorLicenseRoot, { recursive: true });
-for (const [name, license] of [["pdf-lib", "LICENSE.md"], ["diff", "LICENSE"], ["fflate", "LICENSE"], ["marked", "LICENSE"], ["exifr", "LICENSE"], ["jsonc-parser", "LICENSE.md"], ["date-fns-tz", "LICENSE.md"], ["@plussub/srt-vtt-parser", "LICENSE"], ["tesseract.js", "LICENSE.md"], ["tesseract.js-core", "LICENSE"], ["modern-tar", "LICENSE"], ["jsbarcode", "MIT-LICENSE.txt"], ["jwt-decode", "LICENSE"], ["pinyin-pro", "LICENSE"], ["entities", "LICENSE"], ["papaparse", "LICENSE"]]) {
+for (const [name, license] of [["pdf-lib", "LICENSE.md"], ["diff", "LICENSE"], ["fflate", "LICENSE"], ["marked", "LICENSE"], ["exifr", "LICENSE"], ["jsonc-parser", "LICENSE.md"], ["date-fns-tz", "LICENSE.md"], ["@plussub/srt-vtt-parser", "LICENSE"], ["tesseract.js", "LICENSE.md"], ["tesseract.js-core", "LICENSE"], ["modern-tar", "LICENSE"], ["jsbarcode", "MIT-LICENSE.txt"], ["jwt-decode", "LICENSE"], ["pinyin-pro", "LICENSE"], ["entities", "LICENSE"], ["papaparse", "LICENSE"], ["yaml", "LICENSE"]]) {
   await cp(new URL(`../node_modules/${name}/${license}`, import.meta.url), new URL(`${name.replaceAll("/", "-")}.txt`, vendorLicenseRoot));
 }
+
+// Cron, binary signatures and pixel comparison, including bundled runtime dependencies.
+// @tokenizer/token contains TypeScript declarations only; pngjs is pixelmatch's unused CLI dependency.
+for (const [name, license] of [["cron-parser", "LICENSE"], ["luxon", "LICENSE.md"], ["file-type", "license"], ["strtok3", "LICENSE.txt"], ["token-types", "LICENSE.txt"], ["@borewit/text-codec", "LICENSE.txt"], ["uint8array-extras", "license"], ["@tokenizer/inflate", "LICENSE"], ["debug", "LICENSE"], ["ms", "license.md"], ["ieee754", "LICENSE"], ["pixelmatch", "LICENSE"]]) {
+  await cp(new URL(`../node_modules/${name}/${license}`, import.meta.url), new URL(`${name.replaceAll("/", "-")}.txt`, vendorLicenseRoot));
+}
+
+for (const name of ["ipaddr.js", "culori"]) {
+  await cp(new URL(`../node_modules/${name}/LICENSE`, import.meta.url), new URL(`${name}.txt`, vendorLicenseRoot));
+}
+
+await cp(new URL("../licenses/saxes-6.0.0-LICENSE.txt", import.meta.url), new URL("saxes.txt", vendorLicenseRoot));
+await cp(new URL("../licenses/pdf-lib-fontkit-NOTICE.md", import.meta.url), new URL("pdf-lib-fontkit-NOTICE.md", vendorLicenseRoot));
+await cp(new URL("../node_modules/xmlchars/LICENSE", import.meta.url), new URL("xmlchars.txt", vendorLicenseRoot));
+// This npm distribution has no separate LICENSE; retain its original MIT declaration
+// and bundled attribution comments instead of inventing a copyright statement.
+await cp(new URL("../node_modules/@pdf-lib/fontkit/README.md", import.meta.url), new URL("pdf-lib-fontkit-README.md", vendorLicenseRoot));
+await cp(new URL("../node_modules/@pdf-lib/fontkit/package.json", import.meta.url), new URL("pdf-lib-fontkit-package.json", vendorLicenseRoot));
+await cp(new URL("../node_modules/@pdf-lib/fontkit/dist/fontkit.es.js", import.meta.url), new URL("pdf-lib-fontkit-original.txt", vendorLicenseRoot));
+await cp(new URL("../node_modules/@pdf-lib/fontkit/node_modules/pako/LICENSE", import.meta.url), new URL("pdf-lib-fontkit-pako.txt", vendorLicenseRoot));

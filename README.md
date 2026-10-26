@@ -25,10 +25,10 @@
   <img alt="React 19" src="https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white">
   <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white">
   <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white">
-  <img alt="80+ 工具" src="https://img.shields.io/badge/工具-80%2B-7c6fb1">
+  <img alt="100+ 工具" src="https://img.shields.io/badge/工具-100%2B-7c6fb1">
 </p>
 
-多功能工具箱基于 React、Next.js、vinext 与 Cloudflare Workers 构建，收录 80 余个视频、音频、图片、文档、开发和生活类工具。多数媒体和文本处理在浏览器本地完成，无需安装客户端。
+多功能工具箱基于 React、Next.js、vinext 与 Cloudflare Workers 构建，收录 100 余个视频、音频、图片、文档、开发和生活类工具。多数媒体和文本处理在浏览器本地完成，无需安装客户端。
 
 ## 功能
 
@@ -43,6 +43,10 @@
 - **实用工具**：密码与 UUID、正则测试、JWT 解析、条形码、节拍器和 ICO 图标制作。选型见 [调研记录](docs/pc-tool-research.md)。
 - **图像与换算扩展**：11 类单位换算、图片调色与滤镜、无损 DPI 元数据修改、视频单帧截图与区间批量取帧。
 - **文本与文档扩展**：Base64 / URL / HTML / Unicode 编解码、汉字转拼音、CSV / TSV / JSON 表格转换、多图排序合成 PDF；均在本地处理。
+- **更多本地工具**：PDF 页面图片与文字导出、图片九宫格 / 网格切分、YAML / JSON 互转和 WCAG 颜色对比度检查。
+- **检查与剪辑**：Cron 时区预览、文件头类型识别、原尺寸图片差异对比与视频区间裁剪；不上传源文件。
+- **网络与样式**：IP / CIDR 子网计算、URL 解析与参数编辑、渐变色 CSS / SVG / PNG、CSS 多层阴影；不请求输入网址。
+- **文档与练习**：PDF 加页码与可见区域裁剪、PPTX 图片和正文提取、图片指定颜色替换、提词器、中文 / 英文打字速度测试；不上传或保存输入。PDF 裁剪不是安全脱敏，PPTX 不重建版式或执行宏。
 - **扩展工具**：PDF 页面管理、文本差异、批量重命名、OCR、JSON、Markdown、ZIP、字幕编辑、音频裁剪拼接、EXIF、时间戳、Unicode、无缝贴图、RGBA 通道、全景预览和高度转法线。选型与处理边界见 [GitHub 调研记录](docs/extended-tools-research.md)。
 
 ## 快速开始

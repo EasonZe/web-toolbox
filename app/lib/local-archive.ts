@@ -112,6 +112,15 @@ export function extractZip(data: Uint8Array, selected?: string) {
         !entry.name.endsWith("/") && (!selected || entry.name === selected),
     );
   if (selected && !wanted.length) throw new Error("条目不存在。");
+  return extractWanted(data, wanted);
+}
+/** Verify the archive once, then extract only the explicitly requested parts. */
+export function extractZipEntries(data: Uint8Array, names: ReadonlySet<string>) {
+  const entries = inspectZip(data), wanted = entries.filter((entry) => names.has(entry.name) && !entry.name.endsWith("/"));
+  if (wanted.length !== names.size) throw new Error("请求的 ZIP 条目不存在或是目录。");
+  return extractWanted(data, wanted);
+}
+function extractWanted(data: Uint8Array, wanted: ArchiveEntry[]) {
   const set = new Set(wanted.map((entry) => entry.name)),
     result = unzipSync(data, { filter: (entry) => set.has(entry.name) });
   for (const entry of wanted) {

@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://tool.easonzhan.xyz/pdf-page-numbers</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/pdf-cropper</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/image-color-replace</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/teleprompter</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/pptx-extractor</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/typing-test</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/cidr-calculator</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/url-parser</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/gradient-generator</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/shadow-generator</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/cron-preview</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/file-identification</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/image-difference</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/video-trimmer</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/pdf-export</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/image-grid</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/yaml-converter</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/color-contrast</loc></url>
   <url><loc>https://tool.easonzhan.xyz/text-codec</loc></url>
   <url><loc>https://tool.easonzhan.xyz/text-pinyin</loc></url>
   <url><loc>https://tool.easonzhan.xyz/table-converter</loc></url>
