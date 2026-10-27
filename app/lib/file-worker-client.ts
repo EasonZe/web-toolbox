@@ -5,7 +5,9 @@ import type { GridSplitOptions } from "./image-grid-options";
 import type { CronOptions, ImageDiffOptions } from "./practical-tool-options";
 import type { PdfNumberOptions, PdfCropOptions } from "./pdf-page-options";
 import type { ColorReplaceOptions } from "./image-color-replace";
+import { runWorkerTask } from "./worker-task";
 export type FileWorkerRequest =
+  | { action: "json-pointer"; text: string; paths: string }
   | { action: "pdf-page-info"; file: File }
   | { action: "pdf-number"; file: File; options: PdfNumberOptions }
   | { action: "pdf-crop"; file: File; options: PdfCropOptions }
@@ -42,41 +44,9 @@ export function runFileWorker<T>(
   signal: AbortSignal,
   report?: (value: number, text: string) => void,
 ): Promise<T> {
-  signal.throwIfAborted();
-  return new Promise((resolve, reject) => {
-    const worker = new Worker(
-      new URL("../workers/local-files.worker.ts", import.meta.url),
-      { type: "module" },
-    );
-    const finish = () => {
-      worker.terminate();
-      signal.removeEventListener("abort", abort);
-      clearTimeout(timer);
-    };
-    const abort = () => {
-      finish();
-      reject(signal.reason ?? new Error("已取消"));
-    };
-    const timer = setTimeout(() => {
-      finish();
-      reject(new Error("处理超时，请减少文件或页数。"));
-    }, 900000);
-    signal.addEventListener("abort", abort, { once: true });
-    worker.onmessage = ({ data }) => {
-      if (typeof data.progress === "number") { report?.(data.progress, data.status ?? "正在处理…"); return; }
-      finish();
-      if (data.error) reject(new Error(data.error));
-      else resolve(data.result as T);
-    };
-    worker.onerror = () => {
-      finish();
-      reject(new Error("文件处理引擎加载失败，请刷新后重试。"));
-    };
-    try {
-      worker.postMessage(request);
-    } catch (cause) {
-      finish();
-      reject(cause);
-    }
+  return runWorkerTask<T>(() => new Worker(new URL("../workers/local-files.worker.ts", import.meta.url), { type: "module" }), request, signal, {
+    timeoutMs: request.action === "json-pointer" ? 30000 : 900000, timeoutMessage: "处理超时，请减少文件或页数。",
+    loadMessage: "文件处理引擎加载失败，请刷新后重试。", cancelMessage: "已取消",
+    progress: "field", report,
   });
 }

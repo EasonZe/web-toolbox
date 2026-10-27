@@ -13,6 +13,10 @@ import {
   FiX,
 } from "react-icons/fi";
 import { FileDropZone } from "./file-drop-zone";
+import { ResultContinue, ToolHandoffInput } from "./tool-handoff";
+import { resultFile } from "../lib/tool-handoff";
+import { checkFiles } from "../lib/local-files";
+import { runSerialBatch } from "../lib/serial-batch";
 import {
   compressionQualityPresets,
   defaultCompressionQuality,
@@ -134,7 +138,8 @@ function optimizePngPixels(
   context.putImageData(imageData, 0, 0);
 }
 
-async function compressImage(file: File, quality: number): Promise<CompressedImage> {
+async function compressImage(file: File, quality: number, signal?: AbortSignal): Promise<CompressedImage> {
+  signal?.throwIfAborted();
   quality = normalizeCompressionQuality(quality);
   const type = normalizeImageType(file);
   if (!type) throw new Error("仅支持JPG、PNG和WebP图片");
@@ -142,7 +147,9 @@ async function compressImage(file: File, quality: number): Promise<CompressedIma
   const bitmap = await createImageBitmap(file, {
     imageOrientation: "from-image",
   });
+  let canvas: HTMLCanvasElement | undefined;
   try {
+    signal?.throwIfAborted();
     const width = bitmap.width;
     const height = bitmap.height;
     if (!width || !height) throw new Error("无法读取图片尺寸");
@@ -150,7 +157,7 @@ async function compressImage(file: File, quality: number): Promise<CompressedIma
       throw new Error("图片像素不能超过1亿");
     }
 
-    const canvas = document.createElement("canvas");
+    canvas = document.createElement("canvas");
     canvas.width = width;
     canvas.height = height;
     const context = canvas.getContext("2d", { alpha: type !== "image/jpeg" });
@@ -166,6 +173,7 @@ async function compressImage(file: File, quality: number): Promise<CompressedIma
       type,
       type === "image/png" ? undefined : quality / 100,
     );
+    signal?.throwIfAborted();
     if (encoded.type && encoded.type !== type) {
       throw new Error("当前浏览器不支持导出这种图片格式");
     }
@@ -178,6 +186,7 @@ async function compressImage(file: File, quality: number): Promise<CompressedIma
       usedOriginal,
     };
   } finally {
+    if (canvas) { canvas.width = 0; canvas.height = 0; }
     bitmap.close();
   }
 }
@@ -287,22 +296,31 @@ function triggerDownload(url: string, name: string) {
 
 export default function ImageCompressor() {
   const itemsRef = useRef<CompressionItem[]>([]);
+  const mountedRef = useRef(true);
+  const taskRef = useRef<AbortController | null>(null);
+  const uploadVersionRef = useRef(0);
+  const [uploadVersion, setUploadVersion] = useState(0);
   const [items, setItems] = useState<CompressionItem[]>([]);
   const [quality, setQuality] = useState(defaultCompressionQuality);
   const [qualityInput, setQualityInput] = useState(String(defaultCompressionQuality));
   const [compressing, setCompressing] = useState(false);
+  const [stopping, setStopping] = useState(false);
   const [packing, setPacking] = useState(false);
   const [message, setMessage] = useState("");
   const qualityInputValid = qualityInput.trim() !== ""
     && Number.isInteger(Number(qualityInput))
     && Number(qualityInput) >= 1 && Number(qualityInput) <= 100;
 
-  useEffect(() => {
-    itemsRef.current = items;
-  }, [items]);
+  function updateItems(change: (current: CompressionItem[]) => CompressionItem[]) {
+    itemsRef.current = change(itemsRef.current);
+    setItems(itemsRef.current);
+  }
 
   useEffect(() => {
+    mountedRef.current = true;
     return () => {
+      mountedRef.current = false;
+      taskRef.current?.abort();
       for (const item of itemsRef.current) {
         URL.revokeObjectURL(item.previewUrl);
         if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
@@ -327,12 +345,12 @@ export default function ImageCompressor() {
     : 0;
 
   function resetResults(nextQuality: number) {
-    if (compressing || packing) return;
+    if (taskRef.current || packing) return;
     const normalized = normalizeCompressionQuality(nextQuality);
     setQualityInput(String(normalized));
     if (normalized === quality) return;
     setQuality(normalized);
-    setItems((current) =>
+    updateItems((current) =>
       current.map((item) => {
         if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
         return {
@@ -363,10 +381,11 @@ export default function ImageCompressor() {
   }
 
   function handleFiles(files: File[]) {
-    const remaining = Math.max(0, maxFiles - items.length);
+    if (!mountedRef.current || taskRef.current || packing) return false;
+    const remaining = Math.max(0, maxFiles - itemsRef.current.length);
     if (remaining === 0) {
       setMessage(`一次最多处理${maxFiles}张图片。`);
-      return;
+      return false;
     }
 
     const accepted: File[] = [];
@@ -380,7 +399,7 @@ export default function ImageCompressor() {
     }
 
     if (accepted.length) {
-      setItems((current) => [...current, ...accepted.map(createItem)]);
+      updateItems((current) => [...current, ...accepted.map(createItem)]);
     }
     const omitted = Math.max(0, files.length - remaining);
     if (rejected || omitted) {
@@ -390,10 +409,11 @@ export default function ImageCompressor() {
     } else {
       setMessage("");
     }
+    return accepted.length > 0;
   }
 
   function removeItem(id: string) {
-    setItems((current) => {
+    updateItems((current) => {
       const target = current.find((item) => item.id === id);
       if (target) {
         URL.revokeObjectURL(target.previewUrl);
@@ -404,65 +424,69 @@ export default function ImageCompressor() {
   }
 
   function clearItems() {
+    if (taskRef.current || packing) return;
+    uploadVersionRef.current++;
+    setUploadVersion(uploadVersionRef.current);
     for (const item of itemsRef.current) {
       URL.revokeObjectURL(item.previewUrl);
       if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
     }
-    setItems([]);
+    updateItems(() => []);
     setMessage("");
   }
 
   async function runCompression() {
-    if (compressing || packing || !qualityInputValid) return;
-    if (!items.length) {
+    if (!mountedRef.current || taskRef.current || packing || !qualityInputValid) return;
+    const pending = itemsRef.current.filter((item) => item.status !== "done");
+    if (!pending.length) {
       setMessage("请先选择需要压缩的图片。");
       return;
     }
-
+    const controller = new AbortController(), signal = controller.signal;
+    taskRef.current = controller;
     setCompressing(true);
+    setStopping(false);
     setMessage("");
-    for (const sourceItem of items) {
-      setItems((current) =>
-        current.map((item) =>
-          item.id === sourceItem.id
-            ? { ...item, status: "compressing", error: "" }
-            : item,
+    try {
+      await runSerialBatch({
+        items: pending, signal,
+        process: (item, signal) => compressImage(item.file, quality, signal),
+        onStart: (sourceItem) => updateItems((current) =>
+          current.map((item) => item.id === sourceItem.id ? { ...item, status: "compressing", error: "" } : item),
         ),
-      );
-
-      try {
-        const result = await compressImage(sourceItem.file, quality);
-        const resultUrl = URL.createObjectURL(result.blob);
-        setItems((current) =>
-          current.map((item) => {
-            if (item.id !== sourceItem.id) return item;
-            if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
-            return {
-              ...item,
-              ...result,
-              resultBlob: result.blob,
-              resultUrl,
-              status: "done",
-              error: "",
-            };
-          }),
-        );
-      } catch (error) {
-        setItems((current) =>
-          current.map((item) =>
-            item.id === sourceItem.id
-              ? {
-                  ...item,
-                  status: "error",
-                  error:
-                    error instanceof Error ? error.message : "图片压缩失败",
-                }
-              : item,
-          ),
-        );
+        onSuccess(sourceItem, result) {
+          const resultUrl = URL.createObjectURL(result.blob);
+          updateItems((current) =>
+            current.map((item) => {
+              if (item.id !== sourceItem.id) return item;
+              if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
+              return { ...item, ...result, resultBlob: result.blob, resultUrl, status: "done", error: "" };
+            }),
+          );
+        },
+        onError(sourceItem, error) {
+          updateItems((current) =>
+            current.map((item) => item.id === sourceItem.id ? {
+              ...item, status: "error", error: error instanceof Error ? error.message : "图片压缩失败",
+            } : item),
+          );
+        },
+      });
+    } catch (error) {
+      if (mountedRef.current) setMessage(signal.aborted ? "已停止处理，已完成的结果保留；再次开始将处理未完成的图片。" : error instanceof Error ? error.message : "图片压缩失败");
+    } finally {
+      taskRef.current = null;
+      if (mountedRef.current) {
+        updateItems((current) => current.map((item) => item.status === "compressing" ? { ...item, status: "ready", error: "" } : item));
+        setCompressing(false);
+        setStopping(false);
       }
     }
-    setCompressing(false);
+  }
+
+  function stopCompression() {
+    taskRef.current?.abort();
+    setStopping(true);
   }
 
   function downloadItem(item: CompressionItem) {
@@ -507,12 +531,20 @@ export default function ImageCompressor() {
         className="converter-card image-compressor-card"
         aria-label="批量图片压缩"
       >
+        <ToolHandoffInput target="/image-compressor" behavior="append" disabled={compressing || packing} onFiles={(files) => {
+          try {
+            checkFiles([...itemsRef.current.map((item) => item.file), ...files], toolLimits.image.batchBytes, maxFiles);
+            if (files.some((file) => !normalizeImageType(file) || file.size > maxFileSize)) throw new Error("请选择 JPG、PNG 或 WebP 图片，单张最多 100 MB。");
+            return handleFiles(files);
+          } catch (cause) { setMessage(cause instanceof Error ? cause.message : "图片导入失败。"); return false; }
+        }} />
         <FileDropZone
+          key={uploadVersion}
           className="image-compressor-picker"
           accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
           multiple
           disabled={compressing || packing}
-          onFiles={handleFiles}
+          onFiles={(files) => { if (uploadVersion === uploadVersionRef.current) handleFiles(files); }}
           ariaLabel="选择或拖入多张图片"
         >
           <FiUploadCloud aria-hidden="true" />
@@ -620,10 +652,10 @@ export default function ImageCompressor() {
             <button
               className="convert-button image-compressor-run"
               type="button"
-              onClick={runCompression}
-              disabled={!items.length || compressing || packing || !qualityInputValid}
+              onClick={compressing ? stopCompression : runCompression}
+              disabled={!items.some((item) => item.status !== "done") || stopping || packing || !qualityInputValid}
             >
-              {compressing ? "正在逐张压缩…" : "开始压缩"}
+              {stopping ? "正在停止…" : compressing ? "停止处理" : "开始压缩"}
             </button>
             <button
               className="open-button image-compressor-download-all"
@@ -642,6 +674,7 @@ export default function ImageCompressor() {
             className="image-compressor-results"
             aria-labelledby="image-compressor-results-title"
           >
+            {!!completedItems.length && <ResultContinue source="图片压缩" targets={["/images-to-pdf"]} count={completedItems.length} disabled={compressing || packing} getFiles={() => completedItems.flatMap((item) => item.resultBlob ? [resultFile(item.resultBlob, outputFileName(item.file), normalizeImageType(item.file))] : [])} />}
             <div className="image-compressor-results-heading">
               <h2 id="image-compressor-results-title">压缩列表</h2>
               {completedItems.length ? (

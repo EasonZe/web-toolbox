@@ -55,6 +55,10 @@ for (const name of ["ipaddr.js", "culori"]) {
   await cp(new URL(`../node_modules/${name}/LICENSE`, import.meta.url), new URL(`${name}.txt`, vendorLicenseRoot));
 }
 
+for (const [name, license] of [["jsonpointer", "LICENSE.md"], ["bezier-easing", "LICENSE"]]) {
+  await cp(new URL(`../node_modules/${name}/${license}`, import.meta.url), new URL(`${name}.txt`, vendorLicenseRoot));
+}
+
 await cp(new URL("../licenses/saxes-6.0.0-LICENSE.txt", import.meta.url), new URL("saxes.txt", vendorLicenseRoot));
 await cp(new URL("../licenses/pdf-lib-fontkit-NOTICE.md", import.meta.url), new URL("pdf-lib-fontkit-NOTICE.md", vendorLicenseRoot));
 await cp(new URL("../node_modules/xmlchars/LICENSE", import.meta.url), new URL("xmlchars.txt", vendorLicenseRoot));

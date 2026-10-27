@@ -46,6 +46,12 @@ test("真实 ES 模块文件 Worker 按需加载并完成 JSON、差异、ZIP、
   }
   const json = await run({ action: "json-format", text: '{"id":9007199254740993123}', compact: true });
   assert.equal(json.result.output, '{"id":9007199254740993123}');
+  const pointer = await run({ action: "json-pointer", text: '{"users":[{"name":"Eason"}],"big":9007199254740993123}', paths: "/users/0/name\n/big\n/missing" });
+  assert.equal(pointer.result.matched, 2); assert.equal(pointer.result.total, 3);
+  assert.match(pointer.result.output, /9007199254740993123/);
+  assert.equal(JSON.parse(pointer.result.output)[0].value, "Eason");
+  assert.match((await run({ action: "json-pointer", text: '{"a":1,"a":2}', paths: "/a" })).error, /重复字段/);
+  assert.equal(JSON.parse((await run({ action: "json-pointer", text: "{}", paths: "/constructor" })).result.output)[0].found, false);
   assert.equal((await run({ action: "text-diff", left: "old\n", right: "new\n" })).result[0].kind, "changed");
   assert.equal((await run({ action: "text-codec", text: "5Lit5paH8J+YgA==", mode: "base64", direction: "decode" })).result, "中文😀");
   assert.match((await run({ action: "text-codec", text: "%XX", mode: "url", direction: "decode" })).error, /URL/);

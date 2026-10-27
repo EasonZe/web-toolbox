@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="./public/images/toolbox-logo.png" width="152" alt="多功能工具箱项目标志">
+  <img src="./public/images/toolbox-logo.png" width="152" alt="多功能工具箱">
 </p>
 
 <h1 align="center">多功能工具箱</h1>
 
-<p align="center">一个干净、响应式、面向生产环境的在线工具集合</p>
+<p align="center">浏览器里的实用工具</p>
 
 <p align="center">
   <a href="./README.md"><strong>简体中文</strong></a> ·
@@ -13,47 +13,43 @@
 </p>
 
 <p align="center">
+  <a href="https://tool.easonzhan.xyz/"><img alt="Website" src="https://img.shields.io/badge/Website-tool.easonzhan.xyz-0ea5e9"></a>
+  <a href="https://github.com/EasonZe/web-toolbox/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/EasonZe/web-toolbox"></a>
   <a href="https://github.com/EasonZe/web-toolbox/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/EasonZe/web-toolbox/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="./LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-2563eb.svg"></a>
-  <a href="https://tool.easonzhan.xyz/"><img alt="在线体验" src="https://img.shields.io/badge/在线体验-tool.easonzhan.xyz-0ea5e9.svg"></a>
+  <a href="./LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-2563eb"></a>
   <a href="https://github.com/EasonZe/web-toolbox/stargazers"><img alt="GitHub Stars" src="https://img.shields.io/github/stars/EasonZe/web-toolbox?style=flat&logo=github"></a>
 </p>
 
 <p align="center">
   <img alt="Node.js 22+" src="https://img.shields.io/badge/Node.js-22%2B-339933?logo=nodedotjs&logoColor=white">
-  <img alt="TypeScript 5.9" src="https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white">
-  <img alt="React 19" src="https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white">
-  <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white">
+  <img alt="React" src="https://img.shields.io/badge/React-149ECA?logo=react&logoColor=white">
   <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white">
-  <img alt="100+ 工具" src="https://img.shields.io/badge/工具-100%2B-7c6fb1">
+  <img alt="100+ tools" src="https://img.shields.io/badge/Tools-100%2B-7c6fb1">
 </p>
 
-多功能工具箱基于 React、Next.js、vinext 与 Cloudflare Workers 构建，收录 100 余个视频、音频、图片、文档、开发和生活类工具。多数媒体和文本处理在浏览器本地完成，无需安装客户端。
+[在线使用](https://tool.easonzhan.xyz/) · [版本更新](https://github.com/EasonZe/web-toolbox/releases) · [问题反馈](https://github.com/EasonZe/web-toolbox/issues)
 
-## 功能
+多功能工具箱收录 100 余个视频、音频、图片、文档、开发与生活工具，无需安装。多数文件和文本处理在浏览器本地完成。
 
-- **视频**：链接解析、格式转换、压缩、倒放、转 GIF、提取音频和水印。
-- **音频**：格式转换、压缩、倒放、变速变调、麦克风测试与录音。
-- **图片与设计**：压缩、裁剪、拼接、水印、取色、像素画、拼豆图纸、智能抠图、二维码和 3D 模型预览。
-- **文字与文档**：纯文本编辑、格式转换、字数统计、ASCII 字符画、简繁转换以及 Word/PDF 工具。
-- **科学计算**：表达式计算、方程求解、微积分计算、矩阵运算、数据统计、数论与组合六个独立工具；基于 MathLive、Cortex Compute Engine 与 Math.js，支持可视化公式输入，在浏览器后台线程中运行。
-- **开发与生活**：文件哈希、进制转换、函数绘图、摩斯电码、短链接、汇率、全球时间、日期计算、倒计时和设备测试。
-- **使用体验**：搜索、分类、收藏、四种列表布局、浅色/深色模式、自定义主题色，以及桌面、平板和手机适配。
-- **游戏资源**：Unity `.unitypackage` 目录与资源预览、模型几何查看及 `.meta` 提取。
-- **实用工具**：密码与 UUID、正则测试、JWT 解析、条形码、节拍器和 ICO 图标制作。选型见 [调研记录](docs/pc-tool-research.md)。
-- **图像与换算扩展**：11 类单位换算、图片调色与滤镜、无损 DPI 元数据修改、视频单帧截图与区间批量取帧。
-- **文本与文档扩展**：Base64 / URL / HTML / Unicode 编解码、汉字转拼音、CSV / TSV / JSON 表格转换、多图排序合成 PDF；均在本地处理。
-- **更多本地工具**：PDF 页面图片与文字导出、图片九宫格 / 网格切分、YAML / JSON 互转和 WCAG 颜色对比度检查。
-- **检查与剪辑**：Cron 时区预览、文件头类型识别、原尺寸图片差异对比与视频区间裁剪；不上传源文件。
-- **网络与样式**：IP / CIDR 子网计算、URL 解析与参数编辑、渐变色 CSS / SVG / PNG、CSS 多层阴影；不请求输入网址。
-- **文档与练习**：PDF 加页码与可见区域裁剪、PPTX 图片和正文提取、图片指定颜色替换、提词器、中文 / 英文打字速度测试；不上传或保存输入。PDF 裁剪不是安全脱敏，PPTX 不重建版式或执行宏。
-- **扩展工具**：PDF 页面管理、文本差异、批量重命名、OCR、JSON、Markdown、ZIP、字幕编辑、音频裁剪拼接、EXIF、时间戳、Unicode、无缝贴图、RGBA 通道、全景预览和高度转法线。选型与处理边界见 [GitHub 调研记录](docs/extended-tools-research.md)。
+## 工具有哪些
 
-## 快速开始
+| 分类 | 常用工具 |
+| --- | --- |
+| 视频 | 格式转换、压缩、裁剪、水印、转 GIF、截图与取帧、视频链接解析 |
+| 音频 | 格式转换、裁剪与拼接、变速变调、倒放、录音、节拍器 |
+| 图片与设计 | 压缩、裁剪、拼接、OCR、抠图、取色、像素画、贴图、3D 预览、CSS 样式生成 |
+| 文字与文档 | 文本编辑与对比、Markdown、字幕、PDF 页面管理与导出、PPTX 提取 |
+| 编码与开发 | JSON、YAML、路径提取、哈希与 HMAC、正则、JWT、二维码、ZIP、Unity 资源包预览 |
+| 计算与换算 | 表达式、方程、微积分、矩阵、统计、数论、单位与汇率换算 |
+| 时间与生活 | 世界时钟、倒计时、日期计算、抽签、打字练习 |
+| 设备与网络 | 麦克风、键盘与屏幕测试、IP 查询、子网计算、短链接 |
 
-大文件、批量处理与设备内存保护说明见 [本地处理与限制](docs/resource-limits.md)。
+支持搜索、分类、收藏、四种列表布局、深浅色模式和自定义主题色。部分图片与 PDF 结果可以直接交给下一个工具，详见[工具衔接](docs/tool-workflows.md)。
 
-环境要求：Node.js `>= 22.13.0`、npm `>= 10`。
+## 本地运行
+
+需要 Node.js 22.13 或更高版本及 npm。
 
 ```bash
 git clone https://github.com/EasonZe/web-toolbox.git
@@ -62,67 +58,34 @@ npm ci
 npm run dev
 ```
 
-提交代码前请运行完整质量检查：
+提交前运行检查：
 
 ```bash
 npm run check
 ```
 
-该命令会依次执行 ESLint、TypeScript 检查、生产构建和自动化测试。
-
-## 技术架构
-
-| 层级 | 技术 |
-| --- | --- |
-| 界面与路由 | React 19、Next.js 16、TypeScript、vinext |
-| 构建与部署 | Vite、Cloudflare Workers、Wrangler |
-| 云端能力 | Workers Assets、Images、D1、Rate Limiting |
-| 质量保障 | ESLint、Node.js Test Runner、GitHub Actions、Dependabot |
-
-```text
-app/                         页面、组件和浏览器端工具逻辑
-worker/                      主站 Cloudflare Worker
-workers/eason-daoyin-api/    抖音解析 Worker 源码
-workers/eason-bilibili-api/  Bilibili 解析 Worker 源码
-migrations/short-links/      D1 数据库迁移
-public/                      静态资源与字体许可证
-tests/                       自动化回归测试
-docs/                        架构、部署与依赖审查文档
-```
-
-## 视频解析服务
-
-| 平台 | 生产 Worker | 主要上游 | 仓库状态 |
-| --- | --- | --- | --- |
-| 抖音 | `eason-daoyin-api` | 抖音公开页面与播放地址 | 源码已收录 |
-| Bilibili | `eason-bilibili-api` | Bilibili 官方公开播放接口 | 源码已收录 |
-
-这些端点不是本仓库的通用公共 API。Fork 可以部署仓库内对应 Worker，并替换页面中的地址。完整边界与审查结果见 [系统架构](docs/architecture.md)、[部署文档](docs/deployment.md) 和 [依赖与上游审查](docs/dependency-audit.md)。
-
 ## 部署
 
-主站面向 Cloudflare Workers 部署，需要配置 Assets、Images、D1 与 Rate Limiting 绑定：
+使用 Cloudflare Workers。Fork 后请替换 `wrangler.jsonc` 中的域名、资源 ID 和绑定，步骤见[部署文档](docs/deployment.md)。
 
 ```bash
-npm ci
 npm run check
 npx wrangler deploy --dry-run
 npx wrangler deploy --keep-vars
 ```
 
-`wrangler.jsonc` 中的生产域名和资源 ID 属于当前站点。Fork 后必须替换为自己的 Cloudflare 资源，具体步骤见 [部署文档](docs/deployment.md)。
+抖音与 B 站解析使用独立 Worker，源码位于 `workers/`，需要单独部署。
 
-## 隐私、合规与安全
+## 使用说明
 
-- 用户文件优先留在浏览器本地；视频解析、汇率、IP 查询和短链接等功能需要访问网络服务。
-- 视频解析仅应用于你拥有权利或已获授权的内容，并应遵守目标平台条款及当地法律。
-- 不要在公开 Issue 中提交密钥、个人文件或敏感链接；安全问题请按 [安全政策](SECURITY.md) 私下报告。
-- 第三方组件及许可证见 [第三方声明](THIRD_PARTY_NOTICES.md)，锁定版本以 `package-lock.json` 为准。
+- 本地处理能力受设备内存和浏览器支持影响，详见[处理范围](docs/resource-limits.md)。
+- 视频解析、汇率、IP 查询和短链接等功能需要联网。视频内容应由你拥有或已获使用授权。
+- PDF 裁剪只隐藏页面区域，不能用于安全脱敏；JWT 解析不验证签名。
 
-## 参与项目
+## 文档与参与
 
-本项目由 [EasonZe](https://github.com/EasonZe) 发起并维护。欢迎提交 Issue 与 Pull Request；开始前请阅读 [贡献指南](CONTRIBUTING.md) 和 [行为准则](CODE_OF_CONDUCT.md)。
+[系统架构](docs/architecture.md) · [贡献指南](CONTRIBUTING.md) · [安全政策](SECURITY.md) · [第三方声明](THIRD_PARTY_NOTICES.md)
 
-## 许可证
+由 [EasonZe](https://github.com/EasonZe) 维护，欢迎提交 Issue 和 Pull Request。
 
-项目代码使用 [MIT License](LICENSE)。第三方组件、字体、模型和随包资源仍遵循各自许可证。
+项目代码使用 [MIT License](LICENSE)。第三方组件、字体、模型及素材遵循各自许可证。

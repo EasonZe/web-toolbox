@@ -1,7 +1,7 @@
 "use client";
 import { toolLimits } from "../lib/resource-limits";
 /* eslint-disable @next/next/no-img-element -- Local PDF preview is a revocable Blob URL. */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { UtilityShell } from "./utility-shell";
 import {
   LocalUpload,
@@ -14,6 +14,9 @@ import { checkFiles } from "../lib/local-files";
 import { parsePageSelection, type PdfPageChoice } from "../lib/pdf-selection";
 import { runFileWorker } from "../lib/file-worker-client";
 import { WorkbenchPagination } from "./workbench-pagination";
+import { createPdfPreviewSession } from "../lib/pdf-preview-session";
+import { ResultContinue } from "./tool-handoff";
+import { resultFile } from "../lib/tool-handoff";
 type Source = { file: File; bytes: Uint8Array; pages: number };
 function PdfPreview({
   file,
@@ -30,34 +33,27 @@ function PdfPreview({
     blob: Blob | null;
     error: string;
   } | null>(null);
+  const session = useRef<ReturnType<typeof createPdfPreviewSession> | null>(null);
   const current =
       preview?.file === file && preview?.page === page ? preview : null,
     url = useBlobUrl(current?.blob);
   useEffect(() => {
-    const controller = new AbortController();
-    if (file)
-      void (async () => {
-        const { loadPdf, renderPdfPage } = await import("../lib/document-pdf");
-        const pdf = await loadPdf(file, controller.signal);
-        try {
-          const result = await renderPdfPage(
-            pdf,
-            page + 1,
-            controller.signal,
-            0.7,
-          );
-          if (!controller.signal.aborted)
-            setPreview({ file, page, blob: result.blob, error: "" });
-        } finally {
-          await pdf.loadingTask.destroy();
-        }
-      })().catch((cause) => {
+    if (!file) return;
+    const owner = createPdfPreviewSession(file); session.current = owner;
+    return () => { if (session.current === owner) session.current = null; void owner.dispose(); };
+  }, [file]);
+  useEffect(() => {
+    const controller = new AbortController(), owner = session.current;
+    if (file && owner)
+      void owner.render(page + 1, controller.signal, 0.7).then((result) => {
+        if (!controller.signal.aborted) setPreview({ file, page, blob: result.blob, error: "" });
+      }).catch((cause) => {
         if (!controller.signal.aborted)
           setPreview({
             file,
             page,
             blob: null,
-            error: (cause as Error).message,
+            error: cause instanceof Error ? cause.message : "PDF 页面预览失败。",
           });
       });
     return () => controller.abort();
@@ -325,7 +321,7 @@ export default function PdfPageManager() {
       )}
       <TaskFeedback task={task} />
       {task.result && (
-        <LocalDownload blob={task.result.blob} name={task.result.name} />
+        <><LocalDownload blob={task.result.blob} name={task.result.name} />{task.result.blob.type === "application/pdf" && <ResultContinue source="PDF 页面管理" targets={["/pdf-page-numbers", "/pdf-cropper"]} getFiles={() => task.result ? [resultFile(task.result.blob, task.result.name, "application/pdf")] : []} />}</>
       )}
     </UtilityShell>
   );

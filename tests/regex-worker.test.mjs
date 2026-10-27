@@ -1,24 +1,13 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import { readdir } from "node:fs/promises";
 import { once } from "node:events";
 import { Worker } from "node:worker_threads";
-import vm from "node:vm";
 import test from "node:test";
-import ts from "typescript";
-import { loadLocalModule } from "./helpers/load-local-module.mjs";
+import { workerClientHarness } from "./helpers/worker-client-harness.mjs";
 
 function clientHarness() {
-  const workers = [], timers = new Map();
-  class BrowserWorker {
-    constructor(url, options) { this.url = url; this.options = options; this.terminated = false; workers.push(this); }
-    postMessage(data) { this.request = data; }
-    terminate() { this.terminated = true; }
-  }
-  const source = readFileSync(new URL("../app/lib/regex-worker-client.ts", import.meta.url), "utf8").replaceAll("import.meta.url", JSON.stringify("https://example.test/app/lib/regex-worker-client.ts"));
-  const scope = { exports: {}, URL, Error, Worker: BrowserWorker, require: () => loadLocalModule("app/lib/resource-limits.ts"), setTimeout: (callback, delay) => { const id = timers.size + 1; timers.set(id, { callback, delay }); return id; }, clearTimeout: (id) => timers.delete(id) };
-  vm.runInNewContext(ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText, scope);
-  return { run: scope.exports.runRegex, workers, timers };
+  const app = workerClientHarness("app/lib/regex-worker-client.ts");
+  return { ...app, run: app.exports.runRegex };
 }
 const request = { pattern: "a", flags: "g", text: "abc" };
 test("正则测试成功、语法报错和 Worker 加载失败均清理线程", async () => {

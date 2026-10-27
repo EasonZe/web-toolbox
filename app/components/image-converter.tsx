@@ -5,6 +5,9 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FiCheck, FiDownload, FiImage, FiTrash2, FiUploadCloud, FiX } from "react-icons/fi";
 import { FileDropZone } from "./file-drop-zone";
+import { ResultContinue } from "./tool-handoff";
+import { resultFile } from "../lib/tool-handoff";
+import { runSerialBatch } from "../lib/serial-batch";
 
 type OutputFormat = "image/png" | "image/jpeg" | "image/webp";
 type ConversionStatus = "ready" | "converting" | "done" | "error";
@@ -40,11 +43,24 @@ function looksLikeImage(file: File) {
   return file.type.startsWith("image/") || /\.(png|jpe?g|webp|gif|bmp|avif)$/i.test(file.name);
 }
 
-function loadImage(url: string) {
+function loadImage(url: string, signal: AbortSignal) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
+    signal.throwIfAborted();
     const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error("无法读取图片"));
+    let settled = false;
+    function finish(error?: unknown) {
+      if (settled) return;
+      settled = true;
+      image.onload = image.onerror = null;
+      signal.removeEventListener("abort", abort);
+      if (error) { image.src = ""; reject(error); }
+      else resolve(image);
+    }
+    function abort() { finish(signal.reason); }
+    image.onload = () => finish();
+    image.onerror = () => finish(new Error("无法读取图片"));
+    signal.addEventListener("abort", abort, { once: true });
+    if (signal.aborted) { abort(); return; }
     image.src = url;
   });
 }
@@ -76,32 +92,64 @@ function triggerDownload(url: string, name: string) {
 
 export default function ImageConverter() {
   const itemsRef = useRef<ConversionItem[]>([]);
-  const jobRef = useRef(0);
+  const mountedRef = useRef(true);
+  const taskRef = useRef<AbortController | null>(null);
+  const importRef = useRef<AbortController | null>(null);
+  const importingUrlsRef = useRef(new Set<string>());
+  const uploadVersionRef = useRef(0);
+  const [uploadVersion, setUploadVersion] = useState(0);
   const [items, setItems] = useState<ConversionItem[]>([]);
   const [outputFormat, setOutputFormat] = useState<OutputFormat>("image/jpeg");
   const [quality, setQuality] = useState(90);
   const [background, setBackground] = useState("#ffffff");
   const [message, setMessage] = useState("");
   const [converting, setConverting] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [stopping, setStopping] = useState(false);
 
-  useEffect(() => { itemsRef.current = items; }, [items]);
-  useEffect(() => () => {
-    jobRef.current += 1;
-    for (const item of itemsRef.current) {
-      URL.revokeObjectURL(item.previewUrl);
-      if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
-    }
-  }, []);
+  function updateItems(change: (current: ConversionItem[]) => ConversionItem[]) {
+    itemsRef.current = change(itemsRef.current);
+    setItems(itemsRef.current);
+  }
 
   useEffect(() => {
-    jobRef.current += 1;
-    setConverting(false);
-    setItems((current) => current.map((item) => {
+    mountedRef.current = true;
+    const importingUrls = importingUrlsRef.current;
+    return () => {
+      mountedRef.current = false;
+      taskRef.current?.abort();
+      importRef.current?.abort();
+      for (const url of importingUrls) URL.revokeObjectURL(url);
+      importingUrls.clear();
+      for (const item of itemsRef.current) {
+        URL.revokeObjectURL(item.previewUrl);
+        if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
+      }
+    };
+  }, []);
+
+  function resetResults() {
+    updateItems((current) => current.map((item) => {
       if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
       return { ...item, status: "ready", resultBlob: null, resultUrl: "", error: "" };
     }));
     setMessage("");
-  }, [background, outputFormat, quality]);
+  }
+
+  function changeFormat(value: OutputFormat) {
+    if (taskRef.current || value === outputFormat) return;
+    resetResults(); setOutputFormat(value);
+  }
+
+  function changeQuality(value: number) {
+    if (taskRef.current || value === quality) return;
+    resetResults(); setQuality(value);
+  }
+
+  function changeBackground(value: string) {
+    if (taskRef.current || value === background) return;
+    resetResults(); setBackground(value);
+  }
 
   const selectedFormat = formatOptions.find((option) => option.value === outputFormat) ?? formatOptions[0];
   const completedItems = useMemo(
@@ -110,42 +158,67 @@ export default function ImageConverter() {
   );
 
   async function addFiles(files: File[]) {
-    const existingKeys = new Set(items.map((item) => `${item.file.name}-${item.file.size}-${item.file.lastModified}`));
-    const remainingCount = Math.max(0, maxFiles - items.length);
-    const existingSize = items.reduce((sum, item) => sum + item.file.size, 0);
+    if (!mountedRef.current || importRef.current || taskRef.current) return;
+    const controller = new AbortController(), signal = controller.signal;
+    importRef.current = controller;
+    setImporting(true);
+    const existingKeys = new Set(itemsRef.current.map((item) => `${item.file.name}-${item.file.size}-${item.file.lastModified}`));
+    const remainingCount = Math.max(0, maxFiles - itemsRef.current.length);
+    const existingSize = itemsRef.current.reduce((sum, item) => sum + item.file.size, 0);
     let acceptedSize = 0;
     let skipped = 0;
     const accepted: ConversionItem[] = [];
 
-    for (const file of files.slice(0, remainingCount)) {
-      const key = `${file.name}-${file.size}-${file.lastModified}`;
-      if (existingKeys.has(key) || !looksLikeImage(file) || file.size > maxFileSize || existingSize + acceptedSize + file.size > maxTotalSize) {
-        skipped += 1;
-        continue;
+    try {
+      for (const file of files.slice(0, remainingCount)) {
+        signal.throwIfAborted();
+        const key = `${file.name}-${file.size}-${file.lastModified}`;
+        if (existingKeys.has(key) || !looksLikeImage(file) || file.size > maxFileSize || existingSize + acceptedSize + file.size > maxTotalSize) {
+          skipped += 1;
+          continue;
+        }
+        const previewUrl = URL.createObjectURL(file);
+        importingUrlsRef.current.add(previewUrl);
+        let image: HTMLImageElement | undefined;
+        try {
+          image = await loadImage(previewUrl, signal);
+          signal.throwIfAborted();
+          if (!image.naturalWidth || !image.naturalHeight || image.naturalWidth * image.naturalHeight > maxImagePixels) throw new Error("图片尺寸无效或像素过大");
+          accepted.push({
+            id: createId(), file, previewUrl, width: image.naturalWidth, height: image.naturalHeight,
+            status: "ready", resultBlob: null, resultUrl: "", error: "",
+          });
+          acceptedSize += file.size;
+          existingKeys.add(key);
+        } catch {
+          if (importingUrlsRef.current.delete(previewUrl)) URL.revokeObjectURL(previewUrl);
+          signal.throwIfAborted();
+          skipped += 1;
+        } finally {
+          if (image) image.src = "";
+        }
       }
-      const previewUrl = URL.createObjectURL(file);
-      try {
-        const image = await loadImage(previewUrl);
-        if (image.naturalWidth * image.naturalHeight > maxImagePixels) throw new Error("图片像素过大");
-        accepted.push({
-          id: createId(), file, previewUrl, width: image.naturalWidth, height: image.naturalHeight,
-          status: "ready", resultBlob: null, resultUrl: "", error: "",
-        });
-        acceptedSize += file.size;
-        existingKeys.add(key);
-      } catch {
-        URL.revokeObjectURL(previewUrl);
-        skipped += 1;
+
+      skipped += Math.max(0, files.length - remainingCount);
+      signal.throwIfAborted();
+      if (accepted.length) updateItems((current) => [...current, ...accepted]);
+      for (const item of accepted) importingUrlsRef.current.delete(item.previewUrl);
+      setMessage(skipped ? `已跳过${skipped}个文件；单张最大100 MB，一次最多200张，总计不超过1 GB。` : "");
+    } catch (error) {
+      for (const item of accepted) {
+        if (importingUrlsRef.current.delete(item.previewUrl)) URL.revokeObjectURL(item.previewUrl);
+      }
+      if (!signal.aborted && mountedRef.current) setMessage(error instanceof Error ? error.message : "图片导入失败");
+    } finally {
+      if (importRef.current === controller) {
+        importRef.current = null;
+        if (mountedRef.current) setImporting(false);
       }
     }
-
-    skipped += Math.max(0, files.length - remainingCount);
-    if (accepted.length) setItems((current) => [...current, ...accepted]);
-    setMessage(skipped ? `已跳过${skipped}个文件；单张最大100 MB，一次最多200张，总计不超过1 GB。` : "");
   }
 
   function removeItem(id: string) {
-    setItems((current) => {
+    updateItems((current) => {
       const target = current.find((item) => item.id === id);
       if (target) {
         URL.revokeObjectURL(target.previewUrl);
@@ -157,65 +230,89 @@ export default function ImageConverter() {
   }
 
   function clearItems() {
-    jobRef.current += 1;
+    if (taskRef.current) return;
+    uploadVersionRef.current++;
+    setUploadVersion(uploadVersionRef.current);
+    importRef.current?.abort();
+    importRef.current = null;
+    for (const url of importingUrlsRef.current) URL.revokeObjectURL(url);
+    importingUrlsRef.current.clear();
+    setImporting(false);
     for (const item of itemsRef.current) {
       URL.revokeObjectURL(item.previewUrl);
       if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
     }
-    setItems([]);
-    setConverting(false);
+    updateItems(() => []);
     setMessage("");
   }
 
-  async function convertItem(item: ConversionItem) {
-    const image = await loadImage(item.previewUrl);
-    const canvas = document.createElement("canvas");
-    canvas.width = item.width;
-    canvas.height = item.height;
-    const context = canvas.getContext("2d");
-    if (!context) throw new Error("浏览器无法创建转换画布");
-    if (outputFormat === "image/jpeg") {
-      context.fillStyle = background;
-      context.fillRect(0, 0, canvas.width, canvas.height);
+  async function convertItem(item: ConversionItem, signal: AbortSignal) {
+    const image = await loadImage(item.previewUrl, signal);
+    let canvas: HTMLCanvasElement | undefined;
+    try {
+      signal.throwIfAborted();
+      canvas = document.createElement("canvas");
+      canvas.width = item.width;
+      canvas.height = item.height;
+      const context = canvas.getContext("2d");
+      if (!context) throw new Error("浏览器无法创建转换画布");
+      if (outputFormat === "image/jpeg") {
+        context.fillStyle = background;
+        context.fillRect(0, 0, canvas.width, canvas.height);
+      }
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+      const result = await canvasToBlob(canvas, outputFormat, quality);
+      signal.throwIfAborted();
+      return result;
+    } finally {
+      if (canvas) { canvas.width = 0; canvas.height = 0; }
+      image.src = "";
     }
-    context.drawImage(image, 0, 0, canvas.width, canvas.height);
-    return canvasToBlob(canvas, outputFormat, quality);
   }
 
   async function runConversion() {
-    if (converting) return;
-    if (!items.length) return setMessage("请先选择需要转换的图片。");
-    const job = jobRef.current + 1;
-    jobRef.current = job;
+    if (!mountedRef.current || taskRef.current || importRef.current) return;
+    const pending = itemsRef.current.filter((item) => item.status !== "done");
+    if (!pending.length) return;
+    const controller = new AbortController(), signal = controller.signal;
+    taskRef.current = controller;
     setConverting(true);
+    setStopping(false);
     setMessage("");
-    let succeeded = 0;
-
-    for (const sourceItem of items) {
-      if (jobRef.current !== job) return;
-      setItems((current) => current.map((item) => item.id === sourceItem.id ? { ...item, status: "converting", error: "" } : item));
-      try {
-        const blob = await convertItem(sourceItem);
-        if (jobRef.current !== job) return;
-        const resultUrl = URL.createObjectURL(blob);
-        succeeded += 1;
-        setItems((current) => current.map((item) => {
-          if (item.id !== sourceItem.id) return item;
-          if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
-          return { ...item, status: "done", resultBlob: blob, resultUrl, error: "" };
-        }));
-      } catch (error) {
-        setItems((current) => current.map((item) => item.id === sourceItem.id ? {
-          ...item, status: "error", error: error instanceof Error ? error.message : "图片转换失败",
-        } : item));
+    try {
+      const { succeeded, failed } = await runSerialBatch({
+        items: pending, signal, process: convertItem,
+        onStart: (sourceItem) => updateItems((current) => current.map((item) => item.id === sourceItem.id ? { ...item, status: "converting", error: "" } : item)),
+        onSuccess(sourceItem, blob) {
+          const resultUrl = URL.createObjectURL(blob);
+          updateItems((current) => current.map((item) => {
+            if (item.id !== sourceItem.id) return item;
+            if (item.resultUrl) URL.revokeObjectURL(item.resultUrl);
+            return { ...item, status: "done", resultBlob: blob, resultUrl, error: "" };
+          }));
+        },
+        onError(sourceItem, error) {
+          updateItems((current) => current.map((item) => item.id === sourceItem.id ? {
+            ...item, status: "error", error: error instanceof Error ? error.message : "图片转换失败",
+          } : item));
+        },
+      });
+      setMessage(failed === 0 ? `转换完成，共${succeeded}张图片。` : `转换完成：成功${succeeded}张，失败${failed}张。`);
+    } catch (error) {
+      if (mountedRef.current) setMessage(signal.aborted ? "已停止处理，已完成的结果保留；再次开始将处理未完成的图片。" : error instanceof Error ? error.message : "图片转换失败");
+    } finally {
+      taskRef.current = null;
+      if (mountedRef.current) {
+        updateItems((current) => current.map((item) => item.status === "converting" ? { ...item, status: "ready", error: "" } : item));
+        setConverting(false);
+        setStopping(false);
       }
     }
-    if (jobRef.current === job) {
-      setConverting(false);
-      setMessage(succeeded === items.length
-        ? `转换完成，共${succeeded}张图片。`
-        : `转换完成：成功${succeeded}张，失败${items.length - succeeded}张。`);
-    }
+  }
+
+  function stopConversion() {
+    taskRef.current?.abort();
+    setStopping(true);
   }
 
   function outputFileName(file: File) {
@@ -241,7 +338,7 @@ export default function ImageConverter() {
       </header>
 
       <section className="converter-card image-converter-card" aria-label="批量图片格式转换">
-        <FileDropZone className="image-converter-picker" accept="image/*" multiple onFiles={addFiles} disabled={converting} ariaLabel="选择或拖入多张图片">
+        <FileDropZone key={uploadVersion} className="image-converter-picker" accept="image/*" multiple onFiles={(files) => { if (uploadVersion === uploadVersionRef.current) return addFiles(files); }} disabled={converting || importing} ariaLabel="选择或拖入多张图片">
           <FiUploadCloud aria-hidden="true" />
           <strong>{items.length ? "继续添加图片" : "选择多张图片"}</strong>
           <span>点击选择或直接拖入，支持PNG、JPG、WebP、BMP、AVIF等常见格式；单张最大100 MB，最多200张</span>
@@ -283,7 +380,7 @@ export default function ImageConverter() {
                 <FiImage aria-hidden="true" /><strong>尚未选择图片</strong><span>添加的图片会逐张显示在这里</span>
               </div>
             )}
-            <button className="image-converter-clear" type="button" onClick={clearItems} disabled={!items.length || converting}><FiTrash2 aria-hidden="true" />清空列表</button>
+            <button className="image-converter-clear" type="button" onClick={clearItems} disabled={(!items.length && !importing) || converting}><FiTrash2 aria-hidden="true" />清空列表</button>
           </section>
 
           <section className="image-converter-settings" aria-labelledby="image-converter-settings-title">
@@ -291,23 +388,24 @@ export default function ImageConverter() {
             <fieldset className="image-format-options" disabled={converting}>
               <legend>目标格式</legend>
               <div>{formatOptions.map((option) => (
-                <button className={outputFormat === option.value ? "is-selected" : ""} type="button" key={option.value} onClick={() => setOutputFormat(option.value)} aria-pressed={outputFormat === option.value}>{option.label}</button>
+                <button className={outputFormat === option.value ? "is-selected" : ""} type="button" key={option.value} onClick={() => changeFormat(option.value)} aria-pressed={outputFormat === option.value}>{option.label}</button>
               ))}</div>
             </fieldset>
             {outputFormat !== "image/png" ? (
-              <label className="image-converter-control"><span>图片质量<strong>{quality}%</strong></span><input type="range" min="20" max="100" step="1" value={quality} disabled={converting} onChange={(event) => setQuality(Number(event.target.value))} /></label>
+              <label className="image-converter-control"><span>图片质量<strong>{quality}%</strong></span><input type="range" min="20" max="100" step="1" value={quality} disabled={converting} onChange={(event) => changeQuality(Number(event.target.value))} /></label>
             ) : <p className="image-converter-note">PNG为无损格式，不需要设置质量。</p>}
             {outputFormat === "image/jpeg" ? (
-              <label className="image-converter-control"><span>透明区域背景</span><span className="image-converter-color-picker"><input type="color" value={background} disabled={converting} onChange={(event) => setBackground(event.target.value)} /><code>{background.toUpperCase()}</code></span></label>
+              <label className="image-converter-control"><span>透明区域背景</span><span className="image-converter-color-picker"><input type="color" value={background} disabled={converting} onChange={(event) => changeBackground(event.target.value)} /><code>{background.toUpperCase()}</code></span></label>
             ) : null}
             <div className="image-converter-file"><FiImage aria-hidden="true" /><div>
               <strong>{items.length ? `已选择${items.length}张图片` : "尚未选择图片"}</strong>
               <span>{items.length ? `共${formatFileSize(items.reduce((sum, item) => sum + item.file.size, 0))}` : "选择后可统一转换并下载"}</span>
             </div></div>
             <div className="image-converter-main-actions">
-              <button className="convert-button image-converter-download" type="button" onClick={runConversion} disabled={converting || !items.length}><FiImage aria-hidden="true" />{converting ? "正在逐张转换…" : "开始批量转换"}</button>
+              <button className="convert-button image-converter-download" type="button" onClick={converting ? stopConversion : runConversion} disabled={stopping || importing || !items.some((item) => item.status !== "done")}><FiImage aria-hidden="true" />{stopping ? "正在停止…" : converting ? "停止处理" : "开始批量转换"}</button>
               <button className="secondary-action image-converter-download-all" type="button" onClick={downloadAll} disabled={converting || !completedItems.length}><FiDownload aria-hidden="true" />下载全部</button>
             </div>
+            {!!completedItems.length && <ResultContinue source="图片格式转换" targets={["/images-to-pdf"]} count={completedItems.length} disabled={converting} getFiles={() => completedItems.flatMap((item) => item.resultBlob ? [resultFile(item.resultBlob, outputFileName(item.file), outputFormat)] : [])} />}
           </section>
         </div>
         {message ? <p className="message" role={message.startsWith("转换完成") ? "status" : "alert"}>{message}</p> : null}

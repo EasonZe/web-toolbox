@@ -10,6 +10,8 @@ function task() { return { result: null, busy: false, error: "", reset() { this.
 function workbench(path, name, props) {
   const tasks = [task(), task(), task()], calls = []; let cursor = 0;
   const app = loadHookComponent(`app/components/${path}.tsx`, name, (id) => {
+    if (id === "./tool-handoff") return { ResultContinue: "result-continue", ToolHandoffInput: "handoff-input" };
+    if (id === "../lib/tool-handoff") return loadLocalModule("app/lib/tool-handoff.ts");
     if (id === "./local-workbench") return { useLocalTask: () => tasks[cursor++], TaskFeedback: "feedback", LocalUpload: "upload", LocalDownload: "download", useBlobUrl: (blob) => blob ? "blob:local" : "" };
     if (id === "./utility-shell") return { UtilityShell: "shell" };
     if (id === "./pdf-local-preview") return { PdfLocalPreview: "pdf-preview" };
@@ -130,15 +132,16 @@ test("提词器 UI 快捷键不截获输入，换稿归零暂停、镜像和全�
   app.unmount(); assert.equal(app.events.size, 0);
 });
 
-test("PDF 单页预览切页/退出取消旧渲染、销毁文档，旧页不覆盖新页", async () => {
+test("PDF 单页预览切页复用文档、取消旧渲染，退出才销毁，旧页不覆盖新页", async () => {
   const renders = [], destroyed = []; let source = 0;
   const app = mountComponent("app/components/pdf-local-preview.tsx", "PdfLocalPreview", (id) => {
     if (id === "./local-workbench") return { useBlobUrl: (blob) => blob ? `blob:${blob.size}` : "" };
-    if (id === "../lib/document-pdf") return { loadPdf: async () => { const id = ++source; return { id, loadingTask: { async destroy() { destroyed.push(id); } } }; }, renderPdfPage: (doc, page, signal) => new Promise((resolve) => renders.push({ doc, page, signal, resolve })) };
+    if (id === "../lib/pdf-preview-session") return { createPdfPreviewSession: (file) => loadLocalModule("app/lib/pdf-preview-session.ts").createPdfPreviewSession(file, async () => ({ loadPdf: async () => { const id = ++source; return { id, loadingTask: { async destroy() { destroyed.push(id); } } }; }, renderPdfPage: (doc, page, signal) => new Promise((resolve) => renders.push({ doc, page, signal, resolve })) })) };
   });
   const file = new Blob(["pdf"]); app.render({ file, page: 1 }); app.flushEffects(); await new Promise((resolve) => setImmediate(resolve));
   app.render({ file, page: 2 }); app.flushEffects(); await new Promise((resolve) => setImmediate(resolve)); assert.equal(renders[0].signal.aborted, true);
   renders[1].resolve({ blob: new Blob(["new-page"]), width: 200, height: 300 }); await new Promise((resolve) => setImmediate(resolve));
   renders[0].resolve({ blob: new Blob(["old"]), width: 100, height: 100 }); await new Promise((resolve) => setImmediate(resolve));
-  const tree = app.render({ file, page: 2 }); assert.equal(allElements(tree, (n) => n.type === "img")[0].props.src, "blob:8"); assert.deepEqual(destroyed.sort(), [1, 2]); app.unmount(); assert.equal(renders[1].signal.aborted, true);
+  const tree = app.render({ file, page: 2 }); assert.equal(allElements(tree, (n) => n.type === "img")[0].props.src, "blob:8"); assert.equal(source, 1); assert.equal(renders[0].doc, renders[1].doc); assert.deepEqual(destroyed, []);
+  app.unmount(); await new Promise((resolve) => setImmediate(resolve)); assert.deepEqual(destroyed, [1]);
 });

@@ -19,6 +19,8 @@
 | [Pixelmatch](https://github.com/mapbox/pixelmatch) 8.0.0 | 原尺寸图片视觉像素差异比较 | ISC |
 | [ipaddr.js](https://github.com/whitequark/ipaddr.js) 2.5.0 | IPv4 / IPv6 严格地址解析与标准化 | MIT |
 | [Culori](https://github.com/Evercoder/culori) 4.0.2 | sRGB / OKLab 预乘透明度插值 | MIT |
+| [jsonpointer](https://github.com/janl/node-jsonpointer) 5.0.1 | RFC 6901 只读路径提取；本项目额外校验自有字段与数组索引 | MIT |
+| [bezier-easing](https://github.com/gre/bezier-easing) 3.2.0 | CSS 贝塞尔缓动取样；编辑器独立实现 | MIT |
 | [jsdiff](https://github.com/kpdecker/jsdiff) | 文本行级、字符级差异比较 | BSD-3-Clause |
 | [fflate](https://github.com/101arrowz/fflate) | 本地 ZIP 打包、解压与批量重命名下载 | MIT |
 | [Tesseract.js](https://github.com/naptha/tesseract.js) / core | 中英文图片 OCR 与 WebAssembly 引擎 | Apache-2.0 |
@@ -90,6 +92,8 @@
 - `public/images/eason-avatar.png`：站点维护者的个人头像素材，不属于 MIT 软件授权范围，未经原权利人许可请勿复用。
 
 ## 参考实现
+
+- 本轮继续参考 ToolKnit 的维护文档中解析 / 渲染分离、预览完成后替换、任务生命周期与构建一致性检查的通用思路；按本项目 React / PDF.js / Worker 架构独立实现，没有复制其代码、素材或引入 PDF-to-Word 引擎，保留本项目 MIT 许可。详见 [工程优化记录](docs/toolknit-optimization.md)。
 
 - 第七批只参考 [ToolKnit Desktop](https://github.com/ZihangDong/toolknit-desktop) 的功能方向，不复制其源码、素材、Tauri/Rust 程序或 PDF-to-Word 引擎。其作者代码并非本项目可直接复用的 MIT 代码；不能因仓库公开而推定可集成。PDF 复用 PDF-lib（MIT）、PDF.js（Apache-2.0）及项目内 Noto Sans SC（OFL-1.1）；`@pdf-lib/fontkit` 1.1.1 的 README / npm 元数据明确声明 MIT，但未附独立 LICENSE，构建会保留原始 README、元数据、带内嵌版权声明的完整原包及 [来源声明](licenses/pdf-lib-fontkit-NOTICE.md)，不伪造上游版权头。其内嵌 Google Brotli 的 Apache 声明与 pako 许可分别保留，不能笼统按 MIT 覆盖。
 - PPTX 只解析包内结构，使用 saxes 6.0.0（ISC）与 xmlchars 2.2.0（MIT），复用 fflate（MIT）。saxes npm 包未附独立 LICENSE，已从 [对应 v6.0.0 上游版本](https://github.com/lddubeau/saxes/blob/v6.0.0/LICENSE) 保存原始全文并随构建分发；其仓库已归档，版本锁定，DTD / 实体与工作预算由本项目额外约束。未复制提词器或 Monkeytype 的代码、词库与界面，练习文本为本项目自写。

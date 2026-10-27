@@ -6,6 +6,8 @@ import { checkFiles, fileSize } from "../lib/local-files";
 import { toolLimits } from "../lib/resource-limits";
 import { LocalDownload, LocalUpload, TaskFeedback, useLocalTask } from "./local-workbench";
 import { UtilityShell } from "./utility-shell";
+import { ResultContinue, ToolHandoffInput } from "./tool-handoff";
+import { resultFile } from "../lib/tool-handoff";
 type Item = { id: number; file: File };
 export default function ImagesToPdf() {
   const [items, setItems] = useState<Item[]>([]), [options, setOptions] = useState(defaultImagePdfOptions), sequence = useRef(0);
@@ -13,14 +15,17 @@ export default function ImagesToPdf() {
   function change(next: Partial<ImagePdfOptions>) { task.reset(); setOptions({ ...options, ...next }); }
   function update(next: Item[]) { task.reset(); setItems(next); }
   function move(index: number, step: number) { const next = [...items]; [next[index], next[index + step]] = [next[index + step], next[index]]; update(next); }
-  return <UtilityShell className="additional-utilities" title="图片转 PDF" description="多张图片按顺序合成 PDF，自定义纸张、方向、边距与清晰度，本地导出。">
-    <LocalUpload multiple accept="image/png,image/jpeg,image/webp,image/avif,image/bmp" title="添加图片 / 拖入多张图片" hint="PNG / JPG / WebP / AVIF / BMP · 最多 200 张，每张 100 MB，总计 1 GB" onFiles={(files) => {
+  function addFiles(files: File[]) {
       task.reset();
       try { checkFiles([...items.map((item) => item.file), ...files], toolLimits.image.batchBytes, toolLimits.image.batchFiles);
         if (files.some((file) => file.size > toolLimits.image.fileBytes || !/\.(png|jpe?g|webp|avif|bmp)$/i.test(file.name))) throw new Error("请选择支持的图片格式，每张最多 100 MB。");
         setItems([...items, ...files.map((file) => ({ id: ++sequence.current, file }))]);
-      } catch (cause) { task.setError((cause as Error).message); }
-    }} />
+        return true;
+      } catch (cause) { task.setError((cause as Error).message); return false; }
+  }
+  return <UtilityShell className="additional-utilities" title="图片转 PDF" description="多张图片按顺序合成 PDF，自定义纸张、方向、边距与清晰度，本地导出。">
+    <ToolHandoffInput target="/images-to-pdf" behavior="append" onFiles={addFiles} disabled={task.busy} />
+    <LocalUpload multiple accept="image/png,image/jpeg,image/webp,image/avif,image/bmp" title="添加图片 / 拖入多张图片" hint="PNG / JPG / WebP / AVIF / BMP · 最多 200 张，每张 100 MB，总计 1 GB" onFiles={(files) => { addFiles(files); }} />
     <div className="utility-columns"><section className="utility-panel utility-controls"><h2>页面顺序 · {items.length} 张</h2>
       <div className="utility-actions"><button disabled={!items.length} onClick={() => update([...items].sort((a, b) => a.file.name.localeCompare(b.file.name, "zh-CN", { numeric: true })))}>按文件名排序</button><button disabled={!items.length} onClick={() => update([])}>清空图片</button></div>
       {items.length ? <ol className="image-pdf-list">{items.map((item, index) => <li key={item.id}><span><strong>{index + 1}. {item.file.name}</strong><small>{fileSize(item.file.size)}</small></span><div className="utility-actions"><button aria-label={`上移 ${item.file.name}`} disabled={index === 0} onClick={() => move(index, -1)}>↑</button><button aria-label={`下移 ${item.file.name}`} disabled={index === items.length - 1} onClick={() => move(index, 1)}>↓</button><button aria-label={`移除 ${item.file.name}`} onClick={() => update(items.filter((other) => other.id !== item.id))}>移除</button></div></li>)}</ol> : <p className="utility-muted">先添加图片，列表顺序就是 PDF 页序。</p>}
@@ -36,7 +41,7 @@ export default function ImagesToPdf() {
         const data = await runFileWorker<Uint8Array>({ action: "images-pdf", files: items.map((item) => item.file), options }, signal, report);
         return new Blob([new Uint8Array(data)], { type: "application/pdf" });
       })}>合成 PDF</button><TaskFeedback task={task} />
-      {task.result && <LocalDownload blob={task.result} name="images.pdf" title={`下载 PDF · ${items.length} 页`} />}
+      {task.result && <><LocalDownload blob={task.result} name="images.pdf" title={`下载 PDF · ${items.length} 页`} /><ResultContinue source="图片转 PDF" targets={["/pdf-page-numbers", "/pdf-cropper"]} getFiles={() => task.result ? [resultFile(task.result, "images.pdf", "application/pdf")] : []} /></>}
       <p className="utility-muted">每张图片一页，完整居中、不裁切；缩小长边时不放大原图。PNG 的透明区域在白纸上显示。输出最多 200 MB，图片按顺序处理，超出内存预算会提示分批，不会自动降低画质。</p>
     </section></div>
   </UtilityShell>;

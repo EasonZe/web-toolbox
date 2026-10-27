@@ -51,6 +51,6 @@ function home(view, width) {
 for (const width of [390, 1440]) for (const view of ["cards", "groups", "table", "minimal"]) {
   test(`同数量搜索换词不隐藏新工具，收藏不重置动画：${width}px / ${view}`, () => {
     const app = home(view, width);
-    try { app.search("时间戳"); app.search("文件哈希"); app.favorite(); } finally { app.component.unmount(); }
+    try { app.search("时间戳"); app.search("文件哈希"); app.favorite(); for (const query of ["JSON 路径提取", "文本哈希与 HMAC", "CSS 缓动曲线"]) { app.search(query); app.favorite(); } } finally { app.component.unmount(); }
   });
 }

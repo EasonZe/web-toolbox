@@ -1,25 +1,9 @@
-import type { Content, TDocumentDefinitions } from "pdfmake/interfaces";
+import type { Content } from "pdfmake/interfaces";
 import type { DocumentSettings } from "./document-conversion";
 import type { ConversionProgress, DocumentResult } from "./document-engine";
 import { checkDocxArchive } from "./document-engine";
 import { loadPdf, renderPdfPage } from "./document-pdf";
-
-function makePdf(definition: TDocumentDefinitions, signal: AbortSignal, progress: ConversionProgress): Promise<Blob> {
-  signal.throwIfAborted();
-  return new Promise((resolve, reject) => {
-    const worker = new Worker(new URL("../workers/document-pdf.worker.ts", import.meta.url), { type: "module" });
-    const close = () => { worker.terminate(); signal.removeEventListener("abort", abort); };
-    const abort = () => { close(); reject(new DOMException("已取消", "AbortError")); };
-    signal.addEventListener("abort", abort, { once: true });
-    worker.onerror = () => { close(); reject(new Error("PDF生成引擎启动失败，请刷新后重试。")); };
-    worker.onmessage = ({ data }) => {
-      if (data.type === "progress") progress(data.percent, data.message);
-      if (data.type === "done") { close(); resolve(data.blob); }
-      if (data.type === "error") { close(); reject(new Error(data.message)); }
-    };
-    try { worker.postMessage(definition); } catch (cause) { close(); reject(cause); }
-  });
-}
+import { makePdf } from "./document-pdf-client";
 
 function fitImages(value: unknown, width: number, height: number) {
   if (!value || typeof value !== "object") return;

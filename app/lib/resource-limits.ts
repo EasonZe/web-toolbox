@@ -28,6 +28,8 @@ export const toolLimits = {
   practice: { promptChars: 100_000, typingChars: 20_000, typingGraphemes: 5000 },
   pdfExport: { desktopPixels: 32_000_000, mobilePixels: 16_000_000, bytes: 512 * MiB },
   frameCapture: { frames: 200, bytes: 512 * MiB },
+  jsonPointer: { paths: 200, chars: 32768 },
+  textDigest: { keyBytes: 64 * 1024 },
 } as const;
 export function isConstrainedDevice() {
   if (typeof navigator === "undefined") return false;
