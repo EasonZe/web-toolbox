@@ -1,6 +1,6 @@
 {
   "name": "web-toolbox",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "多功能工具箱：面向浏览器的视频、音频、图片、文档、开发与生活工具集合。",
   "private": true,
   "license": "MIT",
@@ -29,6 +29,8 @@
     "node": ">=22.13.0"
   },
   "scripts": {
+    "check:integrity": "node scripts/check-project-integrity.mjs",
+    "prebuild": "npm run check:integrity",
     "dev": "node scripts/prepare-document-assets.mjs && vinext dev",
     "build": "node scripts/prepare-document-assets.mjs && vinext build",
     "start": "vinext start",
@@ -52,6 +54,7 @@
     "@pdf-lib/fontkit": "1.1.1",
     "@plussub/srt-vtt-parser": "2.0.5",
     "@soundtouchjs/audio-worklet": "^2.1.1",
+    "bezier-easing": "3.2.0",
     "change-case": "^5.4.4",
     "colorthief": "^3.5.0",
     "cron-parser": "5.10.2",
@@ -74,6 +77,7 @@
     "ipaddr.js": "2.5.0",
     "jsbarcode": "3.12.3",
     "jsonc-parser": "3.3.1",
+    "jsonpointer": "5.0.1",
     "jsqr": "^1.4.0",
     "jwt-decode": "4.0.0",
     "mammoth": "^1.12.1",

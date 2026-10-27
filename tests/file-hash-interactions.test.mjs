@@ -3,6 +3,8 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { runToolTest } from "./helpers/vm-modules.mjs";
 import ts from "typescript";
+import { workerClientHarness } from "./helpers/worker-client-harness.mjs";
+const tick = () => new Promise((resolve) => setImmediate(resolve));
 
 const source = await readFile(new URL("../app/components/file-hash.tsx", import.meta.url), "utf8");
 const helpersSource = await readFile(new URL("../app/lib/file-hash.ts", import.meta.url), "utf8");
@@ -11,7 +13,7 @@ const helpers = {};
 runToolTest(compile(helpersSource), { exports: helpers });
 
 function harness() {
-  const slots = [], workers = [], cleanups = [], copied = [];
+  const slots = [], cleanups = [], copied = [], workerApp = workerClientHarness("app/lib/file-hash-client.ts"), workers = workerApp.workers;
   let cursor = 0, root;
   const hooks = {
     useState(initial) { const i = cursor++; if (!(i in slots)) slots[i] = initial; return [slots[i], (value) => { slots[i] = typeof value === "function" ? value(slots[i]) : value; }]; },
@@ -21,13 +23,7 @@ function harness() {
   const exports = {};
   const jsx = (type, props) => ({ type, props });
   runToolTest(compile(source.replaceAll("import.meta.url", '"https://example.test/tool.js"')), {
-    exports, URL,
-    Worker: class {
-      constructor() { workers.push(this); }
-      terminate() { this.terminated = true; }
-      postMessage(request) { this.request = request; }
-      emit(data) { this.onmessage({ data }); }
-    },
+    exports, URL, AbortController, Error,
     navigator: { clipboard: { async writeText(value) { copied.push(value); } } },
     setTimeout: () => 1, clearTimeout() {},
     require(name) {
@@ -37,6 +33,7 @@ function harness() {
       if (name === "react-icons/fi") return {};
       if (name === "./file-drop-zone") return { FileDropZone: "drop-zone" };
       if (name === "../lib/file-hash") return helpers;
+      if (name === "../lib/file-hash-client") return workerApp.exports;
       throw new Error(name);
     },
   });
@@ -71,7 +68,7 @@ test("选择文件后启动独立计算，完成后显示结果并复制", async
   worker.emit({ type: "progress", loaded: 2, total: 3 }); ui.render();
   assert.equal(ui.find((n) => n.type === "progress").props.value, 66);
   const digest = "a".repeat(64);
-  worker.emit({ type: "done", results: { "SHA-256": digest } }); ui.render();
+  worker.emit({ type: "done", results: { "SHA-256": digest } }); await tick(); ui.render();
   assert.equal(ui.status, "计算完成");
   assert.equal(ui.resultCount, 1);
   assert.equal(worker.terminated, true);
@@ -101,14 +98,14 @@ test("取消或更换文件终止旧任务，忽略迟到的结果，可重新�
   assert.equal(ui.workers[2].terminated, true);
 });
 
-test("读取失败和组件加载失败都会恢复计算按钮", () => {
+test("读取失败和组件加载失败都会恢复计算按钮", async () => {
   const ui = harness();
   ui.choose(new File(["a"], "a.txt")); ui.click("开始计算");
-  ui.workers[0].emit({ type: "error", message: "无法读取文件" }); ui.render();
+  ui.workers[0].emit({ type: "error", message: "无法读取文件" }); await tick(); ui.render();
   assert.equal(ui.find((n) => n.props?.role === "alert").props.children, "无法读取文件");
   assert.equal(ui.button("开始计算").disabled, false);
   ui.click("开始计算");
-  ui.workers[1].onerror({ preventDefault() {} }); ui.render();
+  ui.workers[1].onerror({ preventDefault() {} }); await tick(); ui.render();
   assert.match(ui.find((n) => n.props?.role === "alert").props.children, /加载失败/);
   assert.equal(ui.button("开始计算").disabled, false);
 });

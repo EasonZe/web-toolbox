@@ -8032,10 +8032,10 @@ html[data-theme="dark"] .image-watermark-canvas-frame canvas {
 .utility-range-control output { color: var(--ui-accent); font-variant-numeric: tabular-nums; }
 .utility-controls input[type="color"] { height: 44px; }
 .utility-controls fieldset { border: 0; padding: 0; margin: 0; }
-.utility-card button:not(.primary-button) { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; color: var(--text); background: var(--surface); cursor: pointer; font: inherit; font-size: 13px; }
-.utility-card button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
-.utility-card button:disabled { opacity: .5; cursor: not-allowed; }
-.utility-card .primary-button { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; width: 100%; border: 1px solid var(--border); border-radius: 12px; background: var(--accent-soft); color: var(--text); text-decoration: none; font-weight: 600; cursor: pointer; padding: 12px; }
+:is(.utility-card, .tool-result-next, .tool-handoff-input) button:not(.primary-button) { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; color: var(--text); background: var(--surface); cursor: pointer; font: inherit; font-size: 13px; }
+:is(.utility-card, .tool-result-next, .tool-handoff-input) button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+:is(.utility-card, .tool-result-next, .tool-handoff-input) button:disabled { opacity: .5; cursor: not-allowed; }
+:is(.utility-card, .tool-result-next, .tool-handoff-input) .primary-button { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; width: 100%; border: 1px solid var(--border); border-radius: 12px; background: var(--accent-soft); color: var(--text); text-decoration: none; font-weight: 600; cursor: pointer; padding: 12px; }
 .utility-muted { color: var(--muted); font-size: 13px; line-height: 1.7; margin: 0; }
 .utility-error { color: #c13d4f; font-size: 14px; }
 .utility-actions { display: flex; flex-wrap: wrap; gap: 8px; }

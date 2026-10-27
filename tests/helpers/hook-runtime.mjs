@@ -19,6 +19,7 @@ export function mountComponent(path, name, resolve, globals = {}) {
     useState(initial) { const i = cursor++; slots[i] ??= { value: typeof initial === "function" ? initial() : initial }; return [slots[i].value, (next) => { slots[i].value = typeof next === "function" ? next(slots[i].value) : next; }]; },
     useRef(value) { const i = cursor++; if (!slots[i]) { slots[i] = { current: value }; refs.push(slots[i]); } return slots[i]; },
     useEffect(work, deps) { const i = cursor++; if (!slots[i] || changed(slots[i].deps, deps)) { slots[i] = { deps, work, cleanup: slots[i]?.cleanup }; pending.add(i); } },
+    useSyncExternalStore(subscribe, snapshot) { hooks.useEffect(() => subscribe(() => {}), [subscribe]); return snapshot(); },
   };
   const scope = { exports: {}, Error, URL, Blob, File, AbortController, AbortSignal, DOMException, setTimeout, clearTimeout, ...globals };
   scope.require = (id) => id === "react" ? hooks : resolve(id) ?? nativeRequire(id);

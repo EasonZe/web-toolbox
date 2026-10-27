@@ -1,5 +1,7 @@
 # 实用工具选型
 
+最新第八批（2026-10-27）：JSON 路径提取、文本哈希与 HMAC、CSS 缓动曲线，见 [GitHub 选型、实现与验证](json-digest-easing-tools.md)。
+
 调研日期：2026-10-22。参考 [PC-TOOL](https://github.com/Team-YM/pc-tool) 仓库当前工具目录，和本项目首页清单逐项对比。
 
 ## 本次加入

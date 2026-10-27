@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { FiCopy, FiFile, FiUploadCloud } from "react-icons/fi";
 import { FileDropZone } from "./file-drop-zone";
-import { compareFileHash, hashAlgorithms, type HashAlgorithm, type HashResults, type HashWorkerMessage } from "../lib/file-hash";
+import { compareFileHash, hashAlgorithms, type HashAlgorithm, type HashResults } from "../lib/file-hash";
+import { runFileHash } from "../lib/file-hash-client";
 
 function fileSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
@@ -23,12 +24,12 @@ export default function FileHash() {
   const [error, setError] = useState("");
   const [expected, setExpected] = useState("");
   const [toast, setToast] = useState("");
-  const workerRef = useRef<Worker | null>(null);
+  const job = useRef<AbortController | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => () => {
-    workerRef.current?.terminate();
-    workerRef.current = null;
+    job.current?.abort();
+    job.current = null;
     if (toastTimer.current) clearTimeout(toastTimer.current);
   }, []);
 
@@ -36,8 +37,8 @@ export default function FileHash() {
   const resultRows = hashAlgorithms.filter((algorithm) => results[algorithm]);
 
   function resetCalculation() {
-    workerRef.current?.terminate();
-    workerRef.current = null;
+    job.current?.abort();
+    job.current = null;
     setRunning(false);
     setProgress(0);
     setResults({});
@@ -58,51 +59,27 @@ export default function FileHash() {
       : [...previous, algorithm]);
   }
 
-  function start() {
-    if (!file || !selected.length || workerRef.current) return;
+  async function start() {
+    if (!file || !selected.length || job.current) return;
     setResults({});
     setError("");
     setProgress(0);
     setRunning(true);
     setStatus("正在初始化计算…");
-    let worker: Worker | null = null;
-    const fail = (message: string) => {
-      worker?.terminate();
-      workerRef.current = null;
-      setRunning(false);
-      setStatus("");
-      setError(message);
-    };
+    const controller = new AbortController(); job.current = controller;
     try {
-      worker = new Worker(new URL("../workers/file-hash.worker.ts", import.meta.url), { type: "module" });
-      workerRef.current = worker;
-      worker.onmessage = (event: MessageEvent<HashWorkerMessage>) => {
-        if (workerRef.current !== worker) return;
-        const message = event.data;
-        if (message.type === "progress") {
-          setProgress(message.total ? Math.floor(message.loaded / message.total * 100) : 0);
-          setStatus("正在计算…");
-        } else if (message.type === "done") {
-          setResults(message.results);
-          setProgress(100);
-          setRunning(false);
-          setStatus("计算完成");
-          worker?.terminate();
-          workerRef.current = null;
-        } else if (message.type === "error") {
-          fail(message.message);
-        }
-      };
-      worker.onerror = (event) => {
-        event.preventDefault();
-        if (workerRef.current === worker) fail("计算组件加载失败，请刷新页面后重试。");
-      };
-      worker.onmessageerror = () => {
-        if (workerRef.current === worker) fail("无法读取计算结果，请重新计算。");
-      };
-      worker.postMessage({ file, algorithms: selected });
-    } catch {
-      fail("浏览器无法启动计算，请使用新版浏览器后重试。");
+      const next = await runFileHash(file, selected, controller.signal, (value, label) => {
+        if (job.current !== controller) return;
+        setProgress(value); setStatus(label);
+      });
+      if (job.current !== controller) return;
+      setResults(next); setProgress(100); setStatus("计算完成");
+    } catch (cause) {
+      if (job.current === controller) {
+        setStatus(""); setError(cause instanceof Error ? cause.message : "浏览器无法启动计算，请使用新版浏览器后重试。");
+      }
+    } finally {
+      if (job.current === controller) { job.current = null; setRunning(false); }
     }
   }
 

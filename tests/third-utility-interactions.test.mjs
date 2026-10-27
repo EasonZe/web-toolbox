@@ -1,8 +1,6 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import vm from "node:vm";
-import ts from "typescript";
 import test from "node:test";
+import { workerClientHarness } from "./helpers/worker-client-harness.mjs";
 import { loadHookComponent, allElements } from "./helpers/client-hook-harness.mjs";
 import { loadLocalModule } from "./helpers/load-local-module.mjs";
 const definitions = loadLocalModule("app/lib/extra-tool-options.ts");
@@ -17,6 +15,8 @@ function taskMock() {
 function mount(path, name) {
   const task = taskMock(), calls = [];
   const component = loadHookComponent(`app/components/${path}.tsx`, name, (id) => {
+    if (id === "./tool-handoff") return { ResultContinue: "result-continue", ToolHandoffInput: "handoff-input" };
+    if (id === "../lib/tool-handoff") return loadLocalModule("app/lib/tool-handoff.ts");
     if (id === "../lib/extra-tool-options") return definitions;
     if (id === "../lib/resource-limits") return limits;
     if (id === "../lib/local-files") return localFiles;
@@ -73,22 +73,18 @@ test("共享文本导入完整 UTF8，超限明确拒绝且不截断原输入", 
   await allElements(render(), (n) => n.type === "upload")[0].props.onFiles([new File(["too long"], "in.txt")]); assert.equal(value, "中文😀"); assert.match(task.error, /未截断/);
 });
 test("文件 Worker 进度不提前结束，成功、失败、取消及超时都清理线程", async () => {
-  const workers = [], timers = new Map();
-  class BrowserWorker { constructor() { workers.push(this); } postMessage(value) { this.request = value; } terminate() { this.terminated = true; } }
-  const source = readFileSync(new URL("../app/lib/file-worker-client.ts", import.meta.url), "utf8").replaceAll("import.meta.url", '"https://example.test/client.ts"');
-  const scope = { exports: {}, Error, URL, Worker: BrowserWorker, setTimeout(fn, ms) { const id = timers.size + 1; timers.set(id, { fn, ms }); return id; }, clearTimeout(id) { timers.delete(id); } };
-  vm.runInNewContext(ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText, scope);
+  const { exports, workers, timers } = workerClientHarness("app/lib/file-worker-client.ts");
   for (const kind of ["success", "error", "cancel", "timeout", "load"]) {
     const controller = new AbortController(), updates = [];
-    const promise = scope.exports.runFileWorker({ action: "images-pdf", files: [] }, controller.signal, (...args) => updates.push(args));
+    const promise = exports.runFileWorker({ action: "images-pdf", files: [] }, controller.signal, (...args) => updates.push(args));
     const worker = workers.at(-1); worker.onmessage({ data: { progress: 50, status: "第二页" } });
-    assert.equal(updates[0][0], 50); assert.equal(worker.terminated, undefined);
+    assert.equal(updates[0][0], 50); assert.equal(worker.terminations, 0);
     if (kind === "success") { worker.onmessage({ data: { result: "done" } }); assert.equal(await promise, "done"); }
     else {
       if (kind === "error") worker.onmessage({ data: { error: "bad" } });
       if (kind === "cancel") controller.abort(new Error("cancelled"));
       if (kind === "load") worker.onerror();
-      if (kind === "timeout") { const timer = [...timers.values()][0]; assert.equal(timer.ms, 900000); timer.fn(); }
+      if (kind === "timeout") { const timer = [...timers.values()][0]; assert.equal(timer.delay, 900000); timer.callback(); }
       await assert.rejects(promise);
     }
     assert.equal(worker.terminated, true); assert.equal(timers.size, 0);

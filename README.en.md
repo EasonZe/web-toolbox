@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="./public/images/toolbox-logo.png" width="152" alt="Web Toolbox project logo">
+  <img src="./public/images/toolbox-logo.png" width="152" alt="Web Toolbox · 多功能工具箱">
 </p>
 
 <h1 align="center">Web Toolbox · 多功能工具箱</h1>
 
-<p align="center">A clean, responsive collection of production-oriented online utilities</p>
+<p align="center">Everyday tools in your browser</p>
 
 <p align="center">
   <a href="./README.md">简体中文</a> ·
@@ -13,49 +13,43 @@
 </p>
 
 <p align="center">
+  <a href="https://tool.easonzhan.xyz/"><img alt="Website" src="https://img.shields.io/badge/Website-tool.easonzhan.xyz-0ea5e9"></a>
+  <a href="https://github.com/EasonZe/web-toolbox/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/EasonZe/web-toolbox"></a>
   <a href="https://github.com/EasonZe/web-toolbox/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/EasonZe/web-toolbox/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="./LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-2563eb.svg"></a>
-  <a href="https://tool.easonzhan.xyz/"><img alt="Live site" src="https://img.shields.io/badge/Live-tool.easonzhan.xyz-0ea5e9.svg"></a>
+  <a href="./LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-2563eb"></a>
   <a href="https://github.com/EasonZe/web-toolbox/stargazers"><img alt="GitHub Stars" src="https://img.shields.io/github/stars/EasonZe/web-toolbox?style=flat&logo=github"></a>
 </p>
 
 <p align="center">
   <img alt="Node.js 22+" src="https://img.shields.io/badge/Node.js-22%2B-339933?logo=nodedotjs&logoColor=white">
-  <img alt="TypeScript 5.9" src="https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white">
-  <img alt="React 19" src="https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white">
-  <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white">
+  <img alt="React" src="https://img.shields.io/badge/React-149ECA?logo=react&logoColor=white">
   <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white">
   <img alt="100+ tools" src="https://img.shields.io/badge/Tools-100%2B-7c6fb1">
 </p>
 
-Web Toolbox is built with React, Next.js, vinext and Cloudflare Workers. It provides more than 100 utilities for video, audio, images, documents, development and everyday tasks. Most media and text processing happens locally in the browser, with no desktop installation required.
+[Live site](https://tool.easonzhan.xyz/) · [Releases](https://github.com/EasonZe/web-toolbox/releases) · [Report an issue](https://github.com/EasonZe/web-toolbox/issues)
 
-## Features
+Web Toolbox contains over 100 tools for media, documents, development and everyday tasks. No installation is needed. Most file and text processing runs locally in your browser.
 
-- **Video:** link parsing, conversion, compression, reversal, GIF creation, audio extraction and watermarking.
-- **Audio:** conversion, compression, reversal, speed and pitch adjustment, microphone testing and recording.
-- **Images and design:** compression, cropping, stitching, watermarks, color extraction, pixel art, bead patterns, background removal, QR codes and 3D model previews.
-- **Text and documents:** plain-text editing, format conversion, word counts, ASCII art, Chinese script conversion and Word/PDF tools.
-- **Scientific computing:** six independent tools for expressions, equations, calculus, matrices, statistics, and number theory / combinatorics; visual math input powered by MathLive, Cortex Compute Engine and Math.js in a browser Web Worker.
-- **Development and daily life:** file hashes, base conversion, function plotting, Morse code, short links, exchange rates, world clocks, date calculations, timers and device tests.
-- **Experience:** search, categories, favorites, four list layouts, light/dark modes, custom theme colors, and responsive desktop, tablet and mobile layouts.
-- **Game assets:** local Unity `.unitypackage` browsing, resource/model previews and `.meta` extraction.
-- **Utilities:** password / UUID generation, regex testing, JWT decoding, barcodes, a metronome and multi-size ICO creation. See the [research notes](docs/pc-tool-research.md).
-- **Image and conversion additions:** 11 categories of unit conversion, image adjustments and filters, lossless DPI metadata editing, and single or batch video frame capture.
+## Tools
 
-Additional local utilities include PDF image/text export, image grid splitting, YAML/JSON conversion and WCAG color contrast checks. See [utility selection](docs/pc-tool-research.md) for implementation choices and verification limits.
+| Category | Examples |
+| --- | --- |
+| Video | Conversion, compression, trimming, watermarks, GIFs, frame capture and link parsing |
+| Audio | Conversion, trimming, merging, speed and pitch, reversal, recording and metronome |
+| Images and design | Compression, cropping, stitching, OCR, background removal, colors, pixel art, textures, 3D previews and CSS generators |
+| Text and documents | Editing, diffs, Markdown, subtitles, PDF pages and exports, PPTX extraction |
+| Development | JSON, YAML, path extraction, hashes, HMAC, regex, JWT, QR codes, ZIP and Unity packages |
+| Calculation | Expressions, equations, calculus, matrices, statistics, number theory, units and currencies |
+| Time and daily tasks | World clocks, countdowns, date calculations, random draws and typing practice |
+| Devices and networks | Microphone, keyboard and screen tests, IP lookup, subnet calculations and short links |
 
-Also available: timezone-aware Cron previews, binary file signature checks, original-size image difference maps and video trimming. Source files remain local.
+Includes search, categories, favorites, four list layouts, light/dark modes and custom theme colors. Supported image and PDF results can be sent directly to another tool. See [connected workflows](docs/tool-workflows.md).
 
-Network and styling utilities include IPv4/IPv6 CIDR calculations, URL/query editing, CSS/SVG/PNG gradients and multi-layer CSS shadows. Entered URLs are never requested.
+## Run locally
 
-Local document and practice tools include PDF page numbering and visible-area cropping, PPTX image/body-text extraction, image color replacement, a teleprompter and Chinese/English typing tests. Inputs are not uploaded or saved. PDF cropping is not redaction; PPTX extraction does not reconstruct slide layouts or execute macros.
-
-New local workbenches cover PDF pages, text diffs, batch renaming, OCR, JSON, Markdown, ZIP, subtitles, audio editing, EXIF, timestamps, Unicode, seamless textures, RGBA channels, panorama previews and height-to-normal maps. Text encoding/decoding, Chinese pinyin, CSV/TSV/JSON conversion and ordered images-to-PDF are also processed locally. See [implementation research](docs/extended-tools-research.md) and [utility selection](docs/pc-tool-research.md) for sources and limitations.
-
-## Quick start
-
-Requirements: Node.js `>= 22.13.0` and npm `>= 10`.
+Requires Node.js 22.13 or later and npm.
 
 ```bash
 git clone https://github.com/EasonZe/web-toolbox.git
@@ -64,56 +58,34 @@ npm ci
 npm run dev
 ```
 
-Run the complete quality gate before submitting changes:
+Run checks before submitting changes:
 
 ```bash
 npm run check
 ```
 
-## Architecture
+## Deploy
 
-| Layer | Technology |
-| --- | --- |
-| UI and routing | React 19, Next.js 16, TypeScript, vinext |
-| Build and deployment | Vite, Cloudflare Workers, Wrangler |
-| Cloud services | Workers Assets, Images, D1, Rate Limiting |
-| Quality | ESLint, Node.js Test Runner, GitHub Actions, Dependabot |
-
-## Video parsing services
-
-| Platform | Production Worker | Primary upstream | Repository status |
-| --- | --- | --- | --- |
-| Douyin | `eason-daoyin-api` | Public Douyin pages and playback URLs | Source included |
-| Bilibili | `eason-bilibili-api` | Official public Bilibili playback APIs | Source included |
-
-These endpoints are not general-purpose public APIs provided by this repository. Forks can deploy the corresponding Workers from this repository and replace the page endpoints. See [architecture](docs/architecture.md), [deployment](docs/deployment.md), and the [dependency and upstream audit](docs/dependency-audit.md) for details.
-
-## Deployment
-
-The main site targets Cloudflare Workers and requires Assets, Images, D1 and Rate Limiting bindings:
+Deploy to Cloudflare Workers. Replace the domains, resource IDs and bindings in `wrangler.jsonc` with your own. See the [deployment guide](docs/deployment.md).
 
 ```bash
-npm ci
 npm run check
 npx wrangler deploy --dry-run
 npx wrangler deploy --keep-vars
 ```
 
-The domains and resource IDs in `wrangler.jsonc` belong to the production site. Forks must replace them with their own Cloudflare resources. See the [deployment guide](docs/deployment.md).
+Douyin and Bilibili parsing use separate Workers in `workers/` and must be deployed separately.
 
-## Privacy, compliance and security
+## Usage notes
 
-- User files are processed locally whenever possible; some network-backed tools still contact external services.
-- Only parse video that you own or are authorized to use, and comply with platform terms and local law.
-- Report security issues privately according to the [security policy](SECURITY.md).
-- See [third-party notices](THIRD_PARTY_NOTICES.md) for dependency and asset licenses.
+- Local processing depends on device memory and browser support. See [processing limits](docs/resource-limits.md).
+- Video parsing, currency rates, IP lookup and short links require network access. Only use video you own or are authorized to use.
+- PDF cropping hides content; it is not secure redaction. JWT decoding does not verify signatures.
 
-## Contributing
+## Documentation and contributing
 
-Created and maintained by [EasonZe](https://github.com/EasonZe). Issues and pull requests are welcome; please read the [contributing guide](CONTRIBUTING.md) and [code of conduct](CODE_OF_CONDUCT.md) first.
+[Architecture](docs/architecture.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Third-party notices](THIRD_PARTY_NOTICES.md)
 
-## License
+Maintained by [EasonZe](https://github.com/EasonZe). Issues and pull requests are welcome.
 
-See [local processing limits](docs/resource-limits.md) for workload budgets and large-file behavior.
-
-Project code is available under the [MIT License](LICENSE). Third-party components, fonts, models and bundled assets remain subject to their own licenses.
+Project code uses the [MIT License](LICENSE). Third-party components, fonts, models and assets retain their own licenses.

@@ -1,33 +1,10 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { runToolTest } from "./helpers/vm-modules.mjs";
-import ts from "typescript";
-
-const source = await readFile(new URL("../app/lib/scientific-client.ts", import.meta.url), "utf8");
-const code = ts.transpileModule(source.replace("import.meta.url", '"https://example.test/scientific-client.js"'), {
-  compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
-}).outputText;
+import { workerClientHarness } from "./helpers/worker-client-harness.mjs";
 
 function client(options = {}) {
-  const workers = [];
-  const timers = new Map();
-  const exports = {};
-  class Worker {
-    constructor(url, config) {
-      if (options.failLoad) throw new Error("worker unavailable");
-      this.url = url; this.config = config; this.terminated = false;
-      workers.push(this);
-    }
-    postMessage(request) { if (options.failPost) throw new Error("cannot send"); this.request = request; }
-    terminate() { this.terminated = true; }
-  }
-  runToolTest(code, {
-    exports, Worker, URL, DOMException,
-    setTimeout: (callback, delay) => { const key = Symbol(); timers.set(key, { callback, delay }); return key; },
-    clearTimeout: (key) => timers.delete(key),
-  });
-  return { run: exports.runScientificCalculation, workers, timers };
+  const app = workerClientHarness("app/lib/scientific-client.ts", options);
+  return { ...app, run: app.exports.runScientificCalculation };
 }
 const request = { mode: "statistics", data: "1,2,3" };
 
@@ -49,8 +26,9 @@ test("取消计算终止 Worker，迟到结果不会覆盖取消状态", async (
   const { run, workers, timers } = client();
   const controller = new AbortController();
   const pending = run(request, controller.signal);
+  const receive = workers[0].onmessage;
   controller.abort();
-  workers[0].onmessage({ data: { result: { title: "late" } } });
+  receive({ data: { result: { title: "late" } } });
   await assert.rejects(pending, { name: "AbortError" });
   assert.equal(workers[0].terminated, true);
   assert.equal(timers.size, 0);

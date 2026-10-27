@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { FiDownload, FiImage, FiMove, FiUploadCloud } from "react-icons/fi";
 import { FileDropZone } from "./file-drop-zone";
 import { UtilityShell } from "./utility-shell";
+import { ToolHandoffInput } from "./tool-handoff";
 
 type BubbleStyle = "none" | "rounded" | "speech-left" | "speech-right" | "thought" | "caption";
 type OutputFormat = "image/png" | "image/jpeg";
@@ -207,7 +208,7 @@ export default function ImageTextEditor() {
     const supported = /^image\/(png|jpeg|webp|bmp|avif|gif)$/i.test(file.type) || (!file.type && /\.(png|jpe?g|webp|bmp|avif|gif)$/i.test(file.name));
     if (!file.size || file.size > toolLimits.image.fileBytes || !supported) {
       setMessage("请选择 100 MB 以内的 PNG、JPG、WebP、BMP、AVIF 或 GIF 图片。");
-      return;
+      return false;
     }
     const currentJob = ++imageJobRef.current;
     const url = URL.createObjectURL(file);
@@ -215,16 +216,18 @@ export default function ImageTextEditor() {
       const image = await loadImage(url);
       if (currentJob !== imageJobRef.current) {
         URL.revokeObjectURL(url);
-        return;
+        return false;
       }
       if (image.naturalWidth * image.naturalHeight > toolLimits.image.pixels) throw new Error("图片像素过大，请缩小到 10000 万像素以内。");
       if (sourceUrlRef.current) URL.revokeObjectURL(sourceUrlRef.current);
       sourceUrlRef.current = url;
       setSourceFile(file);
       setSourceImage(image);
+      return true;
     } catch (error) {
       URL.revokeObjectURL(url);
-      setMessage(error instanceof Error ? error.message : "无法读取这张图片。");
+      if (currentJob === imageJobRef.current) setMessage(error instanceof Error ? error.message : "无法读取这张图片。");
+      return false;
     }
   }
 
@@ -263,7 +266,8 @@ export default function ImageTextEditor() {
 
   return (
     <UtilityShell title="图片加文字与对话框工具" description="为图片添加多行文字和多种对话框，并实时调整位置。">
-      <FileDropZone className="video-file-picker" accept="image/png,image/jpeg,image/webp,image/bmp,image/avif,image/gif" ariaLabel="选择或拖入图片" onFile={selectImage}>
+      <ToolHandoffInput target="/image-text" behavior="replace" onFiles={async (files) => files.length === 1 && await selectImage(files[0])} />
+      <FileDropZone className="video-file-picker" accept="image/png,image/jpeg,image/webp,image/bmp,image/avif,image/gif" ariaLabel="选择或拖入图片" onFile={async (file) => { await selectImage(file); }}>
         <FiUploadCloud aria-hidden="true" />
         <strong>{sourceFile ? "重新选择图片" : "选择图片 / 拖入文件"}</strong>
         <span>{sourceFile ? sourceFile.name : "支持 PNG、JPG、WebP 等格式，最大 100 MB"}</span>

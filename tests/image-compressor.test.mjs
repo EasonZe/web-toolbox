@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { runToolTest } from "./helpers/vm-modules.mjs";
 import ts from "typescript";
+import { loadLocalModule } from "./helpers/load-local-module.mjs";
 
 const source = await readFile(
   new URL("../app/components/image-compressor.tsx", import.meta.url),
@@ -88,6 +89,10 @@ function harness() {
   runToolTest(compile(source + "\nexport { compressImage, optimizePngPixels };"), {
     exports,
     require(name) {
+      if (name === "./tool-handoff") return { ResultContinue: "result-continue", ToolHandoffInput: "handoff-input" };
+      if (name === "../lib/tool-handoff") return loadLocalModule("app/lib/tool-handoff.ts");
+      if (name === "../lib/local-files") return loadLocalModule("app/lib/local-files.ts");
+      if (name === "../lib/serial-batch") return loadLocalModule("app/lib/serial-batch.ts");
       if (name === "react") return hooks;
       if (name === "react/jsx-runtime") return { jsx, jsxs: jsx };
       if (name === "next/link") return { default: "a" };
@@ -97,6 +102,7 @@ function harness() {
       throw new Error(`Unexpected import: ${name}`);
     },
     URL: { revokeObjectURL() {}, createObjectURL() { return `blob:test-${objectCount++}`; } },
+    AbortController,
     crypto: { randomUUID() { return String(objectCount++); } },
     createImageBitmap: async () => ({ width: 2, height: 2, close() {} }),
     document: { createElement() { return {

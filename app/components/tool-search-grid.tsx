@@ -40,6 +40,9 @@ type Tool = {
 };
 
 const tools: Tool[] = [
+  { name: "JSON路径", title: "JSON 路径提取", href: "/json-pointer", icon: TbPhotoCode, keywords: "json pointer rfc6901 字段 数组 索引 路径 批量 提取 数据", category: "编码与开发" },
+  { name: "文本摘要", title: "文本哈希与 HMAC", href: "/text-digest", icon: TbHash, keywords: "文本 哈希 摘要 sha256 sha384 sha512 hmac 密钥 hex base64 校验", category: "编码与开发" },
+  { name: "缓动曲线", title: "CSS 缓动曲线", href: "/easing-curve", icon: TbWaveSine, keywords: "css cubic bezier 贝塞尔 曲线 动画 缓动 easing 速度 transition", category: "图片与设计" },
   { name: "PDF页码", title: "PDF 加页码", href: "/pdf-page-numbers", icon: TbFileTypePdf, keywords: "文档 页数 编号 中文 模板 页眉 页脚", category: "文字与文档" },
   { name: "PDF裁剪", title: "PDF 页面裁剪", href: "/pdf-cropper", icon: TbCrop, keywords: "文档 页面 裁切 白边 边距 cropbox 旋转", category: "文字与文档" },
   { name: "图片换色", title: "图片指定颜色替换", href: "/image-color-replace", icon: TbColorPicker, keywords: "图像 颜色 替换 取色 容差 透明 png", category: "图片与设计" },

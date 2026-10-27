@@ -2,7 +2,9 @@ import type { FileWorkerRequest } from "../lib/file-worker-client";
 self.onmessage = async ({ data }: MessageEvent<FileWorkerRequest>) => {
   try {
     let result: unknown;
-    if (data.action === "pdf-page-info" || data.action === "pdf-number" || data.action === "pdf-crop") {
+    if (data.action === "json-pointer") {
+      result = (await import("../lib/json-pointer")).extractJsonPointers(data.text, data.paths);
+    } else if (data.action === "pdf-page-info" || data.action === "pdf-number" || data.action === "pdf-crop") {
       const pdf = await import("../lib/pdf-page-tools"), signal = new AbortController().signal, report = (progress: number, status: string) => self.postMessage({ progress, status });
       result = data.action === "pdf-page-info" ? await pdf.inspectPdfGeometry(data.file, signal) : data.action === "pdf-number" ? await pdf.numberPdfPages(data.file, data.options, signal, report) : await pdf.cropPdfPages(data.file, data.options, signal, report);
     } else if (data.action === "pptx-extract") {

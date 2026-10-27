@@ -5,6 +5,8 @@ import { inspectCaptureVideo, captureVideo, type VideoCaptureInfo } from "../lib
 import { toolLimits } from "../lib/resource-limits";
 import { LocalUpload, LocalDownload, TaskFeedback, useBlobUrl, useLocalTask } from "./local-workbench";
 import { UtilityShell } from "./utility-shell";
+import { ResultContinue } from "./tool-handoff";
+import { resultFile } from "../lib/tool-handoff";
 export default function VideoCapture() {
   const [start, setStart] = useState(0), [end, setEnd] = useState(0), [count, setCount] = useState(1), [edge, setEdge] = useState(1920), [format, setFormat] = useState<"png" | "jpeg">("png");
   const source = useLocalTask<{ file: File; info: VideoCaptureInfo }>(), task = useLocalTask<Awaited<ReturnType<typeof captureVideo>>>();
@@ -22,7 +24,7 @@ export default function VideoCapture() {
       <label>图片格式<select value={format} onChange={(e) => { task.reset(); setFormat(e.target.value as typeof format); }}><option value="png">PNG · 无损</option><option value="jpeg">JPEG · 质量 92%</option></select></label>
       {current && !current.info.canDecode && <p className="utility-error" role="alert">浏览器无法解码此视频，请先转换为受支持的 MP4 / WebM。</p>}
       <button className="primary-button" type="button" disabled={!current || !current.info.canDecode || task.busy} onClick={() => current && void task.run((signal, report) => captureVideo(current.file, { start, end: count === 1 ? start : end, count, edge, format }, signal, report))}>{count > 1 ? "批量取帧" : "截取此时间画面"}</button><TaskFeedback task={task} />
-      {task.result && <><LocalDownload blob={task.result.blob} name={task.result.name} title={task.result.count > 1 ? "下载截图 ZIP" : "下载截图"} /><p className="utility-muted">{task.result.count} 张 · {task.result.width} × {task.result.height}。批量 ZIP 附带请求时间与实际帧时间清单；截图对应所选时刻之前最近的可显示视频帧。</p></>}
+      {task.result && <><LocalDownload blob={task.result.blob} name={task.result.name} title={task.result.count > 1 ? "下载截图 ZIP" : "下载截图"} />{task.result.count === 1 && <ResultContinue source="视频截图" targets={["/image-compressor", "/image-text", "/images-to-pdf"]} getFiles={() => task.result ? [resultFile(task.result.blob, task.result.name)] : []} />}<p className="utility-muted">{task.result.count} 张 · {task.result.width} × {task.result.height}。批量 ZIP 附带请求时间与实际帧时间清单；截图对应所选时刻之前最近的可显示视频帧。</p></>}
     </section><section className="utility-panel utility-controls"><h2>视频与截图预览</h2>{videoUrl ? <video className="utility-video" src={videoUrl} controls playsInline preload="metadata" /> : <div className="utility-empty">导入后可预览视频</div>}
       {screenshot && <figure className="video-capture-preview"><img src={screenshot} alt="第一张取帧结果" /><figcaption>取帧结果{task.result && task.result.count > 1 ? "（第一张）" : ""}</figcaption></figure>}
       <p className="utility-muted">单张下载图片；多张按区间均匀抽取，保持画面比例，并打包 ZIP。所有处理均在本机完成。</p>

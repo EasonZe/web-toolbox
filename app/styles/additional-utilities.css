@@ -1,4 +1,10 @@
 .utility-card .compact-options { display: flex; flex-wrap: wrap; gap: 12px 20px; }
+.tool-result-next { margin-top: 16px; }
+.tool-result-next > .utility-actions { margin-top: 8px; }
+.tool-handoff-input { margin-bottom: 20px; min-width: 0; overflow-wrap: anywhere; }
+.tool-handoff-files { max-height: 240px; overflow: auto; padding: 0; margin: 0; list-style: none; }
+.tool-handoff-files li { margin-top: 8px; }
+.tool-handoff-files a { max-width: 100%; overflow-wrap: anywhere; }
 .compact-options legend { margin-bottom: 12px; font-size: 14px; }
 .compact-options input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--ui-accent); flex: none; }
 .utility-code-output { max-width: 100%; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; line-height: 1.75; }
@@ -114,3 +120,15 @@
   .image-pdf-list .utility-actions { margin-left: auto; }
 }
 .typing-target .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.easing-point-control { display: grid; grid-template-columns: 110px minmax(0, 1fr); align-items: end; gap: 16px; }
+.easing-point-control > input { align-self: center; }
+.easing-plot { display: block; width: 100%; height: auto; max-height: 360px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.easing-plot path { fill: none; stroke: var(--ui-accent); stroke-width: 3; }
+.easing-plot circle { fill: var(--ui-accent); }
+.easing-plot .easing-guide { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 4; }
+.easing-plot text { fill: var(--muted); font-size: 12px; }
+.easing-runway { border: 1px solid var(--line); border-radius: 12px; padding: 16px; overflow: hidden; }
+.easing-dot { width: 32px; height: 32px; border-radius: 50%; background: var(--ui-accent); }
+.easing-point-control > input[type="range"] { min-width: 0; min-height: 44px; }
+.digest-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 680px) { .digest-options { grid-template-columns: minmax(0, 1fr); } }
