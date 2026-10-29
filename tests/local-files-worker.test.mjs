@@ -7,6 +7,7 @@ import { PDFDocument } from "pdf-lib";
 import { unzipSync } from "fflate";
 import { pptxParts } from "./helpers/seventh-fixtures.mjs";
 import { zipSync } from "fflate";
+import { makeGif } from "./helpers/ninth-fixtures.mjs";
 
 test("真实 ES 模块文件 Worker 按需加载并完成 JSON、差异、ZIP、PDF 合并拆分", { timeout: 30000 }, async (t) => {
   const root = new URL("../dist/client/_next/static/workers/", import.meta.url);
@@ -45,6 +46,15 @@ test("真实 ES 模块文件 Worker 按需加载并完成 JSON、差异、ZIP、
     });
   }
   const json = await run({ action: "json-format", text: '{"id":9007199254740993123}', compact: true });
+  const xml = await run({ action: "xml-process", text: '<r><item id="1">中文</item></r>', options: { mode: "format", indent: 2, reflow: true } });
+  assert.equal(xml.error, undefined); assert.equal(xml.result.elements, 2); assert.match(xml.result.output, /\n  <item/);
+  assert.match((await run({ action: "xml-process", text: '<!DOCTYPE r SYSTEM "https://example.test/x"><r/>', options: { mode: "format", indent: 2, reflow: false } })).error, /DTD/);
+  const gifFile = { name: "test.gif", bytes: makeGif([{ pixels: [1, 1, 1], delay: 0 }, { pixels: [2], left: 1, delay: 30 }]) };
+  const gif = await run({ action: "gif-inspect", serializedFile: gifFile });
+  assert.equal(gif.error, undefined); assert.deepEqual(gif.result, { width: 3, height: 1, frames: 2, duration: 30 });
+  assert.match((await run({ action: "gif-extract", serializedFile: gifFile, options: { start: 1, end: 2, step: 1, background: "transparent" } })).error, /后台 PNG/);
+  const duplicates = await run({ action: "duplicate-files", serializedFiles: [{ name: "one.txt", bytes: new TextEncoder().encode("same") }, { name: "renamed.bin", bytes: new TextEncoder().encode("same") }, { name: "other.txt", bytes: new TextEncoder().encode("diff") }] });
+  assert.equal(duplicates.error, undefined); assert.equal(duplicates.result.groups.length, 1); assert.equal(duplicates.result.redundantBytes, 4); assert.equal(duplicates.result.groups[0].files[1].name, "renamed.bin");
   assert.equal(json.result.output, '{"id":9007199254740993123}');
   const pointer = await run({ action: "json-pointer", text: '{"users":[{"name":"Eason"}],"big":9007199254740993123}', paths: "/users/0/name\n/big\n/missing" });
   assert.equal(pointer.result.matched, 2); assert.equal(pointer.result.total, 3);

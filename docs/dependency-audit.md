@@ -1,5 +1,27 @@
 # 依赖与上游审查
 
+## OCR 与图像工具增量（2026-10-28）
+
+新增精确锁定 `@paddleocr/paddleocr-js` 0.4.2、`@techstark/opencv-js` 4.10.0-release.1；共 70 项直接运行时依赖、25 项开发依赖，合计 95 项。其 ORT Web 实际锁定 1.31.1，独立于原抠图运行时的 1.22 开发版，不全局覆盖。只在 OCR 任务 Worker 按需加载 CPU WASM；官方模型归档按字节数与 SHA-256 校验后同源分发。首次构建需要网络，模型缓存不入 Git 历史。
+
+PaddleOCR / OpenCV 及模型按原始 Apache-2.0 声明分发，ORT 为 MIT；Clipper 按 Boost-1.0，内嵌 JSBN 另保留 Tom Wu 许可。完整文本与原始归属随构建复制，不仅写 npm 的简写字段。GIF 复用 gifenc / gifuct-js，字体使用原生 FontFace，显存计算和相纸布局独立实现。第三方代码没有从 ToolKnit 或 PC-TOOL 移植。范围、复现方法和限制见 [本轮记录](ocr-photo-tools.md)。
+
+证件照新增 MODNet 的模型卡标记 Apache-2.0，锁定修订并只在显式操作后下载；既有 ISNet 模型卡实际为 AGPL-3.0，与实现代码的许可不同。已补充第三方声明，不把它纳入本站 MIT 授权，也未在新工具复用该权重。完整人像边缘质量、真实打印及设备字体渲染仍需实机验收。
+
+## 节拍与浏览器信息增量（2026-10-28）
+
+精确锁定 Bowser 2.15.0 与 web-audio-beat-detector-worker 6.0.14；当前直接运行时依赖 68 项、开发依赖 25 项，合计 93 项。Bowser 按需解析 UA，使用未修改发布包；其 LICENSE 虽标注 MIT，另有实质修改后替换原作者问题上报地址的条件，构建保留完整原文。节拍引擎仅导入 `build/es2019/helpers/guess.js` 的纯计算依赖，不导入注册全局监听的根入口或额外 singleton Worker；`worker-factory` 等包的安装依赖与实际浏览器调用范围应分开核对。两项原始许可证随构建分发，媒体读取复用 Mediabunny。功能来源与边界见 [选型记录](bpm-browser-tools.md)。
+
+同期针对 vinext 间接使用的 `@vercel/og` 定向覆盖到 1.0.3，并将其 Satori 链的 fflate 固定到 0.7.5；站点直接使用的 fflate 仍为 0.8.3，不全局降级。为解决 HarfBuzz 的运行兼容问题，vinext 精确升级至包含官方兼容插件的最小修复版本 `1.0.0-beta.13`，不保留旧版框架加自定义运行时补丁。官方插件的实际模块已在本地无网络条件下生成 PNG；本站没有动态 OG 业务入口，该检查不代表线上动态 OG 已通过。修复依据：[Satori 公告](https://github.com/advisories/GHSA-wx4j-mvgx-mqwp)、[fflate 公告](https://github.com/advisories/GHSA-px8p-9vwx-vf98)、[框架兼容修复](https://github.com/cloudflare/vinext/pull/3409)。此前安装后的 npm 审计为 0 项已知漏洞，只是依赖公告匹配，不是完整运行时兼容或安全保证。
+
+GIF 预检新增独立 LZW 验证，避免 gifuct-js 对提前结束的帧补零后误报成功；保留原像素解码器。PDF 转扫描件改为逐页完成图片嵌入，并检查 PDF 保留缓冲与封装工作量；这些修复没有增加依赖。
+
+## GIF 与 XML 增量（2026-10-27）
+
+同日补充重复文件检查、PDF 转扫描件，复用 hash-wasm / PDF.js / PDF-lib，不增加直接依赖；hash-wasm 原始许可证补入构建分发。ToolKnit / PC-TOOL 仅作为功能方向来源，未复制代码，具体边界见 [选型说明](duplicate-scan-tools.md)。
+
+新增精确锁定 gifuct-js 2.1.2、prettier 3.9.10、@prettier/plugin-xml 3.4.2，实际直接依赖现为 91 项。逐帧还原独立实现，不复制 GIF 演示页；XML 复用 saxes 先严格校验，Prettier standalone 按需格式化。未采用会裁剪混合文本空白的 xml-formatter，已移除候选依赖。新增包及实际运行时依赖的 MIT / Apache-2.0 原文、Prettier 内嵌依赖声明随构建分发；范围与边界见 [选型记录](gif-xml-tools.md)。下方是历史快照，不代表最新依赖数量。
+
 ## 第八批增量（2026-10-27）
 
 精确锁定 jsonpointer 5.0.1 与 bezier-easing 3.2.0，均为 MIT、无运行时依赖，原始许可证随构建分发并有一致性测试。摘要使用原生 Web Crypto，未加入额外密码算法包；路径仅开放只读 getter，并额外限制自有字段、数组索引、数据预算与 Worker 时限。实际直接依赖现为 88 项，`npm audit --audit-level=low` 为 0 项已知漏洞。完整范围见 [选型记录](json-digest-easing-tools.md)；以下各日期的历史快照保留原记录，不能视为本次数量或安全保证。

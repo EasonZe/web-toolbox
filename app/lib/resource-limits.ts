@@ -4,6 +4,10 @@ export const toolLimits = {
   image: { fileBytes: 100 * MiB, pixels: 100_000_000, batchFiles: 200, batchBytes: 1024 * MiB, metadataParts: 100_000 },
   media: { fileBytes: 2 * 1024 * MiB, videoReverseSeconds: 3600 },
   decodedAudio: { fileBytes: 512 * MiB, files: 200, seconds: 3 * 3600, samples: 192_000_000 },
+  audioBpm: { channels: 32 },
+  fontPreview: { files: 8, fileBytes: 64 * MiB, batchBytes: 128 * MiB, decodedBytes: 256 * MiB, decodedFileBytes: 128 * MiB, previewChars: 2000 },
+  ocr: { desktopPixels: 16_000_000, mobilePixels: 8_000_000, edge: 6000, lines: 2000 },
+  idPhoto: { desktopPixels: 32_000_000, mobilePixels: 16_000_000, copies: 200, matteEdge: 2048 },
   archive: { fileBytes: 512 * MiB, expandedBytes: 512 * MiB, entryBytes: 256 * MiB, entries: 2000 },
   unity: { fileBytes: 512 * MiB, expandedBytes: 1024 * MiB, entryBytes: 256 * MiB, assets: 20_000, entries: 100_000, textPreviewBytes: MiB },
   document: { fileBytes: 200 * MiB, pages: 1000, layoutPages: 200, expandedBytes: 512 * MiB },
@@ -30,6 +34,7 @@ export const toolLimits = {
   frameCapture: { frames: 200, bytes: 512 * MiB },
   jsonPointer: { paths: 200, chars: 32768 },
   textDigest: { keyBytes: 64 * 1024 },
+  gifExtract: { frames: 2000, outputs: 200 },
 } as const;
 export function isConstrainedDevice() {
   if (typeof navigator === "undefined") return false;

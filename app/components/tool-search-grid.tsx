@@ -40,6 +40,19 @@ type Tool = {
 };
 
 const tools: Tool[] = [
+  { name: "圆角边框", title: "图片圆角与边框", href: "/image-rounded", icon: TbPhotoEdit, keywords: "图片 圆角 圆形 四角 内边框 外边框 透明 png 头像", category: "图片与设计" },
+  { name: "图片画布", title: "图片画布与纯色图", href: "/image-canvas", icon: TbLayoutCollage, keywords: "图片 画布 扩边 补色 纯色 透明 底图 封面 背景 尺寸 定位", category: "图片与设计" },
+  { name: "双色调", title: "图片双色调", href: "/image-duotone", icon: TbColorSwatch, keywords: "图片 duotone 双 色调 暗部 亮部 海报 映射 透明 png", category: "图片与设计" },
+  { name: "图片锐化", title: "图片锐化", href: "/image-sharpen", icon: TbPhoto, keywords: "图片 边缘 锐化 细节 半径 阈值 反差 unsharp mask png", category: "图片与设计" },
+  { name: "贴图显存", title: "贴图显存估算", href: "/texture-memory", icon: TbGridDots, keywords: "纹理 内存 gpu vram mipmap bc1 bc3 bc5 bc7 astc etc2 压缩 贴图", category: "图片与设计" },
+  { name: "证件照", title: "证件照制作与排版", href: "/id-photo", icon: TbPhotoEdit, keywords: "一寸 二寸 照片 裁切 抠图 背景 相纸 六寸 dpi 毫米 排版", category: "图片与设计" },
+  { name: "本地字体", title: "本地字体预览", href: "/font-preview", icon: TbTypography, keywords: "ttf otf woff woff2 字体 预览 fontface 字号 字重 本地", category: "文字与文档" },
+  { name: "音频BPM", title: "音频 BPM 分析", href: "/audio-bpm", icon: TbWaveSine, keywords: "音频 音乐 节拍 检测 估算 tempo 鼓点 区间 速度 声道", category: "音频工具" },
+  { name: "浏览器信息", title: "浏览器信息与能力检测", href: "/browser-info", icon: TbDeviceDesktop, keywords: "user agent ua 浏览器 系统 引擎 设备 api 暴露 能力 webcodecs", category: "设备与网络" },
+  { name: "重复文件", title: "重复文件检查", href: "/duplicate-files", icon: TbHash, keywords: "文件 重复 相同 内容 sha256 字节 查重 文件夹 报告", category: "编码与开发" },
+  { name: "PDF扫描件", title: "PDF 转扫描件", href: "/pdf-scan", icon: TbScan, keywords: "文档 栅格化 灰度 黑白 图片型 扫描 pdf", category: "文字与文档" },
+  { name: "GIF拆帧", title: "GIF 拆帧与编辑", href: "/gif-extract", icon: TbGif, keywords: "动图 拆帧 分解 GIF 帧提取 png 完整帧 透明 zip 时间轴 帧序 延迟 循环 编辑", category: "图片与设计" },
+  { name: "XML格式", title: "XML 格式化与校验", href: "/xml-formatter", icon: TbPhotoCode, keywords: "xml svg 格式化 语法 校验 行列 缩进", category: "编码与开发" },
   { name: "JSON路径", title: "JSON 路径提取", href: "/json-pointer", icon: TbPhotoCode, keywords: "json pointer rfc6901 字段 数组 索引 路径 批量 提取 数据", category: "编码与开发" },
   { name: "文本摘要", title: "文本哈希与 HMAC", href: "/text-digest", icon: TbHash, keywords: "文本 哈希 摘要 sha256 sha384 sha512 hmac 密钥 hex base64 校验", category: "编码与开发" },
   { name: "缓动曲线", title: "CSS 缓动曲线", href: "/easing-curve", icon: TbWaveSine, keywords: "css cubic bezier 贝塞尔 曲线 动画 缓动 easing 速度 transition", category: "图片与设计" },
@@ -135,7 +148,7 @@ const tools: Tool[] = [
   { name: "PDF页面", title: "PDF 页面管理", href: "/pdf-pages", icon: TbFileTypePdf, keywords: "文档 合并 拆分 删除 排序 旋转 页码", category: "文字与文档" },
   { name: "文本对比", title: "文本差异对比", href: "/text-diff", icon: TbTextGrammar, keywords: "文字 左右 diff 差异 高亮 增加 删除 修改", category: "文字与文档" },
   { name: "批量重命名", title: "批量文件重命名", href: "/batch-rename", icon: TbNotes, keywords: "文件 序号 替换 日期 名称 预览 zip 下载", category: "编码与开发" },
-  { name: "图片OCR", title: "图片文字识别 OCR", href: "/image-ocr", icon: TbScan, keywords: "文字 图像 中英文 识别 tesseract 复制 导出", category: "图片与设计" },
+  { name: "图片OCR", title: "图片文字识别 OCR", href: "/image-ocr", icon: TbScan, keywords: "文字 图像 中英文 识别 paddleocr tesseract 复制 导出 中文 空格 裁剪", category: "图片与设计" },
   { name: "JSON", title: "JSON 格式化与校验", href: "/json-formatter", icon: TbPhotoCode, keywords: "开发 数据 压缩 格式化 校验 错误 定位", category: "编码与开发" },
   { name: "Markdown", title: "Markdown 编辑与预览", href: "/markdown-editor", icon: FiEdit3, keywords: "文字 md 实时 预览 html 文档 导出", category: "文字与文档" },
   { name: "ZIP", title: "ZIP 打包与解压", href: "/zip", icon: TbNotes, keywords: "文件 压缩包 预览 提取 下载 fflate", category: "编码与开发" },

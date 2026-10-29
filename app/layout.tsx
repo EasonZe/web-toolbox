@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import FloatingDock from "./components/floating-dock";
 import "./globals.css";
+import "./styles/mobile-tools.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   const requestHeaders = await headers();

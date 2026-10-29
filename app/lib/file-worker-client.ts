@@ -6,7 +6,13 @@ import type { CronOptions, ImageDiffOptions } from "./practical-tool-options";
 import type { PdfNumberOptions, PdfCropOptions } from "./pdf-page-options";
 import type { ColorReplaceOptions } from "./image-color-replace";
 import { runWorkerTask } from "./worker-task";
+import type { XmlOptions } from "./xml-formatter";
+import type { GifExtractOptions } from "./gif-extract";
 export type FileWorkerRequest =
+  | { action: "duplicate-files"; files: File[] }
+  | { action: "xml-process"; text: string; options: XmlOptions }
+  | { action: "gif-inspect"; file: File }
+  | { action: "gif-extract"; file: File; options: GifExtractOptions }
   | { action: "json-pointer"; text: string; paths: string }
   | { action: "pdf-page-info"; file: File }
   | { action: "pdf-number"; file: File; options: PdfNumberOptions }
@@ -45,7 +51,7 @@ export function runFileWorker<T>(
   report?: (value: number, text: string) => void,
 ): Promise<T> {
   return runWorkerTask<T>(() => new Worker(new URL("../workers/local-files.worker.ts", import.meta.url), { type: "module" }), request, signal, {
-    timeoutMs: request.action === "json-pointer" ? 30000 : 900000, timeoutMessage: "处理超时，请减少文件或页数。",
+    timeoutMs: ["json-pointer", "xml-process"].includes(request.action) ? 30000 : 900000, timeoutMessage: "处理超时，请减少文件或页数。",
     loadMessage: "文件处理引擎加载失败，请刷新后重试。", cancelMessage: "已取消",
     progress: "field", report,
   });

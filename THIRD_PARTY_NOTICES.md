@@ -18,12 +18,18 @@
 | [file-type](https://github.com/sindresorhus/file-type) 22.2.0 | 二进制文件头识别，不执行文件 | MIT |
 | [Pixelmatch](https://github.com/mapbox/pixelmatch) 8.0.0 | 原尺寸图片视觉像素差异比较 | ISC |
 | [ipaddr.js](https://github.com/whitequark/ipaddr.js) 2.5.0 | IPv4 / IPv6 严格地址解析与标准化 | MIT |
-| [Culori](https://github.com/Evercoder/culori) 4.0.2 | sRGB / OKLab 预乘透明度插值 | MIT |
+| [Culori](https://github.com/Evercoder/culori) 4.0.2 | sRGB / OKLab 预乘透明度插值、线性 sRGB 双色调 | MIT |
 | [jsonpointer](https://github.com/janl/node-jsonpointer) 5.0.1 | RFC 6901 只读路径提取；本项目额外校验自有字段与数组索引 | MIT |
 | [bezier-easing](https://github.com/gre/bezier-easing) 3.2.0 | CSS 贝塞尔缓动取样；编辑器独立实现 | MIT |
+| [Bowser](https://github.com/bowser-js/bowser) 2.15.0 | 按需解析 User-Agent；不用于权限或身份判断 | MIT（保留完整原文及问题上报地址条件） |
+| [web-audio-beat-detector-worker](https://github.com/chrisguttandin/web-audio-beat-detector-worker) 6.0.14 | 复用纯 `helpers/guess` 节拍估算，在本项目可终止 Worker 内运行 | MIT |
 | [jsdiff](https://github.com/kpdecker/jsdiff) | 文本行级、字符级差异比较 | BSD-3-Clause |
 | [fflate](https://github.com/101arrowz/fflate) | 本地 ZIP 打包、解压与批量重命名下载 | MIT |
 | [Tesseract.js](https://github.com/naptha/tesseract.js) / core | 中英文图片 OCR 与 WebAssembly 引擎 | Apache-2.0 |
+| [PaddleOCR.js](https://github.com/PaddlePaddle/PaddleOCR/tree/main/paddleocr-js) 0.4.2 / PP-OCRv5 mobile det、rec | 中文截图检测识别；模型按锁定 SHA-256 获取并同源分发 | Apache-2.0 |
+| [OpenCV.js](https://github.com/TechStark/opencv-js) 4.10.0-release.1 | OCR 图像几何与检测后处理 | Apache-2.0 |
+| [ONNX Runtime Web](https://github.com/microsoft/onnxruntime) 1.31.1 | 新 OCR 单线程 CPU WASM；不替换旧抠图运行时 | MIT |
+| [Clipper](https://github.com/junmer/clipper-lib) 6.4.2 / 内嵌 JSBN | 文字检测多边形后处理 | Boost-1.0 / Tom Wu 原始许可，保留完整声明 |
 | [naptha/tessdata](https://github.com/naptha/tessdata) | 中英文 OCR 模型；见 `licenses/OCR-models-NOTICE.md` | MIT（数据包）/ Apache-2.0（上游模型） |
 | [jsonc-parser](https://github.com/microsoft/node-jsonc-parser) | 严格 JSON 校验、错误位置与无精度损失格式化 | MIT |
 | [Marked](https://github.com/markedjs/marked) | Markdown 解析；输出经 DOMPurify 净化 | MIT |
@@ -35,6 +41,7 @@
 | `@morsecodeapp/morse` | 摩斯电码转换 | MIT |
 | `@soundtouchjs/audio-worklet` | 音频变速与变调 | MPL-2.0 |
 | Transformers.js | 浏览器端智能抠图模型运行时 | Apache-2.0 |
+| [Xenova/MODNet](https://huggingface.co/Xenova/modnet) | 证件照中显式启用的人像抠图；固定修订、外部下载模型，照片本地处理 | 模型卡 Apache-2.0 |
 | DOMPurify | 文档转换内容净化 | MPL-2.0 OR Apache-2.0 |
 | [PDF.js](https://github.com/mozilla/pdf.js) | PDF 读取、页面导出、文字提取、字体、CMap 与图像解码资源 | Apache-2.0 |
 | pdfmake | PDF 生成 | MIT |
@@ -86,12 +93,22 @@
 - `public/fonts/noto-sans-sc/`：Noto Sans SC，SIL Open Font License 1.1；目录内包含许可证与来源说明。
 - `public/pdfjs/`：构建时由 `pdfjs-dist` 复制，不进入 Git；运行时资源及许可证由 `scripts/prepare-document-assets.mjs` 一并准备。
 - `public/mathlive/`：构建时由 MathLive 复制版本匹配的数学字体；附带 MathLive、Compute Engine 与 KaTeX fonts 的 MIT 许可证，公式输入不依赖第三方 CDN。
-- `public/ocr/`：构建时复制 Tesseract.js、匹配的 core 及中英文语言模型，OCR 图片不上传，目录附带许可证与模型来源说明。
+- `public/ocr/`：构建时复制 Tesseract.js、匹配的 core 及中英文语言模型；另准备按 SHA-256 锁定的 PaddleOCR 归档与单线程 ORT WASM。OCR 图片不上传，目录附带许可证与模型来源说明。
+
+### 既有人像模型许可边界
+
+2026-10-28 核对：[现有智能抠图选用的 ISNet-ONNX 模型卡](https://huggingface.co/onnx-community/ISNet-ONNX) 标记为 AGPL-3.0，不能将其视为本项目 MIT 或仅按上游实现代码的 Apache 许可处理。该工具运行时外部获取权重；本轮未变更既有入口、未把该权重复制到仓库或新工具。使用和再分发模型须单独核对其许可要求；新增证件照使用模型卡标记 Apache-2.0 的 MODNet。此说明不将第三方资源重新授权为 MIT，也不是法律意见。
 - `public/vendor-licenses/`：构建时复制新增浏览器依赖的原始许可证文本，随站点静态资源一起分发。
 - `public/soundtouch/`：构建时由 `@soundtouchjs/audio-worklet` 复制，不手工维护；目录内包含上游许可证。
 - `public/images/eason-avatar.png`：站点维护者的个人头像素材，不属于 MIT 软件授权范围，未经原权利人许可请勿复用。
 
 ## 参考实现
+
+- 音频 BPM 与浏览器信息只参考 [PC-TOOL 音频 BPM](https://github.com/Team-YM/pc-tool/blob/main/cn.pc-tool.cn/tool/audio-bpm.html)、[UA 解析](https://github.com/Team-YM/pc-tool/blob/main/cn.pc-tool.cn/tool/ua-parser.html) 的功能方向；没有确认该站整站复用许可，不复制其代码、界面或资源，也不复制 ToolKnit 作者代码。复用未经修改的 Bowser 与节拍引擎发布包，原始 LICENSE 全文随站点分发；低通系数依据 [W3C Audio EQ Cookbook](https://www.w3.org/TR/audio-eq-cookbook/) 独立实现。详见 [范围与许可](docs/bpm-browser-tools.md)。
+
+- 重复文件检查、PDF 转扫描件仅参考 ToolKnit 的功能方向，不复制其 PolyForm 作者代码、桌面扫描 / 删除能力或独立授权引擎。复用 hash-wasm（MIT）、PDF.js（Apache-2.0）、PDF-lib（MIT）；hash-wasm 原始许可补入站点构建分发，像素处理独立实现。PC-TOOL 同类功能已有覆盖，不增加重复入口；详见 [选型说明](docs/duplicate-scan-tools.md)。
+
+- GIF 帧提取使用 gifuct-js 2.1.2 与 js-binary-schema-parser（MIT），复用 fflate；完整帧还原与解码前 LZW 完整性校验按 GIF89a 独立实现，不复制演示渲染代码。XML 使用 Prettier 3.9.10 与 @prettier/plugin-xml 3.4.2（MIT），其 @xml-tools/parser / Chevrotain（Apache-2.0）、regexp-to-ast（MIT）原始许可保留；Prettier 的完整 THIRD-PARTY-NOTICES 同时分发，其中包含其他内嵌许可，不能统一用 MIT 覆盖。试用的 xml-formatter 未采用。详见 [选型与边界](docs/gif-xml-tools.md)。
 
 - 本轮继续参考 ToolKnit 的维护文档中解析 / 渲染分离、预览完成后替换、任务生命周期与构建一致性检查的通用思路；按本项目 React / PDF.js / Worker 架构独立实现，没有复制其代码、素材或引入 PDF-to-Word 引擎，保留本项目 MIT 许可。详见 [工程优化记录](docs/toolknit-optimization.md)。
 

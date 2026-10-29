@@ -13,7 +13,7 @@ export function pdfExportDimensions(width: number, height: number, dpi: number, 
   if (output.width > toolLimits.raster.edge || output.height > toolLimits.raster.edge || output.width * output.height > (constrained ? toolLimits.pdfExport.mobilePixels : toolLimits.pdfExport.desktopPixels)) throw new Error("此页在所选 DPI 下超过画布预算，请降低 DPI；不会静默降低导出清晰度。");
   return output;
 }
-export async function renderExportPage(page: PDFPageProxy, options: PdfExportOptions, signal: AbortSignal, includePreview = true) {
+export async function renderExportPage(page: PDFPageProxy, options: PdfExportOptions, signal: AbortSignal, includePreview = true, beforeEncode?: (context: CanvasRenderingContext2D, width: number, height: number) => void | Promise<void>) {
   const base = page.getViewport({ scale: 1 }), dimensions = pdfExportDimensions(base.width, base.height, options.dpi);
   const viewport = page.getViewport({ scale: options.dpi / 72 });
   const canvas = document.createElement("canvas"); canvas.width = dimensions.width; canvas.height = dimensions.height;
@@ -23,6 +23,7 @@ export async function renderExportPage(page: PDFPageProxy, options: PdfExportOpt
   const abort = () => task?.cancel(); signal.addEventListener("abort", abort, { once: true });
   try {
     signal.throwIfAborted(); task = page.render({ canvas, viewport, background: "#ffffff", annotationMode: 0 }); await task.promise; signal.throwIfAborted();
+    if (beforeEncode) await beforeEncode(context, dimensions.width, dimensions.height); signal.throwIfAborted();
     const blob = await new Promise<Blob>((resolve, reject) => canvas.toBlob((result) => result ? resolve(result) : reject(new Error("PDF 图片编码失败。")), `image/${options.format}`, options.quality));
     if (blob.type !== `image/${options.format}`) throw new Error("浏览器无法按所选图片格式导出。");
     if (!includePreview) { signal.throwIfAborted(); return { blob }; }
