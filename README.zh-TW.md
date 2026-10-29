@@ -49,11 +49,12 @@
 
 ## 本機執行
 
-需要 Node.js 22.13 或更新版本及 npm。
+需要 Node.js 22.13 或更新版本及 npm 11.12.1，與 CI 保持一致。
 
 ```bash
 git clone https://github.com/EasonZe/web-toolbox.git
 cd web-toolbox
+npm install --global npm@11.12.1
 npm ci
 npm run dev
 ```
