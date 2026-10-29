@@ -3,10 +3,12 @@
 ## 前置条件
 
 - Node.js 22.13 或更高版本；
+- npm 11.12.1，与 `package.json` 的 `packageManager` 及 CI 保持一致；
 - Cloudflare 账号与 Wrangler 4；
 - 可用于 Workers 自定义域名的 Cloudflare Zone。
 
 ```bash
+npm install --global npm@11.12.1
 npm ci
 npx wrangler login
 npx wrangler whoami

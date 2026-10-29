@@ -49,11 +49,12 @@ Includes search, categories, favorites, four list layouts, light/dark modes and 
 
 ## Run locally
 
-Requires Node.js 22.13 or later and npm.
+Requires Node.js 22.13 or later and npm 11.12.1, matching CI.
 
 ```bash
 git clone https://github.com/EasonZe/web-toolbox.git
 cd web-toolbox
+npm install --global npm@11.12.1
 npm ci
 npm run dev
 ```

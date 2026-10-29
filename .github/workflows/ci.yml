@@ -29,6 +29,9 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
+      - name: Set up npm
+        run: npm install --global npm@11.12.1
+
       - name: Install locked dependencies
         run: npm ci
 
