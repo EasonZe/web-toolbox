@@ -91,9 +91,10 @@ test("首页分类标签、滚动渐入和收藏夹切换均已接入", async ()
 });
 
 test("设置中的列表选项保持简洁并支持自定义主题颜色", async () => {
-  const [dock, styles] = await Promise.all([
+  const [dock, styles, appearance] = await Promise.all([
     read("../app/components/floating-dock.tsx"),
     read("../app/globals.css"),
+    read("../app/lib/appearance.ts"),
   ]);
   assert.doesNotMatch(dock, /description: "按分类展开或收起"/);
   assert.match(dock, /localStorage\.setItem\(toolViewStorageKey, value\)/);
@@ -103,7 +104,9 @@ test("设置中的列表选项保持简洁并支持自定义主题颜色", async
   assert.doesNotMatch(dock, />自定义<\/strong>/);
   assert.match(dock, /accentOptions\.map[\s\S]*?accent-custom-button/);
   assert.doesNotMatch(dock, /accent-settings-heading/);
-  assert.match(dock, /eason-toolbox-custom-accent/);
+  assert.match(appearance, /eason-toolbox-custom-accent/);
+  assert.match(dock, /appearance\.applyAccent\(document\.documentElement, accent, customAccent\)/);
+  assert.match(dock, /localStorage\.setItem\(customAccentStorageKey, customAccent\)/);
   assert.match(styles, /\.theme-mode-grid \{\s*grid-template-columns: repeat\(3/);
   assert.match(styles, /\.is-table \.tool-table-chevron/);
   assert.match(styles, /\.author-card \{ width: 100%/);

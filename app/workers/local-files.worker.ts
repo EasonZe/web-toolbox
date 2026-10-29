@@ -14,6 +14,8 @@ self.onmessage = async ({ data }: MessageEvent<FileWorkerRequest>) => {
     } else if (data.action === "pdf-page-info" || data.action === "pdf-number" || data.action === "pdf-crop") {
       const pdf = await import("../lib/pdf-page-tools"), signal = new AbortController().signal, report = (progress: number, status: string) => self.postMessage({ progress, status });
       result = data.action === "pdf-page-info" ? await pdf.inspectPdfGeometry(data.file, signal) : data.action === "pdf-number" ? await pdf.numberPdfPages(data.file, data.options, signal, report) : await pdf.cropPdfPages(data.file, data.options, signal, report);
+    } else if (data.action === "pdf-watermark") {
+      result = await (await import("../lib/pdf-watermark")).watermarkPdf(data.file, data.options, new AbortController().signal, (progress, status) => self.postMessage({ progress, status }));
     } else if (data.action === "pptx-extract") {
       result = await (await import("../lib/pptx-extract")).extractPptx(data.file, new AbortController().signal, (progress, status) => self.postMessage({ progress, status }));
     } else if (data.action === "image-color-replace" || data.action === "image-color-sample") {

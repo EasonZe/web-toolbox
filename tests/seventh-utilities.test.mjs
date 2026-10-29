@@ -74,11 +74,11 @@ test("PDF 页码按输入页序连续编号，四种旋转后基线水平且位�
   } finally { await parsed.loadingTask.destroy(); }
 });
 
-test("中文页码真实嵌入字体子集，可被 PDF.js 提取，未选页不加字", async () => {
+test("中文页码真实嵌入完整字体，可被 PDF.js 提取，未选页不加字", async () => {
   const fontBytes = new Uint8Array(await readFile(new URL("../public/fonts/noto-sans-sc/regular.otf", import.meta.url)));
   let requests = 0;
   const result = await pdf.numberPdfPages(await fixturePdf(), { ...defaultPdfNumberOptions, range: "2", template: "第 {n} 页，共 {total} 页" }, signal(), undefined, async () => { requests++; return fontBytes; });
-  assert.equal(requests, 1); assert.ok(result.blob.size < fontBytes.length / 2, "must subset the 8 MB CJK font");
+  assert.equal(requests, 1); assert.ok(result.blob.size > fontBytes.length / 2 && result.blob.size < fontBytes.length + 100000, "保留完整 CFF 字形，避免子集混排缺字");
   const parsed = await loadRendered(result.blob);
   try {
     const page = await parsed.getPage(2); assert.match((await page.getTextContent()).items.map((v) => v.str).join(""), /第 1 页，共 1 页/); assert.doesNotMatch((await (await parsed.getPage(1)).getTextContent()).items.map((v) => v.str).join(""), /第/);

@@ -25,12 +25,12 @@
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white">
   <img alt="React" src="https://img.shields.io/badge/React-149ECA?logo=react&logoColor=white">
   <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white">
-  <img alt="121 tools" src="https://img.shields.io/badge/Tools-121-7c6fb1">
+  <img alt="124 tools" src="https://img.shields.io/badge/Tools-124-7c6fb1">
 </p>
 
 [線上使用](https://tool.easonzhan.xyz/) · [版本更新](https://github.com/EasonZe/web-toolbox/releases) · [問題回報](https://github.com/EasonZe/web-toolbox/issues)
 
-多功能工具箱收錄 121 個影片、音訊、圖片、文件、開發與生活工具，無須安裝。多數檔案與文字處理在瀏覽器本機完成。
+多功能工具箱收錄 124 個影片、音訊、圖片、文件、開發與生活工具，無須安裝。多數檔案與文字處理在瀏覽器本機完成。
 
 ## 有哪些工具
 

@@ -25,12 +25,12 @@
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white">
   <img alt="React" src="https://img.shields.io/badge/React-149ECA?logo=react&logoColor=white">
   <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white">
-  <img alt="121 tools" src="https://img.shields.io/badge/Tools-121-7c6fb1">
+  <img alt="124 tools" src="https://img.shields.io/badge/Tools-124-7c6fb1">
 </p>
 
 [Live site](https://tool.easonzhan.xyz/) · [Releases](https://github.com/EasonZe/web-toolbox/releases) · [Report an issue](https://github.com/EasonZe/web-toolbox/issues)
 
-Web Toolbox contains 121 tools for media, documents, development and everyday tasks. No installation is needed. Most file and text processing runs locally in your browser.
+Web Toolbox contains 124 tools for media, documents, development and everyday tasks. No installation is needed. Most file and text processing runs locally in your browser.
 
 ## Tools
 

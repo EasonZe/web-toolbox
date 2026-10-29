@@ -40,6 +40,9 @@ type Tool = {
 };
 
 const tools: Tool[] = [
+  { name: "图片模糊", title: "图片模糊", href: "/image-blur", icon: TbPhotoEdit, keywords: "图片 全图 柔焦 模糊 均值 半径 局部 矩形 透明 png blur", category: "图片与设计" },
+  { name: "应用图标", title: "多尺寸应用图标", href: "/app-icons", icon: TbPhoto, keywords: "图标 icon pwa web manifest apple android mipmap png 多尺寸 打包 zip", category: "图片与设计" },
+  { name: "PDF水印", title: "PDF 文字水印", href: "/pdf-watermark", icon: TbFileTypePdf, keywords: "pdf 文档 中文 水印 网格 平铺 交错 文字 倾斜 透明度 页码", category: "文字与文档" },
   { name: "圆角边框", title: "图片圆角与边框", href: "/image-rounded", icon: TbPhotoEdit, keywords: "图片 圆角 圆形 四角 内边框 外边框 透明 png 头像", category: "图片与设计" },
   { name: "图片画布", title: "图片画布与纯色图", href: "/image-canvas", icon: TbLayoutCollage, keywords: "图片 画布 扩边 补色 纯色 透明 底图 封面 背景 尺寸 定位", category: "图片与设计" },
   { name: "双色调", title: "图片双色调", href: "/image-duotone", icon: TbColorSwatch, keywords: "图片 duotone 双 色调 暗部 亮部 海报 映射 透明 png", category: "图片与设计" },

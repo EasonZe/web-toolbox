@@ -189,3 +189,22 @@
 .gif-frame-picker select { max-width: 100%; min-height: 44px; border: 1px solid var(--line); border-radius: 10px; padding: 10px; color: var(--text); background: var(--surface); font: inherit; }
 @media (max-width: 680px) { .gif-extract-range { grid-template-columns: minmax(0, 1fr); } .gif-frame-picker select { font-size: 16px; } }
 @media (max-width: 680px) { .digest-options { grid-template-columns: minmax(0, 1fr); } }
+.image-blur-fields { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; min-width: 0; }
+.image-blur-region-fields, .watermark-number-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; min-width: 0; }
+.image-blur-region-fields label, .watermark-number-fields label { display: grid; gap: 6px; min-width: 0; }
+.utility-controls .image-blur-region { min-width: 0; padding: 12px; border: 1px solid var(--line); border-radius: 12px; }
+.image-blur-region legend { padding: 0 6px; color: var(--muted); font-size: 13px; }
+.image-blur-selection { position: relative; margin-top: 8px; }
+.image-blur-selection img { display: block; width: 100%; height: auto; max-height: none; margin-top: 0; border-radius: 0; }
+.image-blur-selection-box { position: absolute; pointer-events: none; border: 2px dashed var(--ui-accent); background: color-mix(in srgb, var(--ui-accent) 12%, transparent); box-sizing: border-box; }
+.app-icon-results { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr)); gap: 16px; min-width: 0; }
+.app-icon-result, .app-icon-source { margin: 0; min-width: 0; }
+.app-icon-result figcaption { display: grid; gap: 4px; margin-bottom: 8px; font-size: 13px; overflow-wrap: anywhere; }
+.app-icon-result figcaption span, .app-icon-source figcaption { color: var(--muted); font-size: 12px; }
+.app-icon-preview { display: grid; place-items: center; min-height: 144px; padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: repeating-conic-gradient(#eee 0% 25%, #fff 0% 50%) 0 0 / 16px 16px; }
+.app-icon-preview img, .app-icon-source img { display: block; max-width: min(128px, 100%); height: auto; }
+.app-icon-result > a { display: flex; justify-content: center; margin-top: 8px; white-space: normal; overflow-wrap: anywhere; min-height: 44px; }
+@media (max-width: 680px) {
+  .image-blur-region-fields, .watermark-number-fields { grid-template-columns: minmax(0, 1fr); }
+  .app-icon-results { grid-template-columns: minmax(0, 1fr); }
+}

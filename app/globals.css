@@ -65,6 +65,8 @@ body {
   margin: 0;
 }
 
+html { background: var(--page); }
+
 body {
   color: var(--text);
   background: var(--page);
