@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://tool.easonzhan.xyz/image-rounded</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/image-canvas</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/image-duotone</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/image-sharpen</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/texture-memory</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/id-photo</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/font-preview</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/audio-bpm</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/browser-info</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/duplicate-files</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/pdf-scan</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/gif-extract</loc></url>
+  <url><loc>https://tool.easonzhan.xyz/xml-formatter</loc></url>
   <url><loc>https://tool.easonzhan.xyz/pdf-page-numbers</loc></url>
   <url><loc>https://tool.easonzhan.xyz/pdf-cropper</loc></url>
   <url><loc>https://tool.easonzhan.xyz/image-color-replace</loc></url>

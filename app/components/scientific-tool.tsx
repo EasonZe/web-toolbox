@@ -33,9 +33,9 @@ function MatrixEditor({ name, value, onChange }: { name: string; value: string[]
       <label>行数<select aria-label={`矩阵 ${name} 行数`} value={value.length} onChange={(e) => resize(Number(e.target.value), value[0].length)}>{Array.from({ length: toolLimits.math.matrixEdge }, (_, i) => i + 1).map((n) => <option key={n}>{n}</option>)}</select></label>
       <label>列数<select aria-label={`矩阵 ${name} 列数`} value={value[0].length} onChange={(e) => resize(value.length, Number(e.target.value))}>{Array.from({ length: toolLimits.math.matrixEdge }, (_, i) => i + 1).map((n) => <option key={n}>{n}</option>)}</select></label>
     </div>
-    <div className="science-matrix-cells" style={{ gridTemplateColumns: `repeat(${value[0].length}, minmax(44px, 1fr))` }}>
+    <div className="science-matrix-scroll" role="region" aria-label={`矩阵 ${name} 数值，列数较多时可左右滑动`} tabIndex={0}><div className="science-matrix-cells" style={{ gridTemplateColumns: `repeat(${value[0].length}, minmax(44px, 1fr))` }}>
       {value.flatMap((row, r) => row.map((entry, c) => <input key={`${r}-${c}`} aria-label={`矩阵 ${name} 第 ${r + 1} 行第 ${c + 1} 列`} value={entry} maxLength={40} placeholder="0" spellCheck={false} onChange={(e) => onChange(value.map((items, i) => items.map((item, j) => i === r && j === c ? e.target.value : item)))} />))}
-    </div>
+    </div></div>
   </fieldset>;
 }
 

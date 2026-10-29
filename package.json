@@ -1,6 +1,6 @@
 {
   "name": "web-toolbox",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "多功能工具箱：面向浏览器的视频、音频、图片、文档、开发与生活工具集合。",
   "private": true,
   "license": "MIT",
@@ -51,10 +51,14 @@
     "@huggingface/transformers": "3.8.1",
     "@mediabunny/mp3-encoder": "^1.51.0",
     "@morsecodeapp/morse": "^0.2.0",
+    "@paddleocr/paddleocr-js": "0.4.2",
     "@pdf-lib/fontkit": "1.1.1",
     "@plussub/srt-vtt-parser": "2.0.5",
+    "@prettier/plugin-xml": "3.4.2",
     "@soundtouchjs/audio-worklet": "^2.1.1",
+    "@techstark/opencv-js": "4.10.0-release.1",
     "bezier-easing": "3.2.0",
+    "bowser": "2.15.0",
     "change-case": "^5.4.4",
     "colorthief": "^3.5.0",
     "cron-parser": "5.10.2",
@@ -71,6 +75,7 @@
     "file-type": "22.2.0",
     "function-plot": "^1.25.4",
     "gifenc": "^1.0.3",
+    "gifuct-js": "2.1.2",
     "hash-wasm": "4.12.0",
     "html-to-pdfmake": "^2.5.34",
     "image-q": "^4.0.0",
@@ -94,6 +99,7 @@
     "pdfmake": "^0.3.11",
     "pinyin-pro": "3.29.5",
     "pixelmatch": "8.0.0",
+    "prettier": "3.9.10",
     "qrcode": "^1.5.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",
@@ -103,6 +109,7 @@
     "spin-wheel": "^5.0.2",
     "tesseract.js": "7.0.0",
     "three": "^0.185.1",
+    "web-audio-beat-detector-worker": "6.0.14",
     "yaml": "2.9.1",
     "youtubei.js": "^17.2.0"
   },
@@ -129,11 +136,19 @@
     "react-server-dom-webpack": "19.2.8",
     "tailwindcss": "4.2.1",
     "typescript": "5.9.3",
-    "vinext": "^1.0.0-beta.10",
+    "vinext": "1.0.0-beta.13",
     "vite": "8.1.6",
     "wrangler": "^4.129.0"
   },
   "overrides": {
+    "vinext": {
+      "@vercel/og": {
+        ".": "1.0.3",
+        "satori": {
+          "fflate": "0.7.5"
+        }
+      }
+    },
     "fast-glob": "$fast-glob",
     "mammoth": {
       "argparse": "2.0.1"

@@ -11,3 +11,6 @@
 *.woff binary
 *.woff2 binary
 *.wasm binary
+
+# Keep the upstream license text unchanged, including its line-end spaces.
+/licenses/JSBN-LICENSE.txt whitespace=-blank-at-eol

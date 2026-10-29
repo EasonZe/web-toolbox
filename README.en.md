@@ -25,21 +25,21 @@
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white">
   <img alt="React" src="https://img.shields.io/badge/React-149ECA?logo=react&logoColor=white">
   <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white">
-  <img alt="100+ tools" src="https://img.shields.io/badge/Tools-100%2B-7c6fb1">
+  <img alt="121 tools" src="https://img.shields.io/badge/Tools-121-7c6fb1">
 </p>
 
 [Live site](https://tool.easonzhan.xyz/) · [Releases](https://github.com/EasonZe/web-toolbox/releases) · [Report an issue](https://github.com/EasonZe/web-toolbox/issues)
 
-Web Toolbox contains over 100 tools for media, documents, development and everyday tasks. No installation is needed. Most file and text processing runs locally in your browser.
+Web Toolbox contains 121 tools for media, documents, development and everyday tasks. No installation is needed. Most file and text processing runs locally in your browser.
 
 ## Tools
 
 | Category | Examples |
 | --- | --- |
 | Video | Conversion, compression, trimming, watermarks, GIFs, frame capture and link parsing |
-| Audio | Conversion, trimming, merging, speed and pitch, reversal, recording and metronome |
-| Images and design | Compression, cropping, stitching, OCR, background removal, colors, pixel art, textures, 3D previews and CSS generators |
-| Text and documents | Editing, diffs, Markdown, subtitles, PDF pages and exports, PPTX extraction |
+| Audio | Conversion, trimming, merging, speed and pitch, reversal, recording, metronome and BPM analysis |
+| Images and design | Compression, cropping, OCR, rounded borders, canvas, duotone, sharpening, GIF editing, ID photos, textures and 3D previews |
+| Text and documents | Editing, diffs, Markdown, subtitles, PDF pages and exports, scanned PDFs, local font previews and PPTX extraction |
 | Development | JSON, YAML, path extraction, hashes, HMAC, regex, JWT, QR codes, ZIP and Unity packages |
 | Calculation | Expressions, equations, calculus, matrices, statistics, number theory, units and currencies |
 | Time and daily tasks | World clocks, countdowns, date calculations, random draws and typing practice |

@@ -51,6 +51,6 @@ function home(view, width) {
 for (const width of [390, 1440]) for (const view of ["cards", "groups", "table", "minimal"]) {
   test(`同数量搜索换词不隐藏新工具，收藏不重置动画：${width}px / ${view}`, () => {
     const app = home(view, width);
-    try { app.search("时间戳"); app.search("文件哈希"); app.favorite(); for (const query of ["JSON 路径提取", "文本哈希与 HMAC", "CSS 缓动曲线"]) { app.search(query); app.favorite(); } } finally { app.component.unmount(); }
+    try { app.search("时间戳"); app.search("文件哈希"); app.favorite(); for (const query of ["JSON 路径提取", "文本哈希与 HMAC", "CSS 缓动曲线", "GIF 帧提取", "XML 格式化与校验", "重复文件检查", "PDF 转扫描件", "音频 BPM 分析", "浏览器信息与能力检测", "贴图显存估算", "本地字体预览", "证件照制作与排版", "GIF 拆帧与编辑", "图片圆角与边框", "图片画布与纯色图", "图片双色调", "图片锐化"]) { app.search(query); app.favorite(); } } finally { app.component.unmount(); }
   });
 }

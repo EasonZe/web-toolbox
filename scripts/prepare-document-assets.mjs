@@ -1,4 +1,5 @@
 import { cp, mkdir, readdir } from "node:fs/promises";
+import { preparePaddleAssets } from "./prepare-paddle-assets.mjs";
 
 // PDF.js needs these version-matched resources for CJK, built-in fonts and image codecs.
 const root = new URL("../public/pdfjs/", import.meta.url);
@@ -37,6 +38,7 @@ await cp(new URL("LICENSE", coreRoot), new URL("Core-LICENSE", ocrRoot));
 // magic bytes and decompresses it without relying on the URL extension.
 for (const language of ["eng", "chi_sim"]) await cp(new URL(`../node_modules/@tesseract.js-data/${language}/4.0.0_best_int/${language}.traineddata.gz`, import.meta.url), new URL(`data/${language}.traineddata`, ocrRoot));
 await cp(new URL("../licenses/OCR-models-NOTICE.md", import.meta.url), new URL("Models-NOTICE.md", ocrRoot));
+await preparePaddleAssets();
 
 // License texts accompany the browser distribution, not just npm sources.
 const vendorLicenseRoot = new URL("../public/vendor-licenses/", import.meta.url);
@@ -51,13 +53,20 @@ for (const [name, license] of [["cron-parser", "LICENSE"], ["luxon", "LICENSE.md
   await cp(new URL(`../node_modules/${name}/${license}`, import.meta.url), new URL(`${name.replaceAll("/", "-")}.txt`, vendorLicenseRoot));
 }
 
-for (const name of ["ipaddr.js", "culori"]) {
+for (const name of ["ipaddr.js", "culori", "hash-wasm"]) {
   await cp(new URL(`../node_modules/${name}/LICENSE`, import.meta.url), new URL(`${name}.txt`, vendorLicenseRoot));
 }
 
-for (const [name, license] of [["jsonpointer", "LICENSE.md"], ["bezier-easing", "LICENSE"]]) {
-  await cp(new URL(`../node_modules/${name}/${license}`, import.meta.url), new URL(`${name}.txt`, vendorLicenseRoot));
+for (const [name, license] of [["jsonpointer", "LICENSE.md"], ["bezier-easing", "LICENSE"], ["gifuct-js", "LICENSE"], ["js-binary-schema-parser", "LICENSE"], ["prettier", "LICENSE"], ["@prettier/plugin-xml", "LICENSE"], ["@xml-tools/parser", "LICENSE"], ["chevrotain", "LICENSE.txt"], ["regexp-to-ast", "LICENSE"], ["bowser", "LICENSE"], ["web-audio-beat-detector-worker", "LICENSE"]]) {
+  await cp(new URL(`../node_modules/${name}/${license}`, import.meta.url), new URL(`${name.replaceAll("/", "-")}.txt`, vendorLicenseRoot));
 }
+await cp(new URL("../node_modules/prettier/THIRD-PARTY-NOTICES.md", import.meta.url), new URL("prettier-THIRD-PARTY-NOTICES.md", vendorLicenseRoot));
+await cp(new URL("../node_modules/gifenc/LICENSE.md", import.meta.url), new URL("gifenc.txt", vendorLicenseRoot));
+await cp(new URL("../node_modules/@techstark/opencv-js/LICENSE", import.meta.url), new URL("opencv-js.txt", vendorLicenseRoot));
+for (const name of ["PaddleOCR-LICENSE", "ONNX-Runtime-LICENSE", "Boost-1.0-LICENSE.txt", "JSBN-LICENSE.txt"]) await cp(new URL(`../licenses/${name}`, import.meta.url), new URL(name, vendorLicenseRoot));
+// This package omits a separate license file; preserve its original author and
+// embedded JSBN notices alongside the complete Boost / JSBN terms.
+await cp(new URL("../node_modules/clipper-lib/clipper.js", import.meta.url), new URL("clipper-lib-original.txt", vendorLicenseRoot));
 
 await cp(new URL("../licenses/saxes-6.0.0-LICENSE.txt", import.meta.url), new URL("saxes.txt", vendorLicenseRoot));
 await cp(new URL("../licenses/pdf-lib-fontkit-NOTICE.md", import.meta.url), new URL("pdf-lib-fontkit-NOTICE.md", vendorLicenseRoot));

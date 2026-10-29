@@ -2,7 +2,14 @@ import type { FileWorkerRequest } from "../lib/file-worker-client";
 self.onmessage = async ({ data }: MessageEvent<FileWorkerRequest>) => {
   try {
     let result: unknown;
-    if (data.action === "json-pointer") {
+    if (data.action === "duplicate-files") {
+      result = await (await import("../lib/duplicate-files")).findDuplicateFiles(data.files, new AbortController().signal, (progress, status) => self.postMessage({ progress, status }));
+    } else if (data.action === "xml-process") {
+      result = await (await import("../lib/xml-formatter")).processXml(data.text, data.options);
+    } else if (data.action === "gif-inspect" || data.action === "gif-extract") {
+      const gif = await import("../lib/gif-extract"), signal = new AbortController().signal;
+      result = data.action === "gif-inspect" ? await gif.inspectGif(data.file, signal) : await gif.extractGif(data.file, data.options, signal, (progress, status) => self.postMessage({ progress, status }));
+    } else if (data.action === "json-pointer") {
       result = (await import("../lib/json-pointer")).extractJsonPointers(data.text, data.paths);
     } else if (data.action === "pdf-page-info" || data.action === "pdf-number" || data.action === "pdf-crop") {
       const pdf = await import("../lib/pdf-page-tools"), signal = new AbortController().signal, report = (progress: number, status: string) => self.postMessage({ progress, status });

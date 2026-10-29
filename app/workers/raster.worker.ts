@@ -2,6 +2,7 @@ import { heightToNormal, packTextureChannels } from "../lib/texture-tools";
 import { composeAudio } from "../lib/audio-editing";
 import { adjustImage } from "../lib/image-adjustments";
 import type { RasterRequest } from "../lib/raster-worker-client";
+import { scanPixels } from "../lib/pdf-scan-pixels";
 self.onmessage = ({ data }: MessageEvent<RasterRequest>) => {
   try {
     if (data.action === "audio") {
@@ -12,7 +13,9 @@ self.onmessage = ({ data }: MessageEvent<RasterRequest>) => {
       );
     } else {
       const result =
-        data.action === "adjust"
+        data.action === "scan"
+          ? scanPixels(data.pixels, data.mode, data.threshold)
+          : data.action === "adjust"
           ? adjustImage(data.pixels, data.width, data.height, data.settings)
           : data.action === "normal"
           ? heightToNormal(

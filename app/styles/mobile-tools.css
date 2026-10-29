@@ -1,0 +1,56 @@
+/* Loaded after the shared styles. Tool pages only: homepage cards and desktop
+   layout/interaction rules remain unchanged. Do not hide page overflow to mask
+   a wide control; reflow controls or give dense data its own scroll container. */
+.science-matrix-scroll { min-width: 0; max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+
+@media (max-width: 680px) {
+  .tool-shell { min-width: 0; }
+  .tool-shell .tool-header { padding: 28px 0 20px; }
+  .tool-shell .tool-header h1 { font-size: clamp(25px, 6vw, 32px); line-height: 1.35; }
+  .tool-shell .tool-header p { font-size: 13px; line-height: 1.65; }
+  .tool-shell .converter-card { padding: 14px; }
+  .tool-shell .utility-card { gap: 14px; }
+  .tool-shell .utility-panel { padding: 12px; }
+  .tool-shell .utility-columns, .tool-shell .workbench-two, .tool-shell .science-layout { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .tool-shell .utility-controls { gap: 12px; }
+  .tool-shell :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not([type="hidden"]), select, textarea) { font-size: 16px; }
+  .tool-shell .utility-controls label { min-width: 0; gap: 7px; line-height: 1.5; }
+  .tool-shell .utility-controls :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]), select, textarea) { min-width: 0; max-width: 100%; font-size: 16px; padding: 10px; }
+  .tool-shell .utility-controls :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]), select) { min-height: 44px; }
+  .tool-shell .utility-controls textarea { min-height: 132px; }
+  .tool-shell .utility-controls input[type="checkbox"], .tool-shell .utility-controls input[type="radio"] { flex-shrink: 0; }
+  .tool-shell .utility-range-control > span { flex-wrap: wrap; row-gap: 3px; }
+  .tool-shell .utility-range-control output { flex: none; margin-left: auto; }
+  .tool-shell .utility-heading { flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+  .tool-shell .utility-heading h2 { flex: 1 0 min(100%, 10em); }
+  .tool-shell .utility-heading > .utility-actions { flex-wrap: wrap; justify-content: flex-start; }
+  .tool-shell .utility-actions { align-items: center; gap: 8px; }
+  .tool-shell .utility-actions > :is(button, a) { max-width: 100%; min-height: 44px; flex-shrink: 0; white-space: normal; overflow-wrap: anywhere; }
+  .tool-shell .utility-inline { flex-wrap: wrap; }
+  .tool-shell .utility-inline > input { flex: 1 1 10rem; }
+  .tool-shell .utility-inline > button { max-width: 100%; min-height: 44px; }
+  .tool-shell .utility-muted, .tool-shell .utility-error, .tool-shell .workbench-feedback > p { overflow-wrap: anywhere; }
+  .tool-shell .utility-panel > :is(h2, h3), .tool-shell .utility-controls > :is(h2, h3) { overflow-wrap: anywhere; }
+  .tool-shell .workbench-feedback { gap: 8px; }
+  .tool-shell .workbench-feedback progress { min-width: min(140px, 100%); }
+  .tool-shell .workbench-table-scroll { min-width: 0; overscroll-behavior-x: contain; }
+  .tool-shell .workbench-table th { white-space: nowrap; }
+  .tool-shell .workbench-table td { min-width: 7rem; }
+  .tool-shell .workbench-table :is(th, td) { padding: 10px; }
+  .tool-shell .workbench-details { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .tool-shell .workbench-details dd { margin-bottom: 8px; }
+  .tool-shell .image-pdf-list .utility-actions { flex-wrap: wrap; }
+  .tool-shell .contrast-color-input { gap: 8px; }
+  .tool-shell .contrast-checks li { flex-wrap: wrap; gap: 6px 12px; }
+  .tool-shell .contrast-checks li > span { flex: 1 1 10rem; }
+  .tool-shell .duplicate-file-list li { flex-wrap: wrap; gap: 4px 12px; }
+  .tool-shell .duplicate-file-list li > span { flex: 1 1 12rem; }
+  .tool-shell .easing-point-control { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .tool-shell .shadow-generator-preview { min-height: 220px; padding: 32px; }
+}
+
+@media (max-width: 480px) {
+  .tool-shell .workbench-fields, .tool-shell .science-fields-row { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .tool-shell .utility-controls .design-stop-editor { padding: 10px; gap: 10px; }
+  .tool-shell .utility-empty { min-height: 150px; padding: 18px; }
+}

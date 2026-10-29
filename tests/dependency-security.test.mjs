@@ -8,6 +8,7 @@ import { promisify } from "node:util";
 import test from "node:test";
 import { runToolTest } from "./helpers/vm-modules.mjs";
 import { Document, Packer, Paragraph } from "docx";
+import ts from "typescript";
 
 const require = createRequire(import.meta.url);
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
@@ -114,14 +115,28 @@ test("Mammoth 浏览器版仍能读取中文 DOCX 并转义正文中的 HTML", a
   assert.doesNotMatch(result.value, /<script>/);
 });
 
-test("部署产物不包含 sprintf-js 命令行或 Node 安装脚本依赖链", async () => {
+function forbiddenRuntimeCode(source) {
   const forbidden = /sprintf-js|sprintf\.(?:parse|format)|global-agent|GLOBAL_AGENT_ENVIRONMENT_VARIABLE_NAMESPACE|onnxruntime-node|ArgumentParser/;
+  const tree = ts.createSourceFile("bundle.js", source, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS), pending = [tree];
+  while (pending.length) {
+    const node = pending.pop();
+    if ((ts.isIdentifier(node) || ts.isStringLiteralLike(node) || [ts.SyntaxKind.TemplateHead, ts.SyntaxKind.TemplateMiddle, ts.SyntaxKind.TemplateTail].includes(node.kind)) && typeof node.text === "string" && forbidden.test(node.text)) return node.text.slice(0, 120);
+    if (ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === "sprintf" && ["parse", "format"].includes(node.name.text)) return `sprintf.${node.name.text}`;
+    ts.forEachChild(node, (child) => { pending.push(child); });
+  }
+  return null;
+}
+test("运行时依赖检查忽略真正的注释，但保留实际导入、字符串和格式化器检查", () => {
+  assert.equal(forbiddenRuntimeCode('/*! onnxruntime-node (ignored) */ const x = 1;'), null);
+  for (const source of ['import("onnxruntime-node")', 'require("sprintf-js")', 'new ArgumentParser()', 'sprintf . parse("x")', 'const name="global-agent"', 'const name=`GLOBAL_AGENT_ENVIRONMENT_VARIABLE_NAMESPACE`']) assert.notEqual(forbiddenRuntimeCode(source), null, source);
+});
+test("部署产物不包含 sprintf-js 命令行或 Node 安装脚本依赖链", async () => {
   let checked = 0;
   for (const folder of ["dist/client/", "dist/server/"]) {
     const base = new URL(`../${folder}`, import.meta.url);
     const files = await readdir(base, { recursive: true });
     for (const path of files.filter((path) => /\.(?:[cm]?js)$/.test(path))) {
-      assert.doesNotMatch(await readFile(new URL(path.replaceAll("\\", "/"), base), "utf8"), forbidden, `${folder}${path}`);
+      assert.equal(forbiddenRuntimeCode(await readFile(new URL(path.replaceAll("\\", "/"), base), "utf8")), null, `${folder}${path}`);
       checked++;
     }
   }

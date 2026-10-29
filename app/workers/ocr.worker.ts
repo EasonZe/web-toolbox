@@ -1,14 +1,17 @@
-import { createWorker, OEM } from "tesseract.js";
+import { createWorker, OEM, PSM } from "tesseract.js";
 self.onmessage = async ({
   data,
 }: MessageEvent<{
   image: Blob;
   language: "eng" | "chi_sim" | "chi_sim+eng";
+  layout?: 3 | 6 | 7 | 11;
 }>) => {
   let worker: Awaited<ReturnType<typeof createWorker>> | undefined;
   try {
     if (!["eng", "chi_sim", "chi_sim+eng"].includes(data.language))
       throw new Error("不支持的识别语言。");
+    const layout = data.layout ?? 3;
+    if (![3, 6, 7, 11].includes(layout)) throw new Error("不支持的文字布局。");
     const base = new URL("/ocr/7.0.0/", self.location.origin).href;
     // The English-first bilingual order is verified against both model files
     // in the real OCR regression, not just against mocked recognition output.
@@ -37,9 +40,10 @@ self.onmessage = async ({
           error: `OCR 初始化失败：${cause instanceof Error ? cause.message : String(cause)}`,
         }),
     });
+    await worker.setParameters({ tessedit_pageseg_mode: String(layout) as PSM, preserve_interword_spaces: "0" });
     const result = await worker.recognize(data.image, { rotateAuto: true });
     self.postMessage({
-      result: { text: result.data.text, confidence: result.data.confidence },
+      result: { text: result.data.text, confidence: result.data.confidence, engine: "Tesseract" },
     });
   } catch (cause) {
     self.postMessage({
