@@ -34,6 +34,7 @@ export default function PdfPageTools({ mode }: { mode: "numbers" | "crop" }) {
         <label>字号（pt）<input type="number" min="6" max="48" value={numberOptions.size} onChange={(e) => number({ size: Number(e.target.value) })} /></label><label>距边缘（mm）<input type="number" min="2" max="50" value={numberOptions.margin} onChange={(e) => number({ margin: Number(e.target.value) })} /></label><DesignColorInput label="页码颜色" value={numberOptions.color} onChange={(color) => number({ color })} />
         <label className="utility-range-control"><span>不透明度<output>{numberOptions.opacity}%</output></span><input type="range" min="0" max="100" value={numberOptions.opacity} onChange={(e) => number({ opacity: Number(e.target.value) })} /></label>
         <p className="utility-muted">页码叠加在原内容上，不自动腾出空白；放不下时会明确报错。0% 为不可见页码。签名可能失效，请保留原文件。</p>
+        <p className="utility-muted">中文混排嵌入完整字体以避免缺字，输出通常增加约 7–8 MB；纯英文使用内置字体。</p>
       </> : <>
         {([["top", "顶部裁去"], ["right", "右侧裁去"], ["bottom", "底部裁去"], ["left", "左侧裁去"]] as const).map(([key, label]) => <label key={key}>{label}（%）<input type="number" min="0" max="99" step="0.1" value={margins[key]} onChange={(e) => crop({ margins: { ...margins, [key]: Number(e.target.value) } })} /></label>)}
         <div className="utility-actions"><button type="button" onClick={() => crop({ margins: { top: 5, right: 5, bottom: 5, left: 5 } })}>四边 5%</button><button type="button" onClick={() => crop({ margins: { top: 0, right: 0, bottom: 0, left: 0 } })}>不再裁切</button></div>

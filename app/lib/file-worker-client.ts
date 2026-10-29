@@ -8,6 +8,7 @@ import type { ColorReplaceOptions } from "./image-color-replace";
 import { runWorkerTask } from "./worker-task";
 import type { XmlOptions } from "./xml-formatter";
 import type { GifExtractOptions } from "./gif-extract";
+import type { PdfWatermarkOptions } from "./pdf-watermark-options";
 export type FileWorkerRequest =
   | { action: "duplicate-files"; files: File[] }
   | { action: "xml-process"; text: string; options: XmlOptions }
@@ -17,6 +18,7 @@ export type FileWorkerRequest =
   | { action: "pdf-page-info"; file: File }
   | { action: "pdf-number"; file: File; options: PdfNumberOptions }
   | { action: "pdf-crop"; file: File; options: PdfCropOptions }
+  | { action: "pdf-watermark"; file: File; options: PdfWatermarkOptions }
   | { action: "pptx-extract"; file: File }
   | { action: "image-color-replace"; file: File; options: ColorReplaceOptions }
   | { action: "image-color-sample"; file: File; x: number; y: number }

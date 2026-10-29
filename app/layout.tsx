@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import Script from "next/script";
 import FloatingDock from "./components/floating-dock";
+import { themeBootstrap } from "./lib/theme-bootstrap";
 import "./globals.css";
 import "./styles/mobile-tools.css";
 
@@ -49,8 +51,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" suppressHydrationWarning>
       <head>
+        <Script id="appearance-init" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
         <style>{`
           @media (hover: none) and (pointer: coarse) {
             .tool-card-shell:hover > .tool-card.is-touch-entering,

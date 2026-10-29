@@ -25,12 +25,12 @@
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white">
   <img alt="React" src="https://img.shields.io/badge/React-149ECA?logo=react&logoColor=white">
   <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white">
-  <img alt="121 tools" src="https://img.shields.io/badge/Tools-121-7c6fb1">
+  <img alt="124 tools" src="https://img.shields.io/badge/Tools-124-7c6fb1">
 </p>
 
 [在线使用](https://tool.easonzhan.xyz/) · [版本更新](https://github.com/EasonZe/web-toolbox/releases) · [问题反馈](https://github.com/EasonZe/web-toolbox/issues)
 
-多功能工具箱收录 121 个视频、音频、图片、文档、开发与生活工具，无需安装。多数文件和文本处理在浏览器本地完成。
+多功能工具箱收录 124 个视频、音频、图片、文档、开发与生活工具，无需安装。多数文件和文本处理在浏览器本地完成。
 
 ## 工具有哪些
 
@@ -38,7 +38,7 @@
 | --- | --- |
 | 视频 | 格式转换、压缩、裁剪、水印、转 GIF、截图与取帧、视频链接解析 |
 | 音频 | 格式转换、裁剪与拼接、变速变调、倒放、录音、节拍器、BPM 分析 |
-| 图片与设计 | 压缩、裁剪、OCR、圆角边框、画布、双色调、锐化、GIF 编辑、证件照、贴图与 3D 预览 |
+| 图片与设计 | 压缩、裁剪、OCR、圆角边框、画布、双色调、锐化与模糊、应用图标、GIF 编辑、证件照、贴图与 3D 预览 |
 | 文字与文档 | 文本编辑与对比、Markdown、字幕、PDF 页面管理与导出、扫描件、本地字体预览、PPTX 提取 |
 | 编码与开发 | JSON、YAML、路径提取、哈希与 HMAC、正则、JWT、二维码、ZIP、Unity 资源包预览 |
 | 计算与换算 | 表达式、方程、微积分、矩阵、统计、数论、单位与汇率换算 |

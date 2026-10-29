@@ -3,6 +3,7 @@
 import type { CSSProperties, ComponentType } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import { appearance, type AccentName, type ThemeMode } from "../lib/appearance";
 import {
   FiArrowLeft,
   FiArrowUp,
@@ -27,29 +28,10 @@ import {
   type ToolViewMode,
 } from "../lib/home-preferences";
 
-type ThemeMode = "light" | "dark" | "system";
-type AccentName =
-  | "blue"
-  | "purple"
-  | "cyan"
-  | "green"
-  | "orange"
-  | "pink"
-  | "red"
-  | "custom";
-
 type ThemeOption = {
   value: ThemeMode;
   label: string;
   icon: ComponentType;
-};
-
-type AccentOption = {
-  value: AccentName;
-  label: string;
-  color: string;
-  hover: string;
-  strong: string;
 };
 
 type ToolViewOption = {
@@ -64,57 +46,13 @@ const themeOptions: ThemeOption[] = [
   { value: "system", label: "系统", icon: FiMonitor },
 ];
 
-const accentOptions: AccentOption[] = [
-  {
-    value: "blue",
-    label: "浅蓝",
-    color: "#cfe2f1",
-    hover: "#bad7e9",
-    strong: "#4f7890",
-  },
-  {
-    value: "purple",
-    label: "紫色",
-    color: "#DAD7ED",
-    hover: "#c9c4e3",
-    strong: "#756c9c",
-  },
-  {
-    value: "cyan",
-    label: "青色",
-    color: "#bde8e8",
-    hover: "#9edcdd",
-    strong: "#397f82",
-  },
-  {
-    value: "green",
-    label: "绿色",
-    color: "#cfe9c4",
-    hover: "#b9dda9",
-    strong: "#527f42",
-  },
-  {
-    value: "orange",
-    label: "橙色",
-    color: "#f8d6ad",
-    hover: "#f2c487",
-    strong: "#9a672b",
-  },
-  {
-    value: "pink",
-    label: "粉色",
-    color: "#f4c7df",
-    hover: "#efadcf",
-    strong: "#9a4e78",
-  },
-  {
-    value: "red",
-    label: "红色",
-    color: "#f2c4c8",
-    hover: "#eba7ad",
-    strong: "#9b4f57",
-  },
-];
+const {
+  accentOptions,
+  normalizeHexColor,
+  themeStorageKey,
+  accentStorageKey,
+  customAccentStorageKey,
+} = appearance;
 
 const toolViewOptions: ToolViewOption[] = [
   { value: "groups", label: "折叠分组", icon: FiLayers },
@@ -123,67 +61,12 @@ const toolViewOptions: ToolViewOption[] = [
   { value: "cards", label: "卡片网格", icon: FiGrid },
 ];
 
-const themeStorageKey = "eason-toolbox-theme";
-const accentStorageKey = "eason-toolbox-accent";
-const customAccentStorageKey = "eason-toolbox-custom-accent";
-const defaultCustomAccent = "#756c9c";
-
-function isThemeMode(value: string | null): value is ThemeMode {
-  return value === "light" || value === "dark" || value === "system";
-}
-
-function isAccentName(value: string | null): value is AccentName {
-  return value === "custom" || accentOptions.some((option) => option.value === value);
-}
-
-function normalizeHexColor(value: string | null) {
-  return value && /^#[0-9a-f]{6}$/i.test(value) ? value.toLowerCase() : defaultCustomAccent;
-}
-
-function mixHexColor(source: string, target: string, targetRatio: number) {
-  const sourceValue = Number.parseInt(source.slice(1), 16);
-  const targetValue = Number.parseInt(target.slice(1), 16);
-  const mixChannel = (shift: number) => Math.round(
-    ((sourceValue >> shift) & 255) * (1 - targetRatio) + ((targetValue >> shift) & 255) * targetRatio,
-  );
-  return `#${[16, 8, 0].map((shift) => mixChannel(shift).toString(16).padStart(2, "0")).join("")}`;
-}
-
-function customAccentPalette(color: string): AccentOption {
-  const value = normalizeHexColor(color);
-  const rgb = [1, 3, 5].map((index) => Number.parseInt(value.slice(index, index + 2), 16));
-  const luminance = (rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722) / 255;
-  return {
-    value: "custom",
-    label: "自定义颜色",
-    color: mixHexColor(value, "#ffffff", 0.62),
-    hover: mixHexColor(value, "#ffffff", 0.42),
-    strong: luminance > 0.62 ? mixHexColor(value, "#17242d", 0.48) : value,
-  };
-}
-
 export default function FloatingDock() {
   const pathname = usePathname();
   const isToolPage = pathname !== "/";
-  const [theme, setTheme] = useState<ThemeMode>(() => {
-    if (typeof window === "undefined") return "light";
-    try {
-      const savedTheme = window.localStorage.getItem(themeStorageKey);
-      return isThemeMode(savedTheme) ? savedTheme : "light";
-    } catch { return "light"; }
-  });
-  const [accent, setAccent] = useState<AccentName>(() => {
-    if (typeof window === "undefined") return "blue";
-    try {
-      const savedAccent = window.localStorage.getItem(accentStorageKey);
-      return isAccentName(savedAccent) ? savedAccent : "blue";
-    } catch { return "blue"; }
-  });
-  const [customAccent, setCustomAccent] = useState(() => {
-    if (typeof window === "undefined") return defaultCustomAccent;
-    try { return normalizeHexColor(window.localStorage.getItem(customAccentStorageKey)); }
-    catch { return defaultCustomAccent; }
-  });
+  const [theme, setTheme] = useState<ThemeMode>(appearance.initialTheme);
+  const [accent, setAccent] = useState<AccentName>(appearance.initialAccent);
+  const [customAccent, setCustomAccent] = useState(appearance.initialCustomAccent);
   const [toolView, setToolView] = useState<ToolViewMode>(() => {
     if (typeof window === "undefined") return "cards";
     try {
@@ -217,32 +100,26 @@ export default function FloatingDock() {
   }, [pathname, settingsOpen]);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const mediaQuery = theme === "system" ? appearance.systemMediaQuery() : null;
     const applyTheme = () => {
-      const resolvedTheme =
-        theme === "system" ? (mediaQuery.matches ? "dark" : "light") : theme;
-      document.documentElement.dataset.theme = resolvedTheme;
-      document.documentElement.dataset.themePreference = theme;
+      appearance.applyTheme(document.documentElement, theme, mediaQuery?.matches ?? false);
     };
 
     applyTheme();
     try { window.localStorage.setItem(themeStorageKey, theme); } catch { /* Private browsing can disable storage. */ }
 
-    if (theme === "system") {
+    if (mediaQuery && typeof mediaQuery.addEventListener === "function") {
       mediaQuery.addEventListener("change", applyTheme);
-      return () => mediaQuery.removeEventListener("change", applyTheme);
+      return () => mediaQuery.removeEventListener?.("change", applyTheme);
+    }
+    if (mediaQuery && typeof mediaQuery.addListener === "function") {
+      mediaQuery.addListener(applyTheme);
+      return () => mediaQuery.removeListener?.(applyTheme);
     }
   }, [theme]);
 
   useEffect(() => {
-    const selectedAccent = accent === "custom"
-      ? customAccentPalette(customAccent)
-      : accentOptions.find((option) => option.value === accent) ?? accentOptions[0];
-    const root = document.documentElement;
-
-    root.style.setProperty("--accent", selectedAccent.color);
-    root.style.setProperty("--accent-hover", selectedAccent.hover);
-    root.style.setProperty("--accent-strong", selectedAccent.strong);
+    appearance.applyAccent(document.documentElement, accent, customAccent);
     try { window.localStorage.setItem(accentStorageKey, accent); } catch { /* Keep the selected color usable without storage. */ }
     try { window.localStorage.setItem(customAccentStorageKey, customAccent); } catch { /* Keep the selected color usable without storage. */ }
   }, [accent, customAccent]);

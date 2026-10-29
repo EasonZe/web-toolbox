@@ -47,12 +47,14 @@ export function numberLabel(template: string, n: number, total: number, page: nu
   return template.replace(/\{(n|total|page)\}/g, (_, key) => String(({ n, total, page } as Record<string, number>)[key]));
 }
 async function loadNumberFont(signal: AbortSignal) { const response = await fetch("/fonts/noto-sans-sc/regular.otf", { signal }); if (!response.ok) throw new Error("项目内中文字体加载失败，请刷新后重试。"); const bytes = new Uint8Array(await response.arrayBuffer()); if (!bytes.length || bytes.length > 32 * 1048576) throw new Error("字体资源大小异常。"); return bytes; }
+export { load as loadEditablePdf, save as saveEditedPdf, loadNumberFont as loadPdfTextFont };
 export async function numberPdfPages(file: File, options: PdfNumberOptions, signal: AbortSignal, report: (n: number, text: string) => void = () => {}, fontSource: (signal: AbortSignal) => Promise<Uint8Array> = loadNumberFont) {
   if (!Number.isSafeInteger(options.start) || options.start < 1 || options.start > 1_000_000_000 || !Number.isFinite(options.size) || options.size < 6 || options.size > 48 || !Number.isFinite(options.margin) || options.margin < 2 || options.margin > 50 || !Number.isFinite(options.opacity) || options.opacity < 0 || options.opacity > 100 || !/^(top|bottom)-(left|center|right)$/.test(options.position)) throw new Error("页码起始编号、字号、边距、不透明度或位置无效。");
   const color = designColor(options.color), pdf = await load(file, signal), pages = selection(options.range, pdf.getPageCount()), labels = pages.map((page, index) => numberLabel(options.template, options.start + index, pages.length, page + 1));
   let font;
   if (labels.every((label) => /^[\x20-\x7e]+$/.test(label))) font = await pdf.embedFont(StandardFonts.Helvetica);
-  else { report(5, "正在加载项目内中文字体…"); const [kit, data] = await Promise.all([import("@pdf-lib/fontkit"), fontSource(signal)]); signal.throwIfAborted(); pdf.registerFontkit(kit.default); font = await pdf.embedFont(data, { subset: true }); }
+  // Full CFF embedding avoids missing outlines in Chinese/Latin mixed text.
+  else { report(5, "正在加载项目内中文字体…"); const [kit, data] = await Promise.all([import("@pdf-lib/fontkit"), fontSource(signal)]); signal.throwIfAborted(); pdf.registerFontkit(kit.default); font = await pdf.embedFont(data, { subset: false }); }
   const supported = new Set(font.getCharacterSet());
   for (let i = 0; i < pages.length; i++) {
     signal.throwIfAborted(); const page = pdf.getPage(pages[i]), g = pageGeometry(page), text = labels[i];

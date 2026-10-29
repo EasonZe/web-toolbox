@@ -56,12 +56,12 @@ test("大矩阵保留44px输入单元并有独立可聚焦的横向滚动区域"
   assert.match(component, /minmax\(44px, 1fr\)/);
   assert.equal(declaration(mobile, ".science-matrix-scroll", "overflow-x"), "auto");
 });
-test("手机源码清单覆盖目录内全部121个工具及其本地UI组件，不以首页抽样代替全站", async () => {
+test("手机源码清单覆盖目录内全部124个工具及其本地UI组件，不以首页抽样代替全站", async () => {
   const result = await mobileLayoutInventory();
-  assert.equal(result.tools.length, 121);
-  assert.equal(new Set(result.tools.map((tool) => tool.path)).size, 121);
+  assert.equal(result.tools.length, 124);
+  assert.equal(new Set(result.tools.map((tool) => tool.path)).size, 124);
   assert.equal(Object.keys(result.counts).length, 8);
-  assert.ok(result.sourceFiles >= 121);
+  assert.ok(result.sourceFiles >= 124);
   for (const path of ["/gradient-generator", "/shadow-generator", "/color-contrast", "/matrix-calculator", "/image-ocr", "/video-converter", "/font-preview", "/unity-package", "/image-rounded", "/image-canvas", "/image-duotone", "/image-sharpen"]) assert.ok(result.tools.some((tool) => tool.path === path), path);
   assert.match(result.note, /does not measure rendered widths/);
 });

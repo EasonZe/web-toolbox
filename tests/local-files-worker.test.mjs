@@ -98,8 +98,13 @@ test("真实 ES 模块文件 Worker 按需加载并完成 JSON、差异、ZIP、
   assert.equal((await run({ action: "pdf-page-info", serializedFile })).result[0].displayWidth, 321);
   const numbered = await run({ action: "pdf-number", serializedFile, options: { range: "1", template: "{n}/{total}", start: 1, position: "bottom-center", size: 12, margin: 10, color: "#333333", opacity: 100 } });
   assert.equal(numbered.error, undefined); assert.equal(numbered.result.changedPages, 1); assert.equal((await PDFDocument.load(await numbered.result.blob.arrayBuffer())).getPageCount(), 1);
+  for (const layout of ["single", "grid", "staggered"]) {
+    const watermarked = await run({ action: "pdf-watermark", serializedFile, options: { text: "DRAFT", range: "1", layout, size: 24, angle: 35, color: "#64748b", opacity: 20, x: 50, y: 50, gapX: 20, gapY: 20 } });
+    assert.equal(watermarked.error, undefined); assert.equal(watermarked.result.changedPages, 1); assert.ok(watermarked.result.stamps >= 1); assert.equal((await PDFDocument.load(await watermarked.result.blob.arrayBuffer())).getPageCount(), 1);
+  }
+  assert.match((await run({ action: "pdf-watermark", serializedFile, options: { text: "DRAFT", range: ",,,", layout: "single", size: 24, angle: 35, color: "#64748b", opacity: 20, x: 50, y: 50, gapX: 20, gapY: 20 } })).error, /有效页面/);
   const chineseNumbered = await run({ action: "pdf-number", serializedFile, options: { range: "1", template: "第 {n} 页", start: 1, position: "bottom-center", size: 12, margin: 10, color: "#333333", opacity: 100 } });
-  assert.equal(chineseNumbered.error, undefined); assert.ok(chineseNumbered.result.blob.size > 1000); assert.ok(chineseNumbered.result.blob.size < 1_000_000);
+  assert.equal(chineseNumbered.error, undefined); assert.ok(chineseNumbered.result.blob.size > 4_000_000); assert.ok(chineseNumbered.result.blob.size < 8 * 1024 * 1024, "完整字体避免中英混排缺字");
   const cropped = await run({ action: "pdf-crop", serializedFile, options: { range: "", margins: { top: 5, right: 5, bottom: 5, left: 5 } } });
   assert.equal(cropped.error, undefined); assert.equal((await PDFDocument.load(await cropped.result.blob.arrayBuffer())).getPage(0).getCropBox().width, 288.9);
   const pptx = await run({ action: "pptx-extract", serializedFile: { name: "test.pptx", bytes: zipSync(pptxParts()) } });
