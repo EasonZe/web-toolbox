@@ -46,6 +46,9 @@ test("真实 ES 模块文件 Worker 按需加载并完成 JSON、差异、ZIP、
     });
   }
   const json = await run({ action: "json-format", text: '{"id":9007199254740993123}', compact: true });
+  const sql = await run({ action: "sql-format", text: "select `Name` from `tools` where id = ?;", options: { dialect: "mysql", indent: 4, keywordCase: "upper" } });
+  assert.equal(sql.error, undefined); assert.match(sql.result.output, /SELECT\n    `Name`/); assert.ok(sql.result.output.includes("?"));
+  assert.match((await run({ action: "sql-format", text: "select (", options: { dialect: "sql", indent: 2, keywordCase: "upper" } })).error, /line 1 column/);
   const xml = await run({ action: "xml-process", text: '<r><item id="1">中文</item></r>', options: { mode: "format", indent: 2, reflow: true } });
   assert.equal(xml.error, undefined); assert.equal(xml.result.elements, 2); assert.match(xml.result.output, /\n  <item/);
   assert.match((await run({ action: "xml-process", text: '<!DOCTYPE r SYSTEM "https://example.test/x"><r/>', options: { mode: "format", indent: 2, reflow: false } })).error, /DTD/);

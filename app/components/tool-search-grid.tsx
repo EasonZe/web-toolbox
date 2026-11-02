@@ -40,6 +40,9 @@ type Tool = {
 };
 
 const tools: Tool[] = [
+  { name: "图片矢量化", title: "图片转 SVG 矢量图", href: "/image-vectorizer", icon: TbPhotoCode, keywords: "图片 矢量 svg vector 描摹 彩色 路径 轮廓 imagetracer", category: "图片与设计" },
+  { name: "SQL格式", title: "SQL 格式化", href: "/sql-formatter", icon: TbPhotoCode, keywords: "sql mysql postgresql sqlite 查询 方言 缩进 格式化 数据库", category: "编码与开发" },
+  { name: "番茄钟", title: "番茄专注钟", href: "/pomodoro", icon: TbClock, keywords: "番茄钟 专注 工作 短休 长休 轮次 pomodoro 提示音 计时", category: "时间与生活" },
   { name: "图片模糊", title: "图片模糊", href: "/image-blur", icon: TbPhotoEdit, keywords: "图片 全图 柔焦 模糊 均值 半径 局部 矩形 透明 png blur", category: "图片与设计" },
   { name: "应用图标", title: "多尺寸应用图标", href: "/app-icons", icon: TbPhoto, keywords: "图标 icon pwa web manifest apple android mipmap png 多尺寸 打包 zip", category: "图片与设计" },
   { name: "PDF水印", title: "PDF 文字水印", href: "/pdf-watermark", icon: TbFileTypePdf, keywords: "pdf 文档 中文 水印 网格 平铺 交错 文字 倾斜 透明度 页码", category: "文字与文档" },
@@ -138,7 +141,7 @@ const tools: Tool[] = [
   { name: "屏幕测试", title: "屏幕纯色测试", href: "/screen-test", icon: TbDeviceDesktop, keywords: "显示器 坏点 亮点 漏光 纯色 全屏", category: "设备与网络" },
   { name: "键盘测试", title: "键盘按键测试", href: "/keyboard-test", icon: TbKeyboard, keywords: "按键 键位 keyboard NKRO 多键 同时", category: "设备与网络" },
   { name: "日期计算", title: "日期计算器", href: "/date-calculator", icon: TbCalendarStats, keywords: "日期 天数 间隔 工作日 加减 推算 周 月 年", category: "时间与生活" },
-  { name: "倒计时", title: "倒计时器", href: "/countdown", icon: TbHourglass, keywords: "计时 定时 目标时间 番茄钟 全屏 提示音", category: "时间与生活" },
+  { name: "倒计时", title: "倒计时器", href: "/countdown", icon: TbHourglass, keywords: "计时 定时 目标时间 全屏 提示音", category: "时间与生活" },
   { name: "汇率转换", title: "实时汇率转换", href: "/currency-converter", icon: TbCurrency, keywords: "外汇 货币 人民币 美元 欧元 日元 换算", category: "计算与换算" },
   { name: "全球时间", title: "全球实时时间", href: "/world-clock", icon: TbClock, keywords: "世界时钟 时区 IANA 北京 纽约 伦敦 东京 全屏 秒", category: "时间与生活" },
   { name: "敏感内容打码", title: "敏感内容打码", href: "/sensitive-redactor", icon: TbShieldLock, keywords: "图片 图像 模糊 马赛克 隐私 遮挡", category: "图片与设计" },

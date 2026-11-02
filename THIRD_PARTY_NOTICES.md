@@ -8,6 +8,8 @@
 | --- | --- | --- |
 | React / Next.js / vinext | UI、路由与 Cloudflare 构建 | MIT |
 | CodeMirror 6 | 纯文本编辑、撤销、查找与替换 | MIT |
+| [ImageTracerJS](https://github.com/jankovicsandras/imagetracerjs) 1.2.6 | 在可终止 Worker 中将像素描摹为 SVG 路径 | Unlicense |
+| [sql-formatter](https://github.com/sql-formatter-org/sql-formatter) 15.9.0 / [Nearley](https://github.com/kach/nearley) 2.20.1 | SQL 文本格式化与解析，不连接数据库、不执行查询 | MIT |
 | [JsBarcode](https://github.com/lindell/JsBarcode) 3.12.3 | 条形码校验与 SVG / PNG 生成 | MIT |
 | [jwt-decode](https://github.com/auth0/jwt-decode) 4.0.0 | JWT 本地解码，不验证签名 | MIT |
 | [PDF-lib](https://github.com/Hopding/pdf-lib) | PDF 合并、拆分、页序、旋转与图片合成 PDF | MIT |
@@ -104,6 +106,8 @@
 
 ## 参考实现
 
+- 图片转 SVG 使用 ImageTracerJS 1.2.6 发布包的像素描摹 API；SQL 使用 sql-formatter 15.9.0 与 Nearley 2.20.1 运行时。三者原始许可证由构建脚本复制并随站点分发。argparse 及 Nearley 的编译、命令行辅助依赖不用于浏览器格式化路径。番茄专注钟只参考 [Pomotroid](https://github.com/Splode/pomotroid) 的工作 / 休息轮次功能方向，由本项目独立实现，没有复制 Electron 程序、源码或素材，也未新增运行依赖。详见[选型与边界](docs/vector-sql-pomodoro-tools.md)。
+
 - 音频 BPM 与浏览器信息只参考 [PC-TOOL 音频 BPM](https://github.com/Team-YM/pc-tool/blob/main/cn.pc-tool.cn/tool/audio-bpm.html)、[UA 解析](https://github.com/Team-YM/pc-tool/blob/main/cn.pc-tool.cn/tool/ua-parser.html) 的功能方向；没有确认该站整站复用许可，不复制其代码、界面或资源，也不复制 ToolKnit 作者代码。复用未经修改的 Bowser 与节拍引擎发布包，原始 LICENSE 全文随站点分发；低通系数依据 [W3C Audio EQ Cookbook](https://www.w3.org/TR/audio-eq-cookbook/) 独立实现。详见 [范围与许可](docs/bpm-browser-tools.md)。
 
 - 重复文件检查、PDF 转扫描件仅参考 ToolKnit 的功能方向，不复制其 PolyForm 作者代码、桌面扫描 / 删除能力或独立授权引擎。复用 hash-wasm（MIT）、PDF.js（Apache-2.0）、PDF-lib（MIT）；hash-wasm 原始许可补入站点构建分发，像素处理独立实现。PC-TOOL 同类功能已有覆盖，不增加重复入口；详见 [选型说明](docs/duplicate-scan-tools.md)。
@@ -132,5 +136,7 @@
 - 短链接设计参考 [miantiao-me/Sink](https://github.com/miantiao-me/Sink)；本项目独立实现 D1 存储、短码、有效期和跳转逻辑，没有复制其源码。
 
 ## 更新要求
+
+- 开发工具的 minimatch 使用项目内兼容入口，匹配逻辑委托给未经修改的 minimatch 11.0.1（ISC，npm 别名 `minimatch-engine`），兼容旧插件的可调用 CommonJS API。仅在构建与检查时使用，不打包到网站；上游许可保留在安装包中。安全说明见 [GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249)。
 
 新增或升级第三方依赖时，应检查其许可证与分发要求，更新本文件，并确保构建产物包含必须随附的许可证文本。
