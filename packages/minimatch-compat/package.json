@@ -1,0 +1,16 @@
+{
+  "name": "@web-toolbox/minimatch-compat",
+  "version": "1.0.0",
+  "private": true,
+  "description": "基于已修复 minimatch 的构建工具 CommonJS 兼容层",
+  "license": "MIT",
+  "main": "index.cjs",
+  "exports": {
+    ".": { "import": "./index.mjs", "require": "./index.cjs" },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "minimatch-engine": "npm:minimatch@11.0.1"
+  },
+  "engines": { "node": ">=22.13.0" }
+}
