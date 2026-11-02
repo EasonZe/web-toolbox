@@ -9,9 +9,11 @@ import { runWorkerTask } from "./worker-task";
 import type { XmlOptions } from "./xml-formatter";
 import type { GifExtractOptions } from "./gif-extract";
 import type { PdfWatermarkOptions } from "./pdf-watermark-options";
+import type { SqlFormatOptions } from "./sql-format-options";
 export type FileWorkerRequest =
   | { action: "duplicate-files"; files: File[] }
   | { action: "xml-process"; text: string; options: XmlOptions }
+  | { action: "sql-format"; text: string; options: SqlFormatOptions }
   | { action: "gif-inspect"; file: File }
   | { action: "gif-extract"; file: File; options: GifExtractOptions }
   | { action: "json-pointer"; text: string; paths: string }
@@ -53,7 +55,7 @@ export function runFileWorker<T>(
   report?: (value: number, text: string) => void,
 ): Promise<T> {
   return runWorkerTask<T>(() => new Worker(new URL("../workers/local-files.worker.ts", import.meta.url), { type: "module" }), request, signal, {
-    timeoutMs: ["json-pointer", "xml-process"].includes(request.action) ? 30000 : 900000, timeoutMessage: "处理超时，请减少文件或页数。",
+    timeoutMs: ["json-pointer", "xml-process", "sql-format"].includes(request.action) ? 30000 : 900000, timeoutMessage: "处理超时，请减少文本、文件或页数。",
     loadMessage: "文件处理引擎加载失败，请刷新后重试。", cancelMessage: "已取消",
     progress: "field", report,
   });
