@@ -205,6 +205,7 @@ export function ToolSearchGrid() {
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Set<ToolCategory>>(() => new Set([categoryOrder[0]]));
   const [revealCycle, setRevealCycle] = useState(0);
+  const [ready, setReady] = useState(false);
   const filteredTools = useMemo(
     () => tools.filter((tool) => toolMatchesSearch(tool, query)),
     [query],
@@ -223,6 +224,7 @@ export function ToolSearchGrid() {
     const restorePreferences = () => {
       setView(readViewPreference());
       setFavorites(readFavorites());
+      setReady(true);
     };
     const handleViewChange = (event: Event) => {
       const value = (event as CustomEvent<string>).detail;
@@ -345,7 +347,7 @@ export function ToolSearchGrid() {
           <span className="tool-card-category">{tool.category}</span>
           <span className="tool-action" aria-hidden="true"><span className="tool-arrow">→</span><FiChevronRight className="tool-table-chevron" /></span>
         </ToolCardLink>
-        <button className="tool-favorite-button" type="button" onClick={() => toggleFavorite(tool.href)} aria-label={favorite ? `取消收藏${tool.title}` : `收藏${tool.title}`} aria-pressed={favorite} title={favorite ? "取消收藏" : "加入收藏夹"}>
+        <button className="tool-favorite-button" type="button" disabled={!ready} onClick={() => toggleFavorite(tool.href)} aria-label={favorite ? `取消收藏${tool.title}` : `收藏${tool.title}`} aria-pressed={favorite} title={favorite ? "取消收藏" : "加入收藏夹"}>
           <FiStar aria-hidden="true" />
         </button>
       </div>
@@ -372,7 +374,7 @@ export function ToolSearchGrid() {
       <div className="tool-browser-toolbar">
         <div className="tool-search">
           <FiSearch aria-hidden="true" />
-          <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索工具" aria-label="搜索工具" autoComplete="off" spellCheck={false} />
+          <input type="search" disabled={!ready} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索工具" aria-label="搜索工具" autoComplete="off" spellCheck={false} />
           {query ? <button type="button" onClick={() => setQuery("")} aria-label="清空搜索"><FiX aria-hidden="true" /></button> : null}
         </div>
         <button className={`favorites-filter${favoritesOnly ? " is-active" : ""}`} type="button" onClick={() => setFavoritesOnly((value) => !value)} aria-label={favoritesOnly ? "关闭收藏夹" : "打开收藏夹"} aria-pressed={favoritesOnly}>

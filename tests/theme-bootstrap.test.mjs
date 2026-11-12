@@ -1,3 +1,4 @@
+import { readStyles } from "./helpers/read-styles.mjs";
 import assert from "node:assert/strict";
 import test from "node:test";
 import vm from "node:vm";
@@ -147,7 +148,7 @@ test("主题源码：布局在 head 注册 beforeInteractive，容忍根属性�
   const beforeBody = layout.slice(layout.indexOf("<head>"), layout.indexOf("<body>"));
   assert.match(beforeBody, /<Script\b[^>]*id="appearance-init"[^>]*strategy="beforeInteractive"[^>]*dangerouslySetInnerHTML=\{\{ __html: themeBootstrap \}\}/);
   assert.doesNotMatch(layout, /<(?:html|body)\b[^>]*\bhidden(?:\s|=|>)/);
-  const styles = postcss.parse(await readFile(new URL("../app/globals.css", import.meta.url), "utf8"));
+  const styles = postcss.parse(await readStyles());
   styles.walkRules((rule) => {
     if (!rule.selectors.some((selector) => ["html", "body", ":root"].includes(selector.trim()))) return;
     rule.walkDecls((decl) => { assert.ok(!(decl.prop === "display" && decl.value === "none" || decl.prop === "visibility" && decl.value === "hidden" || decl.prop === "opacity" && Number(decl.value) === 0), `${rule.selector}: ${decl.toString()}`); });

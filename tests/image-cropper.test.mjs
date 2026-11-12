@@ -1,3 +1,4 @@
+import { readStyles } from "./helpers/read-styles.mjs";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
@@ -7,7 +8,7 @@ import ts from "typescript";
 const libSource = await readFile(new URL("../app/lib/image-cropping.ts", import.meta.url), "utf8");
 const component = await readFile(new URL("../app/components/image-cropper.tsx", import.meta.url), "utf8");
 const page = await readFile(new URL("../app/components/tool-search-grid.tsx", import.meta.url), "utf8");
-const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+const styles = await readStyles();
 
 const compiled = ts.transpileModule(libSource, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },

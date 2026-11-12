@@ -1,3 +1,4 @@
+import { readStyles } from "./helpers/read-styles.mjs";
 import assert from "node:assert/strict";
 import test from "node:test";
 import { existsSync, readFileSync } from "node:fs";
@@ -144,7 +145,7 @@ test("实际 Unity 页面左侧仅有目录树，空态与加载资源的预览�
 });
 
 test("紧凑样式只作用于 Unity 右侧卡片，目录树行高及其他工具不变", () => {
-  const css = postcss.parse(readFileSync(new URL("../app/globals.css", import.meta.url), "utf8"));
+  const css = postcss.parse(readStyles());
   const values = (selector) => {
     const result = {};
     css.walkRules((rule) => {
@@ -182,7 +183,7 @@ test("目录展开控件使用实心小三角，专用样式覆盖通用按钮�
     assert.match(content, /<svg[^>]*viewBox="0 0 12 12"[^>]*aria-hidden="true"/);
     assert.match(content, /<path d="M4 2 9 6 4 10Z" fill="currentColor"/);
   }
-  const css = postcss.parse(readFileSync(new URL("../app/globals.css", import.meta.url), "utf8"));
+  const css = postcss.parse(readStyles());
   const declarations = (selector) => {
     const result = {};
     css.walkRules((rule) => {

@@ -1,3 +1,4 @@
+import { readStyles } from "./helpers/read-styles.mjs";
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFile } from "node:fs/promises";
@@ -83,7 +84,7 @@ function declared(sheets, selectors, property, width) {
 
 test("1440 / 390px CSS 声明保留桌面分栏、手机单列、完整标签与主题变量（非浏览器排版验收）", async () => {
   const extra = postcss.parse(await read("app/styles/additional-utilities.css"));
-  const base = postcss.parse(await read("app/globals.css"));
+  const base = postcss.parse(await readStyles());
   const mobile = postcss.parse(await read("app/styles/mobile-tools.css"));
   const layout = await read("app/layout.tsx");
   assert.ok(layout.indexOf('import "./styles/mobile-tools.css"') > layout.indexOf('import "./globals.css"'));

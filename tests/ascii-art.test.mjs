@@ -1,3 +1,4 @@
+import { readStyles } from "./helpers/read-styles.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
@@ -6,10 +7,7 @@ const source = fs.readFileSync(
   new URL("../app/components/ascii-art-generator.tsx", import.meta.url),
   "utf8",
 );
-const styles = fs.readFileSync(
-  new URL("../app/globals.css", import.meta.url),
-  "utf8",
-);
+const styles = readStyles();
 
 test("ASCII generator turns typed text into a real FIGlet banner", () => {
   assert.match(source, /createTextAsciiArt/);

@@ -1,3 +1,4 @@
+import { readStyles } from "./helpers/read-styles.mjs";
 import assert from "node:assert/strict";
 import { loadLocalModule } from "./helpers/load-local-module.mjs";
 import { readFile } from "node:fs/promises";
@@ -37,7 +38,7 @@ test("新工具使用成熟数据和音频实现并加入首页", async () => {
   const rates = await read("../app/api/exchange-rates/route.ts");
   const clock = await read("../app/components/world-clock.tsx");
   const wheel = await read("../app/components/lottery-wheel.tsx");
-  const styles = await read("../app/globals.css");
+  const styles = await readStyles();
   const morse = await read("../app/components/morse-code-converter.tsx");
   const home = await read("../app/components/tool-search-grid.tsx");
   for (const value of ["@soundtouchjs/audio-worklet", "processOffline", "pitchSemitones", "playbackRate"]) assert.ok(audio.includes(value), value);

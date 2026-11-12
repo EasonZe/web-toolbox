@@ -3,7 +3,6 @@ import test from "node:test";
 import {
   buildApiUrl,
   extractSource,
-  extractYoutubeVideoId,
 } from "../app/lib/video-links.ts";
 
 test("extracts a Douyin link from complete share text", () => {
@@ -45,52 +44,6 @@ test("accepts a bare Bilibili BV number", () => {
       canonicalizeBilibili: true,
     }),
     "https://www.bilibili.com/video/BV1aJMV6jEdg/",
-  );
-});
-
-test("canonicalizes regular, short, and Shorts YouTube links", () => {
-  const config = {
-    domains: ["youtube.com", "youtube-nocookie.com", "youtu.be"],
-    canonicalizeYoutube: true,
-  };
-
-  assert.equal(
-    extractSource("分享 https://youtu.be/dQw4w9WgXcQ?t=8", config),
-    "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-  );
-  assert.equal(
-    extractSource("https://www.youtube.com/shorts/dQw4w9WgXcQ", config),
-    "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-  );
-  assert.equal(
-    extractSource(
-      "https://youtu.be/BZ7Sn5-pShc?si=DGs_ZV8Bp3fuXyHq",
-      config,
-    ),
-    "https://www.youtube.com/watch?v=BZ7Sn5-pShc",
-  );
-  assert.equal(
-    extractSource("dQw4w9WgXcQ", config),
-    "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-  );
-});
-
-test("rejects lookalike YouTube hosts and invalid video IDs", () => {
-  const config = {
-    domains: ["youtube.com", "youtube-nocookie.com", "youtu.be"],
-    canonicalizeYoutube: true,
-  };
-
-  assert.equal(
-    extractSource(
-      "https://youtube.com.example.com/watch?v=dQw4w9WgXcQ",
-      config,
-    ),
-    "",
-  );
-  assert.equal(
-    extractYoutubeVideoId("https://www.youtube.com/watch?v=too-short"),
-    "",
   );
 });
 

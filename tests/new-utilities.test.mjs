@@ -38,6 +38,22 @@ function environment() {
 function createRequest(body, origin = "https://tool.easonzhan.xyz") {
   return new Request("https://tool.easonzhan.xyz/api/short-links", { method: "POST", headers: { "Content-Type": "application/json", Origin: origin }, body: JSON.stringify(body) });
 }
+
+test("短链接在自部署域名上创建并跳转，且拒绝嵌套本站短链接", async () => {
+  const { db, env } = environment();
+  try {
+    for (const origin of ["https://fork.example", "http://localhost:4173"]) {
+      const request = (url) => new Request(`${origin}/api/short-links`, { method: "POST", headers: { "Content-Type": "application/json", Origin: origin }, body: JSON.stringify({ url }) });
+      const response = await links.handleShortLinks(request("https://example.com/document"), env);
+      assert.equal(response.status, 201);
+      const result = await response.json();
+      assert.equal(new URL(result.url).origin, origin);
+      const redirect = await links.handleShortLinks(new Request(result.url), env);
+      assert.equal(redirect.headers.get("Location"), "https://example.com/document");
+      assert.equal((await links.handleShortLinks(request(result.url), env)).status, 400);
+    }
+  } finally { db.close(); }
+});
 test("短链接写入数据库后可以真实跳转，过期和不存在状态正确", async () => {
   const { db, env } = environment();
   try {

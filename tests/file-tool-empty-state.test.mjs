@@ -1,3 +1,4 @@
+import { readStyles } from "./helpers/read-styles.mjs";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
@@ -30,10 +31,7 @@ for (const component of components) {
 }
 
 test("file tool empty states share a visible placeholder style", async () => {
-  const css = await readFile(
-    new URL("../app/globals.css", import.meta.url),
-    "utf8",
-  );
+  const css = await readStyles();
 
   assert.match(css, /\.file-tool-empty\s*\{/);
   assert.match(css, /\.video-preview-empty\s*\{/);

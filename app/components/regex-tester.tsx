@@ -5,6 +5,7 @@ import { runRegex } from "../lib/regex-worker-client";
 import { toolLimits } from "../lib/resource-limits";
 import { useLocalTask, TaskFeedback } from "./local-workbench";
 import { UtilityShell } from "./utility-shell";
+import { useClientReady } from "../lib/client-ready";
 
 function highlighted(text: string, result: RegexResult) {
   const preview = text.slice(0, toolLimits.regex.previewChars), nodes: ReactNode[] = [];
@@ -18,13 +19,14 @@ function highlighted(text: string, result: RegexResult) {
   nodes.push(preview.slice(cursor)); return nodes;
 }
 export default function RegexTester() {
+  const ready = useClientReady();
   const [pattern, setPattern] = useState("(?<name>[A-Za-z]+)=(?<value>\\d+)"), [flags, setFlags] = useState("g"), [text, setText] = useState("width=1920\nheight=1080"), [shown, setShown] = useState(100);
   const task = useLocalTask<RegexResult>();
   return <UtilityShell className="additional-utilities" title="正则表达式测试" description="测试 JavaScript 正则，查看匹配高亮、位置与捕获组。">
-    <section className="utility-panel utility-controls"><label>表达式（不用填写两侧斜杠）<input value={pattern} maxLength={toolLimits.regex.patternChars} spellCheck={false} onChange={(e) => { task.reset(); setPattern(e.target.value); }} /></label>
+    <section className="utility-panel utility-controls"><label>表达式（不用填写两侧斜杠）<input disabled={!ready} value={pattern} maxLength={toolLimits.regex.patternChars} spellCheck={false} onChange={(e) => { task.reset(); setPattern(e.target.value); }} /></label>
       <fieldset className="compact-options"><legend>匹配标志</legend>{[["g", "全局"], ["i", "忽略大小写"], ["m", "多行"], ["s", "点匹配换行"], ["u", "Unicode"], ["y", "粘连"]].map(([flag, label]) => <label className="utility-checkbox" key={flag}><input type="checkbox" checked={flags.includes(flag)} onChange={(e) => { task.reset(); setFlags(e.target.checked ? flags + flag : flags.replace(flag, "")); }} />{flag} · {label}</label>)}</fieldset>
-      <label>测试文本<textarea rows={7} value={text} maxLength={toolLimits.regex.textChars} spellCheck={false} onChange={(e) => { task.reset(); setText(e.target.value); }} /></label>
-      <button className="primary-button" type="button" disabled={task.busy} onClick={() => { setShown(100); void task.run((signal) => runRegex({ pattern, flags, text }, signal)); }}>{task.busy ? "正在测试…" : "测试匹配"}</button><TaskFeedback task={task} />
+      <label>测试文本<textarea disabled={!ready} rows={7} value={text} maxLength={toolLimits.regex.textChars} spellCheck={false} onChange={(e) => { task.reset(); setText(e.target.value); }} /></label>
+      <button className="primary-button" type="button" disabled={!ready || task.busy} onClick={() => { setShown(100); void task.run((signal) => runRegex({ pattern, flags, text }, signal)); }}>{task.busy ? "正在测试…" : "测试匹配"}</button><TaskFeedback task={task} />
     </section>
     {task.result && <><section className="utility-panel"><h2>{task.result.limited ? "至少 " : ""}{task.result.matches.length} 个匹配</h2><pre className="regex-highlight utility-code-output">{highlighted(text, task.result)}</pre>
       <p className="utility-muted">位置按 UTF-16 字符索引，从 0 开始；结束位置不包含在匹配中。▏表示零长度匹配。{text.length > toolLimits.regex.previewChars && " 高亮仅预览前 5 万字符，测试使用完整输入。"}{task.result.limited && " 已达到 1000 条显示上限，请缩小匹配范围。"}</p></section>

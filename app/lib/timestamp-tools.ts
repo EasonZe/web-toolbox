@@ -17,7 +17,15 @@ export function timestampResult(
 ) {
   if (!/^-?\d+(?:\.\d{1,3})?$/.test(value.trim()))
     throw new Error("请输入有效的秒或毫秒时间戳。");
-  const millis = Number(value) * (unit === "seconds" ? 1000 : 1),
+  // Parse the fractional seconds as integer milliseconds. Multiplication of a
+  // floating-point decimal (e.g. 1.001 * 1000) can otherwise reject valid input.
+  const text = value.trim();
+  const [whole, fraction = ""] = text.replace(/^-/, "").split(".");
+  if (unit === "milliseconds" && /[1-9]/.test(fraction))
+    throw new Error("时间戳超出范围或精度超过毫秒。");
+  const millis = unit === "seconds"
+    ? (text.startsWith("-") ? -1 : 1) * (Number(whole) * 1000 + Number(fraction.padEnd(3, "0")))
+    : Number(text),
     date = new Date(millis);
   if (
     !Number.isSafeInteger(millis) ||

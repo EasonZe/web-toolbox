@@ -205,7 +205,7 @@ function childUpload(ui) {
     const node = ui.element((element) => element.type === "drop-zone");
     if (!child || !Object.is(key, node.key)) {
       child?.unmount(); key = node.key;
-      child = mountComponent("app/components/file-drop-zone.tsx", "FileDropZone", (id) => id.startsWith("../lib/") ? loadLocalModule(`app/lib/${id.slice(7)}.ts`) : undefined);
+      child = mountComponent("app/components/file-drop-zone.tsx", "FileDropZone", (id) => id === "../lib/client-ready" ? { useClientReady: () => true } : id.startsWith("../lib/") ? loadLocalModule(`app/lib/${id.slice(7)}.ts`) : undefined);
     }
     child.render(node.props); child.flushEffects(); return child.render(node.props);
   }

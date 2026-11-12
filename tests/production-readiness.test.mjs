@@ -1,3 +1,4 @@
+import { readStyles } from "./helpers/read-styles.mjs";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
@@ -28,7 +29,7 @@ test("透明站点标志、robots与联系方式已用于生产页面", async ()
 test("页面不再使用next font本地绝对路径", async () => {
   const [layout, styles] = await Promise.all([
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+    readStyles(),
   ]);
   assert.doesNotMatch(layout, /next\/font\/google|Geist_Mono|Geist\(/);
   assert.doesNotMatch(`${layout}\n${styles}`, /C:[/\\\\]Users[/\\\\]/i);

@@ -1,3 +1,4 @@
+import { readStyles } from "./helpers/read-styles.mjs";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
@@ -7,7 +8,7 @@ const [componentSource, styles] = await Promise.all([
     new URL("../app/components/floating-dock.tsx", import.meta.url),
     "utf8",
   ),
-  readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  readStyles(),
 ]);
 
 test("hides the floating dock on mobile tool pages", () => {

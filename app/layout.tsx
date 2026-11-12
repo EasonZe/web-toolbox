@@ -1,24 +1,14 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
+import { homepage } from "../package.json";
 import Script from "next/script";
 import FloatingDock from "./components/floating-dock";
 import { themeBootstrap } from "./lib/theme-bootstrap";
 import "./globals.css";
 import "./styles/mobile-tools.css";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const requestHeaders = await headers();
-  const host =
-    requestHeaders.get("x-forwarded-host") ??
-    requestHeaders.get("host") ??
-    "localhost";
-  const protocol =
-    requestHeaders.get("x-forwarded-proto") ??
-    (host.startsWith("localhost") ? "http" : "https");
-  const metadataBase = new URL(`${protocol}://${host}`);
-
+export function generateMetadata(): Metadata {
   return {
-    metadataBase,
+    metadataBase: new URL(homepage),
     title: "多功能工具箱",
     icons: {
       icon: [{ url: "/images/toolbox-logo.png", type: "image/png" }],

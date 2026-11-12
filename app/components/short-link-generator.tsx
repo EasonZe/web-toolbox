@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { UtilityShell } from "./utility-shell";
+import { isShortLinkUrl } from "../lib/short-links";
 
 type Result = { url: string; destination: string; expiresAt: number | null };
 export default function ShortLinkGenerator() {
@@ -18,7 +19,7 @@ export default function ShortLinkGenerator() {
       const response = await fetch("/api/short-links", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url: value, days }), signal: AbortSignal.timeout(20000) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "生成失败，请稍后重试。");
-      if (typeof data.url !== "string" || !data.url.startsWith("https://tool.easonzhan.xyz/s/")) throw new Error("服务返回异常，请稍后重试。");
+      if (!isShortLinkUrl(data.url, window.location.origin)) throw new Error("服务返回异常，请稍后重试。");
       setResult(data); setHistory((h) => [data, ...h].slice(0, 20)); setMessage("短链接生成完成");
     } catch (e) { setMessage(e instanceof Error ? e.message : "生成失败，请检查网络。"); }
     finally { setBusy(false); }

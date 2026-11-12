@@ -26,6 +26,7 @@ function atLeast(version, minimum) {
 test("依赖锁使用已修复安全告警的补丁版本", async () => {
   const lock = JSON.parse(await read("package-lock.json"));
   const minimums = {
+    react: "19.2.9", "react-dom": "19.2.9", "react-server-dom-webpack": "19.2.9",
     next: "16.4.2", dompurify: "3.4.17", sharp: "0.35.5",
     "source-map-js": "1.2.2", "fast-uri": "3.1.9", undici: "7.30.1", zod: "4.6.6",
     "@huggingface/transformers": "3.8.1", "onnxruntime-node": "1.30.0", "argparse": "2.0.1",

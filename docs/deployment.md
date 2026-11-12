@@ -37,6 +37,8 @@ npx wrangler d1 migrations apply web-toolbox-links --remote
 
 随后修改 `wrangler.jsonc` 中的 Worker 名称、路由、Zone、数据库名称与 `database_id`。
 
+将 `package.json` 的 `homepage`、`public/sitemap.xml` 和 `public/robots.txt` 中的站点地址同步改为自己的公开域名。页面分享元数据使用 `homepage`；短链接自动使用当前请求的站点域名。
+
 ## 构建与验证
 
 ```bash

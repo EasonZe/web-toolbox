@@ -1,5 +1,9 @@
 # 依赖与上游审查
 
+## 安全补丁复核（2026-11-11）
+
+`npm audit` 报告 RSC 19.2.8 受 [GHSA-xqc2-xf4c-x3h3](https://github.com/react/react/security/advisories/GHSA-xqc2-xf4c-x3h3) 影响。React、React DOM、react-server-dom-webpack 同步升级到同分支补丁 19.2.9，更新锁文件和安全版本回归。再次审计为 0 项已知漏洞；本轮未推断或验证线上漏洞利用。完整项目审查见 [审查记录](project-review-2026-11-11.md)。
+
 ## OCR 与图像工具增量（2026-10-28）
 
 新增精确锁定 `@paddleocr/paddleocr-js` 0.4.2、`@techstark/opencv-js` 4.10.0-release.1；共 70 项直接运行时依赖、25 项开发依赖，合计 95 项。其 ORT Web 实际锁定 1.31.1，独立于原抠图运行时的 1.22 开发版，不全局覆盖。只在 OCR 任务 Worker 按需加载 CPU WASM；官方模型归档按字节数与 SHA-256 校验后同源分发。首次构建需要网络，模型缓存不入 Git 历史。

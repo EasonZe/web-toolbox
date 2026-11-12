@@ -18,6 +18,8 @@ const eslintConfig = defineConfig([
     "public/vendor-licenses/**", // Copied upstream license texts.
     "types/cloudflare-env.d.ts", // Generated Worker runtime declarations.
     "work/**", // Local browser QA fixtures and scripts.
+    "playwright-report/**", // Generated browser report assets.
+    "test-results/**", // Generated browser traces and screenshots.
   ]),
 ]);
 

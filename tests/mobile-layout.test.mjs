@@ -1,3 +1,4 @@
+import { readStyles } from "./helpers/read-styles.mjs";
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFile } from "node:fs/promises";
@@ -5,7 +6,7 @@ import postcss from "postcss";
 import { mobileLayoutInventory } from "../scripts/mobile-layout-inventory.mjs";
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 const extra = postcss.parse(await read("app/styles/additional-utilities.css"));
-const base = postcss.parse(await read("app/globals.css"));
+const base = postcss.parse(await readStyles());
 const mobile = postcss.parse(await read("app/styles/mobile-tools.css"));
 function declaration(sheet, selector, property) {
   let found;

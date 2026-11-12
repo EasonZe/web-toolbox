@@ -40,3 +40,19 @@ jobs:
 
       - name: Run quality gate
         run: npm run check
+
+      - name: Install test browsers
+        run: npx playwright install --with-deps chromium webkit
+
+      - name: Test desktop and mobile browsers
+        run: npm run test:browser
+
+      - name: Upload browser test report
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: browser-test-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

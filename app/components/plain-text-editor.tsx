@@ -48,6 +48,7 @@ export default function PlainTextEditor() {
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   const [message, setMessage] = useState("");
+  const [ready, setReady] = useState(false);
   const stats = useMemo(() => countText(text), [text]);
 
   useEffect(() => {
@@ -104,6 +105,7 @@ export default function PlainTextEditor() {
       }),
     });
     editorView.current = view;
+    setReady(true);
     setCanUndo(undoDepth(view.state) > 0);
     setCanRedo(redoDepth(view.state) > 0);
     return () => {
@@ -204,9 +206,9 @@ export default function PlainTextEditor() {
       <section className="utility-panel plain-text-editor-panel" aria-label="纯文本编辑器">
         <div className="plain-text-toolbar">
           <div className="utility-actions">
-            <input ref={fileInput} type="file" accept=".txt,.md,.csv,.log,.json,.xml,.yaml,.yml,text/plain" hidden onChange={(event) => { void openFile(event.target.files?.[0]); event.currentTarget.value = ""; }} />
+            <input ref={fileInput} type="file" disabled={!ready} accept=".txt,.md,.csv,.log,.json,.xml,.yaml,.yml,text/plain" hidden onChange={(event) => { void openFile(event.target.files?.[0]); event.currentTarget.value = ""; }} />
             <button type="button" onClick={createNewDocument}><FiTrash2 aria-hidden="true" />新建</button>
-            <button type="button" onClick={() => fileInput.current?.click()}><FiFileText aria-hidden="true" />打开</button>
+            <button type="button" disabled={!ready} onClick={() => fileInput.current?.click()}><FiFileText aria-hidden="true" />打开</button>
             <button type="button" disabled={!canUndo} onClick={() => editorView.current && undo(editorView.current)}><FiRotateCcw aria-hidden="true" />撤销</button>
             <button type="button" disabled={!canRedo} onClick={() => editorView.current && redo(editorView.current)}><FiRotateCw aria-hidden="true" />重做</button>
             <button type="button" onClick={() => editorView.current && openSearchPanel(editorView.current)}><FiSearch aria-hidden="true" />查找替换</button>

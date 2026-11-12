@@ -1,16 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { calculateDateDifference, shiftDate, type DateOffset } from "../lib/date-calculator";
+import { calculateDateDifference, shiftDate, dateInChina, type DateOffset } from "../lib/date-calculator";
 import { UtilityShell } from "./utility-shell";
 
 const units: { key: keyof DateOffset; label: string }[] = [{ key: "years", label: "年" }, { key: "months", label: "月" }, { key: "weeks", label: "周" }, { key: "days", label: "天" }];
-
-function dateInChina() {
-  const parts = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Shanghai", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date());
-  const value = Object.fromEntries(parts.map((part) => [part.type, part.value]));
-  return `${value.year}-${value.month}-${value.day}`;
-}
 
 function addCalendarDays(value: string, days: number) {
   const [year, month, day] = value.split("-").map(Number);
@@ -18,20 +12,17 @@ function addCalendarDays(value: string, days: number) {
   return `${result.getUTCFullYear()}-${String(result.getUTCMonth() + 1).padStart(2, "0")}-${String(result.getUTCDate()).padStart(2, "0")}`;
 }
 
-const initialToday = dateInChina();
-const initialEnd = addCalendarDays(initialToday, 30);
-
 function durationText(duration: ReturnType<typeof calculateDateDifference>["duration"]) {
   const parts = [[duration.years, "年"], [duration.months, "个月"], [duration.days, "天"]].filter(([value]) => value) as [number, string][];
   return parts.length ? parts.map(([value, unit]) => `${value}${unit}`).join(" ") : "同一天";
 }
 
-export default function DateCalculator() {
+export default function DateCalculator({ initialDate }: { initialDate: string }) {
   const [mode, setMode] = useState<"difference" | "shift">("difference");
-  const [start, setStart] = useState(initialToday);
-  const [end, setEnd] = useState(initialEnd);
+  const [start, setStart] = useState(initialDate);
+  const [end, setEnd] = useState(() => addCalendarDays(initialDate, 30));
   const [inclusive, setInclusive] = useState(false);
-  const [source, setSource] = useState(initialToday);
+  const [source, setSource] = useState(initialDate);
   const [direction, setDirection] = useState<"add" | "subtract">("add");
   const [offset, setOffset] = useState<DateOffset>({ years: 0, months: 0, weeks: 0, days: 30 });
   const difference = useMemo(() => { try { return calculateDateDifference(start, end, inclusive); } catch { return null; } }, [start, end, inclusive]);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useClientReady } from "../lib/client-ready";
 import type { DragEvent, ReactNode } from "react";
 import { largeFilesWarning, checkImagePixels, toolLimits } from "../lib/resource-limits";
 
@@ -27,6 +28,9 @@ export function FileDropZone({
   onFile,
   onFiles,
 }: FileDropZoneProps) {
+  // A file selection made before hydration cannot be replayed reliably. Enable
+  // the native picker only after its React change handler has been attached.
+  const hydrated = useClientReady();
   const [dragging, setDragging] = useState(false);
   const [pending, setPending] = useState<File[] | null>(null);
   const [error, setError] = useState("");
@@ -118,7 +122,7 @@ export function FileDropZone({
       <input
         type="file"
         accept={accept}
-        disabled={disabled}
+        disabled={disabled || !hydrated}
         multiple={multiple}
         onChange={(event) => {
           deliverFiles(event.currentTarget.files);

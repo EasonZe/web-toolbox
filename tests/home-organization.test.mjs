@@ -1,3 +1,4 @@
+import { readStyles } from "./helpers/read-styles.mjs";
 import assert from "node:assert/strict";
 import { loadLocalModule } from "./helpers/load-local-module.mjs";
 import { readFile } from "node:fs/promises";
@@ -51,7 +52,7 @@ test("收藏入口、列表设置、个人卡片和默认参考网格均已接�
 test("首页分类标签、滚动渐入和收藏夹切换均已接入", async () => {
   const [source, styles] = await Promise.all([
     read("../app/components/tool-search-grid.tsx"),
-    read("../app/globals.css"),
+    readStyles(),
   ]);
   assert.match(source, /tool-category-tabs-desktop" aria-label="工具分类"/);
   assert.match(source, /activeCategory === "全部"/);
@@ -93,7 +94,7 @@ test("首页分类标签、滚动渐入和收藏夹切换均已接入", async ()
 test("设置中的列表选项保持简洁并支持自定义主题颜色", async () => {
   const [dock, styles, appearance] = await Promise.all([
     read("../app/components/floating-dock.tsx"),
-    read("../app/globals.css"),
+    readStyles(),
     read("../app/lib/appearance.ts"),
   ]);
   assert.doesNotMatch(dock, /description: "按分类展开或收起"/);

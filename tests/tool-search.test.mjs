@@ -1,3 +1,4 @@
+import { readStyles } from "./helpers/read-styles.mjs";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
@@ -6,10 +7,7 @@ const source = await readFile(
   new URL("../app/components/tool-search-grid.tsx", import.meta.url),
   "utf8",
 );
-const styles = await readFile(
-  new URL("../app/globals.css", import.meta.url),
-  "utf8",
-);
+const styles = await readStyles();
 
 test("首页提供简洁的实时工具搜索和清空操作", () => {
   assert.match(source, /type="search"/);

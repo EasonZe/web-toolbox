@@ -1,11 +1,8 @@
+import { readStyles } from "./helpers/read-styles.mjs";
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-const styles = await readFile(
-  new URL("../app/globals.css", import.meta.url),
-  "utf8",
-);
+const styles = await readStyles();
 
 test("uses a clean page background without a top radial glow", () => {
   const bodyRule =

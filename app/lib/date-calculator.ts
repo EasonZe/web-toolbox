@@ -14,6 +14,12 @@ import {
 } from "date-fns";
 import { zhCN } from "date-fns/locale";
 
+export function dateInChina() {
+  const parts = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Shanghai", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date());
+  const value = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${value.year}-${value.month}-${value.day}`;
+}
+
 export function parseDateInput(value: string) {
   const date = parseISO(value);
   if (!value || !isValid(date)) throw new Error("请选择有效日期。");
@@ -24,13 +30,13 @@ export function countWeekdays(start: Date, end: Date, inclusive = false) {
   const direction = start <= end ? 1 : -1;
   const first = direction === 1 ? start : end;
   const last = direction === 1 ? end : start;
-  let count = 0;
-  const cursor = new Date(first.getFullYear(), first.getMonth(), first.getDate());
-  const finish = new Date(last.getFullYear(), last.getMonth(), last.getDate());
-  while (cursor < finish || (inclusive && cursor <= finish)) {
-    const day = cursor.getDay();
+  const days = differenceInCalendarDays(last, first) + (inclusive ? 1 : 0);
+  let count = Math.floor(days / 7) * 5;
+  // Complete weeks always contain five weekdays, including across DST changes.
+  // Only the remaining zero to six calendar days need to be inspected.
+  for (let offset = 0; offset < days % 7; offset++) {
+    const day = (first.getDay() + offset) % 7;
     if (day !== 0 && day !== 6) count++;
-    cursor.setDate(cursor.getDate() + 1);
   }
   return count * direction;
 }

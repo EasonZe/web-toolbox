@@ -34,13 +34,14 @@
     "prebuild": "npm run check:integrity",
     "dev": "node scripts/prepare-document-assets.mjs && vinext dev",
     "build": "node scripts/prepare-document-assets.mjs && vinext build",
-    "start": "vinext start",
-    "test": "npm run build && node --experimental-strip-types --test tests/*.test.mjs",
-    "test:unit": "node --experimental-strip-types --test tests/*.test.mjs",
+    "start": "wrangler dev --local",
+    "test": "npm run build && node --experimental-strip-types --test --test-concurrency=4 tests/*.test.mjs",
+    "test:unit": "node --experimental-strip-types --test --test-concurrency=4 tests/*.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .wrangler --ignore-pattern **/.wrangler/** --ignore-pattern public/soundtouch",
     "typecheck": "tsc --noEmit",
     "check": "npm run lint && npm run typecheck && npm test",
-    "bench:local": "node scripts/measure-local-performance.mjs"
+    "bench:local": "node scripts/measure-local-performance.mjs",
+    "test:browser": "playwright test"
   },
   "dependencies": {
     "@codemirror/commands": "^6.11.1",
@@ -103,8 +104,8 @@
     "pixelmatch": "8.0.0",
     "prettier": "3.9.10",
     "qrcode": "^1.5.4",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
+    "react": "19.2.9",
+    "react-dom": "19.2.9",
     "react-icons": "^5.7.0",
     "read-excel-file": "^9.3.10",
     "saxes": "6.0.0",
@@ -113,12 +114,12 @@
     "tesseract.js": "7.0.0",
     "three": "^0.185.1",
     "web-audio-beat-detector-worker": "6.0.14",
-    "yaml": "2.9.1",
-    "youtubei.js": "^17.2.0"
+    "yaml": "2.9.1"
   },
   "devDependencies": {
     "@cloudflare/puppeteer": "^1.4.0",
     "@cloudflare/vite-plugin": "^1.54.4",
+    "@playwright/test": "1.65.0",
     "@tailwindcss/postcss": "4.2.1",
     "@tesseract.js-data/chi_sim": "1.0.0",
     "@tesseract.js-data/eng": "1.0.0",
@@ -137,12 +138,12 @@
     "eslint-config-next": "16.2.12",
     "fast-glob": "file:packages/glob-compat",
     "minimatch": "file:packages/minimatch-compat",
-    "react-server-dom-webpack": "19.2.8",
+    "react-server-dom-webpack": "19.2.9",
     "tailwindcss": "4.2.1",
     "typescript": "5.9.3",
     "vinext": "1.0.0-beta.13",
     "vite": "8.1.6",
-    "wrangler": "^4.129.0"
+    "wrangler": "^4.160.0"
   },
   "overrides": {
     "vinext": {

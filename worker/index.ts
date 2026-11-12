@@ -1,7 +1,6 @@
 /** Eason 工具箱的 Cloudflare Worker 入口。 */
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
-import { handleYoutubeApi } from "./youtube-api";
 import type { FetcherBinding } from "./types";
 import { handleShortLinks } from "./short-links";
 import type { Cloudflare } from "../types/cloudflare-env";
@@ -35,18 +34,6 @@ const worker = {
     const url = new URL(request.url);
     if (url.pathname === "/api/short-links" || url.pathname.startsWith("/s/")) {
       return handleShortLinks(request, env);
-    }
-
-    const isYoutubeApiRoot =
-      url.hostname.toLowerCase() === "youtube-api.easonzhan.xyz" &&
-      url.pathname === "/";
-
-    if (
-      isYoutubeApiRoot ||
-      url.pathname === "/api/youtube" ||
-      url.pathname === "/api/youtube/"
-    ) {
-      return handleYoutubeApi(request);
     }
 
     if (url.pathname === "/_vinext/image") {

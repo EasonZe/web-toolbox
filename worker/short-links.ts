@@ -1,16 +1,15 @@
 import type { Cloudflare } from "../types/cloudflare-env";
 
-const origin = "https://tool.easonzhan.xyz";
 const codePattern = /^[A-Za-z0-9_-]{8,32}$/;
 
-export function validateDestination(value: unknown) {
+export function validateDestination(value: unknown, siteOrigin?: string) {
   if (typeof value !== "string" || value.length > 4096) throw new Error("请输入4096字以内的完整网址。");
   let url: URL;
   try { url = new URL(value.trim()); } catch { throw new Error("请输入以http://或https://开头的完整网址。"); }
   if (!["http:", "https:"].includes(url.protocol) || url.username || url.password) throw new Error("只支持不含账号密码的HTTP或HTTPS网址。");
   const host = url.hostname.toLowerCase();
   if (!host.includes(".") || host === "localhost" || host.endsWith(".local") || host.startsWith("127.") || host.startsWith("10.") || host.startsWith("192.168.") || host.startsWith("[") || host === "0.0.0.0") throw new Error("请填写可以公开访问的网址。");
-  if (host === "tool.easonzhan.xyz" && url.pathname.startsWith("/s/")) throw new Error("这个网址已经是本站短链接。");
+  if (url.origin === siteOrigin && url.pathname.startsWith("/s/")) throw new Error("这个网址已经是本站短链接。");
   return url.href;
 }
 
@@ -65,7 +64,7 @@ export async function handleShortLinks(request: Request, env: Pick<Cloudflare.En
     try {
       const body = await readBody(request);
       if (!body || typeof body !== "object" || !("url" in body)) throw new Error("请填写网址。");
-      destination = validateDestination(body.url);
+      destination = validateDestination(body.url, url.origin);
       const days = "days" in body ? body.days : 30;
       if (![0, 1, 7, 30, 365].includes(Number(days))) throw new Error("请选择有效期。");
       expiresAt = Number(days) ? Date.now() + Number(days) * 86400000 : null;
@@ -73,7 +72,7 @@ export async function handleShortLinks(request: Request, env: Pick<Cloudflare.En
     for (let attempt = 0; attempt < 3; attempt++) {
       const code = Array.from(crypto.getRandomValues(new Uint8Array(9)), (byte) => "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"[byte & 63]).join("");
       const inserted = await env.SHORT_LINKS.prepare("INSERT OR IGNORE INTO short_links (code, url, created_at, expires_at) VALUES (?, ?, ?, ?)").bind(code, destination, Date.now(), expiresAt).run();
-      if (inserted.meta.changes === 1) return json({ url: `${origin}/s/${code}`, destination, expiresAt }, 201);
+      if (inserted.meta.changes === 1) return json({ url: `${url.origin}/s/${code}`, destination, expiresAt }, 201);
     }
     return json({ error: "生成失败，请重试。" }, 503);
   } catch {

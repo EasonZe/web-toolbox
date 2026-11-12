@@ -69,7 +69,6 @@
 | image-q | 图像颜色量化 | MIT |
 | QRCode / jsQR | 二维码生成与解析 | MIT / Apache-2.0 |
 | hash-wasm | 浏览器文件哈希 | MIT |
-| youtubei.js | 媒体服务相关协议能力 | MIT |
 
 构建与开发工具包括 TypeScript、Vite、vinext、Wrangler、Cloudflare Vite 插件、`@cloudflare/puppeteer`、Tailwind CSS、ESLint 与相关类型包；这些包的锁定版本和许可证字段可在 `package-lock.json` 中核对。
 
