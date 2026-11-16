@@ -14,6 +14,7 @@ const factoryScript = `(${createAppearance.toString()})()`;
 // Bound accidental loops, not execution speed: loaded CI hosts can pause a VM.
 const vmTimeout = 5000;
 const presets = [
+  ["gray", "#C2C2C2", "#adadad", "#626262"],
   ["blue", "#cfe2f1", "#bad7e9", "#4f7890"],
   ["purple", "#DAD7ED", "#c9c4e3", "#756c9c"],
   ["cyan", "#bde8e8", "#9edcdd", "#397f82"],
@@ -56,7 +57,7 @@ test("主题源码：React 未执行前恢复保存的深色及 color-scheme，�
   assert.equal(app.root.dataset.theme, "dark");
   assert.equal(app.root.dataset.themePreference, "dark");
   assert.equal(app.root.style.colorScheme, "dark");
-  assert.equal(app.root.dataset.accentPreference, "blue");
+  assert.equal(app.root.dataset.accentPreference, "gray");
   assert.deepEqual(app.writes, []);
   assertVisible(app);
 });
@@ -80,18 +81,18 @@ test("主题源码：系统跟随两种 OS 状态；没有偏好仍浅色，缺�
 test("主题源码：localStorage getter 或读取失败不报错，单个键失败不丢其它有效设置", () => {
   for (const options of [{ storageGetterThrows: true }, { blockedStorage: true }]) {
     const app = execute(themeBootstrap, options);
-    assert.equal(app.root.dataset.theme, "light"); assert.equal(app.root.dataset.accentPreference, "blue"); assert.deepEqual(app.writes, []);
+    assert.equal(app.root.dataset.theme, "light"); assert.equal(app.root.dataset.accentPreference, "gray"); assert.deepEqual(app.writes, []);
   }
   const saved = { [keys.theme]: "dark", [keys.accent]: "custom", [keys.custom]: "#123456" };
   const themeBad = execute(themeBootstrap, { saved, badKey: keys.theme });
   assert.equal(themeBad.root.dataset.theme, "light"); assert.equal(themeBad.root.dataset.accentPreference, "custom"); assert.equal(themeBad.css.get("--accent-strong"), "#123456");
   const accentBad = execute(themeBootstrap, { saved, badKey: keys.accent });
-  assert.equal(accentBad.root.dataset.theme, "dark"); assert.equal(accentBad.root.dataset.accentPreference, "blue");
+  assert.equal(accentBad.root.dataset.theme, "dark"); assert.equal(accentBad.root.dataset.accentPreference, "gray");
   const customBad = execute(themeBootstrap, { saved, badKey: keys.custom });
   assert.equal(customBad.root.dataset.theme, "dark"); assert.equal(customBad.root.dataset.accentPreference, "custom"); assert.equal(customBad.root.dataset.customAccent, "#756c9c");
 });
 
-test("主题源码：七种预设与自定义色均与交互 apply 共用同一调色规则", () => {
+test("主题源码：八种预设与自定义色均与交互 apply 共用同一调色规则", () => {
   for (const [accent, color, hover, strong] of presets) {
     const app = execute(themeBootstrap, { saved: { [keys.theme]: "dark", [keys.accent]: accent } });
     assert.deepEqual(Object.fromEntries(app.css), { "--accent": color, "--accent-hover": hover, "--accent-strong": strong });
@@ -116,7 +117,7 @@ test("主题源码：非法枚举和颜色仅回退白名单，不把恶意存�
   for (const value of invalid) {
     const app = execute(themeBootstrap, { saved: { [keys.theme]: value, [keys.accent]: value, [keys.custom]: value } });
     assert.equal(app.root.dataset.theme, "light"); assert.equal(app.root.dataset.themePreference, "light");
-    assert.equal(app.root.dataset.accentPreference, "blue"); assert.equal(app.root.dataset.customAccent, "#756c9c");
+    assert.equal(app.root.dataset.accentPreference, "gray"); assert.equal(app.root.dataset.customAccent, "#756c9c");
     assert.deepEqual(Object.keys(app.root.dataset).sort(), ["accentPreference", "customAccent", "theme", "themePreference"]);
     assert.deepEqual([...app.css.keys()].sort(), ["--accent", "--accent-hover", "--accent-strong"]);
     assert.ok([...app.css.values()].every((color) => /^#[\da-f]{6}$/i.test(color))); assertVisible(app);
@@ -138,7 +139,7 @@ test("主题源码：无 window/document 的 SSR 环境可安全加载、初始�
   const context = vm.createContext({});
   assert.doesNotThrow(() => vm.runInContext(themeBootstrap, context, { timeout: vmTimeout }));
   const appearance = vm.runInContext(factoryScript, context, { timeout: vmTimeout });
-  assert.equal(appearance.initialTheme(), "light"); assert.equal(appearance.initialAccent(), "blue"); assert.equal(appearance.initialCustomAccent(), "#756c9c"); assert.equal(appearance.systemMediaQuery(), null);
+  assert.equal(appearance.initialTheme(), "light"); assert.equal(appearance.initialAccent(), "gray"); assert.equal(appearance.initialCustomAccent(), "#756c9c"); assert.equal(appearance.systemMediaQuery(), null);
 });
 
 test("主题源码：布局在 head 注册 beforeInteractive，容忍根属性同步但不隐藏页面", async () => {

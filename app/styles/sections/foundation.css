@@ -1,8 +1,8 @@
 :root {
   color-scheme: light;
-  --accent: #cfe2f1;
-  --accent-hover: #bad7e9;
-  --accent-strong: #4f7890;
+  --accent: #C2C2C2;
+  --accent-hover: #adadad;
+  --accent-strong: #626262;
   --ui-accent: var(--accent-strong);
   --blue: var(--accent);
   --blue-hover: var(--accent-hover);

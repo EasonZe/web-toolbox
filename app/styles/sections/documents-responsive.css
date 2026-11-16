@@ -1043,6 +1043,7 @@
 
   .accent-options {
     justify-content: flex-start;
+    column-gap: 5px;
   }
 }
 

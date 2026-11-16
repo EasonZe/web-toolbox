@@ -51,14 +51,27 @@ for (const view of ["groups", "table", "minimal", "cards"]) {
 
 test("设置切换布局后返回主页，深色偏好在新导航时保留", async ({ page }) => {
   await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("data-accent-preference", "gray");
+  await expect(page.getByRole("searchbox", { name: "搜索工具" })).toBeEnabled();
   await page.getByRole("button", { name: "打开设置", exact: true }).click();
+  const gray = page.getByRole("button", { name: "灰色", exact: true });
+  await expect(page.locator(".accent-button").first()).toHaveAccessibleName("灰色");
+  await expect(gray).toHaveAttribute("aria-pressed", "true");
+  await expect(gray).toHaveCSS("background-color", "rgb(194, 194, 194)");
+  await page.getByRole("button", { name: "浅蓝", exact: true }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-accent-preference", "blue");
+  await gray.click();
   await page.getByRole("button", { name: "深色", exact: true }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await noOverflow(page);
+  const swatchRows = await page.locator(".accent-button").evaluateAll(buttons => buttons.map(button => Math.round(button.getBoundingClientRect().top)));
+  expect(new Set(swatchRows).size).toBe(1);
+  await page.screenshot({ path: test.info().outputPath("gray-theme-settings.png"), fullPage: true });
   await page.getByRole("button", { name: "紧凑表格", exact: true }).click();
   await expect(page.getByRole("searchbox", { name: "搜索工具" })).toBeVisible();
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator("html")).toHaveAttribute("data-accent-preference", "gray");
   await expect.poll(() => page.locator(".tool-card").first().evaluate(element => {
     let opacity = 1;
     for (let node: Element | null = element; node; node = node.parentElement) opacity *= Number(getComputedStyle(node).opacity);

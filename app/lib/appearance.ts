@@ -1,5 +1,5 @@
 export type ThemeMode = "light" | "dark" | "system";
-export type AccentName = "blue" | "purple" | "cyan" | "green" | "orange" | "pink" | "red" | "custom";
+export type AccentName = "gray" | "blue" | "purple" | "cyan" | "green" | "orange" | "pink" | "red" | "custom";
 export type AccentOption = { value: AccentName; label: string; color: string; hover: string; strong: string };
 
 // Self-contained so the compiled function can also run in <head>, without
@@ -8,6 +8,7 @@ export function createAppearance() {
   const themeStorageKey = "eason-toolbox-theme", accentStorageKey = "eason-toolbox-accent", customAccentStorageKey = "eason-toolbox-custom-accent";
   const defaultCustomAccent = "#756c9c";
   const accentOptions: AccentOption[] = [
+    { value: "gray", label: "灰色", color: "#C2C2C2", hover: "#adadad", strong: "#626262" },
     { value: "blue", label: "浅蓝", color: "#cfe2f1", hover: "#bad7e9", strong: "#4f7890" },
     { value: "purple", label: "紫色", color: "#DAD7ED", hover: "#c9c4e3", strong: "#756c9c" },
     { value: "cyan", label: "青色", color: "#bde8e8", hover: "#9edcdd", strong: "#397f82" },
@@ -24,7 +25,7 @@ export function createAppearance() {
   function stored(key: string) { try { return globalThis.window?.localStorage.getItem(key) ?? null; } catch { return null; } }
   function rootElement() { return globalThis.document?.documentElement; }
   function readTheme(): ThemeMode { const value = stored(themeStorageKey); return isThemeMode(value) ? value : "light"; }
-  function readAccent(): AccentName { const value = stored(accentStorageKey); return isAccentName(value) ? value : "blue"; }
+  function readAccent(): AccentName { const value = stored(accentStorageKey); return isAccentName(value) ? value : "gray"; }
   function initialTheme(): ThemeMode { const value = rootElement()?.dataset.themePreference; return isThemeMode(value) ? value : readTheme(); }
   function initialAccent(): AccentName { const value = rootElement()?.dataset.accentPreference; return isAccentName(value) ? value : readAccent(); }
   function initialCustomAccent() { return normalizeHexColor(rootElement()?.dataset.customAccent ?? stored(customAccentStorageKey)); }
