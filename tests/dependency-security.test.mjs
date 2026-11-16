@@ -9,6 +9,7 @@ import test from "node:test";
 import { runToolTest } from "./helpers/vm-modules.mjs";
 import { Document, Packer, Paragraph } from "docx";
 import ts from "typescript";
+import { parse } from "yaml";
 
 const require = createRequire(import.meta.url);
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
@@ -22,6 +23,37 @@ function atLeast(version, minimum) {
   }
   return true;
 }
+
+test("React 客户端与服务端精确版本一致，Node 类型匹配实际构建环境", async () => {
+  const pkg = JSON.parse(await read("package.json"));
+  const lock = JSON.parse(await read("package-lock.json"));
+  const version = pkg.dependencies.react;
+  assert.match(version, /^\d+\.\d+\.\d+$/);
+  for (const name of ["react", "react-dom", "react-server-dom-webpack"]) {
+    assert.equal(pkg.dependencies[name] ?? pkg.devDependencies[name], version, `${name} 必须与 React 同步升级`);
+    assert.equal(lock.packages[`node_modules/${name}`].version, version, `${name} 锁定版本不一致`);
+  }
+  assert.equal(lock.packages["node_modules/@types/node"].version.split(".")[0], (await read(".nvmrc")).trim().split(".")[0]);
+});
+
+test("Dependabot 跨生产和开发依赖同时更新 React 框架，不批量混入主版本升级", async () => {
+  const config = parse(await read(".github/dependabot.yml"));
+  const npm = config.updates.find(update => update["package-ecosystem"] === "npm");
+  const framework = npm.groups.framework;
+  assert.equal(framework["dependency-type"], undefined);
+  for (const name of ["react", "react-dom", "react-server-dom-webpack", "@types/react", "@types/react-dom", "vinext"]) assert.ok(framework.patterns.includes(name));
+  for (const name of ["production-dependencies", "development-dependencies"]) {
+    assert.deepEqual(npm.groups[name]["update-types"], ["minor", "patch"]);
+  }
+});
+
+test("数学输入字体目录与实际锁定版本一致，避免复用旧缓存", async () => {
+  const lock = JSON.parse(await read("package-lock.json"));
+  const version = lock.packages["node_modules/mathlive"].version;
+  assert.ok((await read("app/components/math-field.tsx")).includes(`/mathlive/${version}/fonts`));
+  assert.ok((await read("scripts/prepare-document-assets.mjs")).includes(`new URL("${version}/fonts/", mathLiveRoot)`));
+  assert.ok((await readdir(new URL(`../public/mathlive/${version}/fonts/`, import.meta.url))).some(name => name.endsWith(".woff2")));
+});
 
 test("依赖锁使用已修复安全告警的补丁版本", async () => {
   const lock = JSON.parse(await read("package-lock.json"));

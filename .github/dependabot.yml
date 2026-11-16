@@ -9,10 +9,33 @@ updates:
       timezone: Asia/Shanghai
     open-pull-requests-limit: 5
     groups:
+      # React and its server renderer must move together, across dependency types.
+      framework:
+        patterns:
+          - react
+          - react-dom
+          - react-server-dom-webpack
+          - "@types/react"
+          - "@types/react-dom"
+          - vinext
       production-dependencies:
         dependency-type: production
+        update-types: [minor, patch]
+        exclude-patterns:
+          - react
+          - react-dom
+          - "@cortex-js/compute-engine"
+          - "@huggingface/transformers"
+          - three
       development-dependencies:
         dependency-type: development
+        update-types: [minor, patch]
+        exclude-patterns:
+          - react-server-dom-webpack
+          - "@types/react"
+          - "@types/react-dom"
+          - "@types/three"
+          - vinext
 
   - package-ecosystem: github-actions
     directory: /

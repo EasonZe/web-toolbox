@@ -17,8 +17,8 @@ await cp(new URL("../node_modules/@soundtouchjs/audio-worklet/LICENSE", import.m
 
 // Versioned, same-origin MathLive fonts avoid CDN requests and stale immutable assets.
 const mathLiveRoot = new URL("../public/mathlive/", import.meta.url);
-await mkdir(new URL("0.111.0/", mathLiveRoot), { recursive: true });
-await cp(new URL("../node_modules/mathlive/fonts/", import.meta.url), new URL("0.111.0/fonts/", mathLiveRoot), { recursive: true });
+await mkdir(new URL("0.111.4/", mathLiveRoot), { recursive: true });
+await cp(new URL("../node_modules/mathlive/fonts/", import.meta.url), new URL("0.111.4/fonts/", mathLiveRoot), { recursive: true });
 await cp(new URL("../node_modules/mathlive/LICENSE.txt", import.meta.url), new URL("MathLive-LICENSE.txt", mathLiveRoot));
 await cp(new URL("../node_modules/@cortex-js/compute-engine/LICENSE", import.meta.url), new URL("Compute-Engine-LICENSE", mathLiveRoot));
 await cp(new URL("../licenses/KaTeX-fonts-LICENSE.txt", import.meta.url), new URL("KaTeX-fonts-LICENSE.txt", mathLiveRoot));

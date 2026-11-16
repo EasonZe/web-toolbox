@@ -1,5 +1,13 @@
 # 依赖与上游审查
 
+## 依赖更新复核（2026-11-16）
+
+[PR #17](https://github.com/EasonZe/web-toolbox/pull/17) 在 `npm ci` 阶段失败：RSC 19.3.1 和 vinext 1.4.5 要求 React 19.3.1，但该 PR 保留了 React / React DOM 19.2.9。[PR #18](https://github.com/EasonZe/web-toolbox/pull/18) 的类型检查发现两个抠图调用仍按数组读取 Transformers.js 4 的单张 `RawImage`；Compute Engine 0.187.1 还要求 Node >=26.13.0，与 `.nvmrc` 的 22.13.0 不符。
+
+本轮从两个 PR 中提取 28 项依赖更新。React / RSC / vinext 保持现有兼容组合；Compute Engine、Transformers.js、Three.js、entities、Puppeteer、ESLint、TypeScript 和 Node 类型的迁移暂缓，不以关闭检查或忽略 peer 依赖强行安装。MathLive 同时更新字体目录，避免新脚本复用旧地址的缓存。
+
+Dependabot 将 React、React DOM、RSC、对应类型和 vinext 跨生产/开发依赖归为一组；普通批量更新仅包含 minor / patch，数学、抠图和 Three.js 的迁移单独审查。增加版本一致性、Node 类型及字体目录回归检查。具体锁定版本见 `package-lock.json`，验证结果见本轮 PR 检查。
+
 ## 安全补丁复核（2026-11-11）
 
 `npm audit` 报告 RSC 19.2.8 受 [GHSA-xqc2-xf4c-x3h3](https://github.com/react/react/security/advisories/GHSA-xqc2-xf4c-x3h3) 影响。React、React DOM、react-server-dom-webpack 同步升级到同分支补丁 19.2.9，更新锁文件和安全版本回归。再次审计为 0 项已知漏洞；本轮未推断或验证线上漏洞利用。完整项目审查见 [审查记录](project-review-2026-11-11.md)。
