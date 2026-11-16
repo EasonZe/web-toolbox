@@ -181,7 +181,7 @@ test("视频裁剪在加载、初始化或执行阶段取消都拒绝旧结果�
 
 test("Cron、文件类型和像素对比依赖锁定精确版本，原始许可随构建分发", async () => {
   const pkg = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
-  for (const [name, version, license] of [["cron-parser", "5.10.2", "LICENSE"], ["file-type", "22.2.0", "license"], ["pixelmatch", "8.0.0", "LICENSE"]]) {
+  for (const [name, version, license] of [["cron-parser", "5.10.5", "LICENSE"], ["file-type", "22.3.0", "license"], ["pixelmatch", "8.0.0", "LICENSE"]]) {
     assert.equal(pkg.dependencies[name], version); assert.equal(await readFile(new URL(`../dist/client/vendor-licenses/${name}.txt`, import.meta.url), "utf8"), await readFile(new URL(`../node_modules/${name}/${license}`, import.meta.url), "utf8"));
   }
   for (const [name, license] of [["luxon", "LICENSE.md"], ["strtok3", "LICENSE.txt"], ["token-types", "LICENSE.txt"], ["@borewit/text-codec", "LICENSE.txt"], ["uint8array-extras", "license"], ["@tokenizer/inflate", "LICENSE"], ["debug", "LICENSE"], ["ms", "license.md"], ["ieee754", "LICENSE"]]) {

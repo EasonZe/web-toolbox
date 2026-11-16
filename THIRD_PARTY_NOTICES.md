@@ -16,8 +16,8 @@
 | [pinyin-pro](https://github.com/zh-lx/pinyin-pro) 3.29.5 | 汉字拼音、声调、首字母和姓氏模式 | MIT |
 | [entities](https://github.com/fb55/entities) 8.1.0 | HTML 命名与数字实体编码解码，不执行 HTML | BSD-2-Clause |
 | [yaml](https://github.com/eemeli/yaml) 2.9.1 | YAML 1.2 配置解析与序列化，限制别名与转换类型 | ISC |
-| [cron-parser](https://github.com/harrisiirak/cron-parser) 5.10.2 / Luxon 3.7.2 | Cron 解析、时区与后续时间预览 | MIT |
-| [file-type](https://github.com/sindresorhus/file-type) 22.2.0 | 二进制文件头识别，不执行文件 | MIT |
+| [cron-parser](https://github.com/harrisiirak/cron-parser) 5.10.5 / Luxon 3.7.2 | Cron 解析、时区与后续时间预览 | MIT |
+| [file-type](https://github.com/sindresorhus/file-type) 22.3.0 | 二进制文件头识别，不执行文件 | MIT |
 | [Pixelmatch](https://github.com/mapbox/pixelmatch) 8.0.0 | 原尺寸图片视觉像素差异比较 | ISC |
 | [ipaddr.js](https://github.com/whitequark/ipaddr.js) 2.5.0 | IPv4 / IPv6 严格地址解析与标准化 | MIT |
 | [Culori](https://github.com/Evercoder/culori) 4.0.2 | sRGB / OKLab 预乘透明度插值、线性 sRGB 双色调 | MIT |
@@ -111,7 +111,7 @@
 
 - 重复文件检查、PDF 转扫描件仅参考 ToolKnit 的功能方向，不复制其 PolyForm 作者代码、桌面扫描 / 删除能力或独立授权引擎。复用 hash-wasm（MIT）、PDF.js（Apache-2.0）、PDF-lib（MIT）；hash-wasm 原始许可补入站点构建分发，像素处理独立实现。PC-TOOL 同类功能已有覆盖，不增加重复入口；详见 [选型说明](docs/duplicate-scan-tools.md)。
 
-- GIF 帧提取使用 gifuct-js 2.1.2 与 js-binary-schema-parser（MIT），复用 fflate；完整帧还原与解码前 LZW 完整性校验按 GIF89a 独立实现，不复制演示渲染代码。XML 使用 Prettier 3.9.10 与 @prettier/plugin-xml 3.4.2（MIT），其 @xml-tools/parser / Chevrotain（Apache-2.0）、regexp-to-ast（MIT）原始许可保留；Prettier 的完整 THIRD-PARTY-NOTICES 同时分发，其中包含其他内嵌许可，不能统一用 MIT 覆盖。试用的 xml-formatter 未采用。详见 [选型与边界](docs/gif-xml-tools.md)。
+- GIF 帧提取使用 gifuct-js 2.1.2 与 js-binary-schema-parser（MIT），复用 fflate；完整帧还原与解码前 LZW 完整性校验按 GIF89a 独立实现，不复制演示渲染代码。XML 使用 Prettier 3.10.1 与 @prettier/plugin-xml 3.4.2（MIT），其 @xml-tools/parser / Chevrotain（Apache-2.0）、regexp-to-ast（MIT）原始许可保留；Prettier 的完整 THIRD-PARTY-NOTICES 同时分发，其中包含其他内嵌许可，不能统一用 MIT 覆盖。试用的 xml-formatter 未采用。详见 [选型与边界](docs/gif-xml-tools.md)。
 
 - 本轮继续参考 ToolKnit 的维护文档中解析 / 渲染分离、预览完成后替换、任务生命周期与构建一致性检查的通用思路；按本项目 React / PDF.js / Worker 架构独立实现，没有复制其代码、素材或引入 PDF-to-Word 引擎，保留本项目 MIT 许可。详见 [工程优化记录](docs/toolknit-optimization.md)。
 
