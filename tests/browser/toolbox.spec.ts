@@ -64,7 +64,7 @@ test("设置切换布局后返回主页，深色偏好在新导航时保留", as
   await page.getByRole("button", { name: "深色", exact: true }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await noOverflow(page);
-  const swatchRows = await page.locator(".accent-button").evaluateAll(buttons => buttons.map(button => Math.round(button.getBoundingClientRect().top)));
+  const swatchRows = await page.locator(".accent-button").evaluateAll(buttons => buttons.map(button => (button as HTMLElement).offsetTop));
   expect(new Set(swatchRows).size).toBe(1);
   await page.screenshot({ path: test.info().outputPath("gray-theme-settings.png"), fullPage: true });
   await page.getByRole("button", { name: "紧凑表格", exact: true }).click();
