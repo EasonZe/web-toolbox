@@ -7,7 +7,7 @@ import type { MathfieldElement } from "mathlive";
 let mathLive: Promise<typeof import("mathlive")> | undefined;
 function loadMathLive() {
   mathLive ??= import("mathlive").then((module) => {
-    module.MathfieldElement.fontsDirectory = "/mathlive/0.111.0/fonts";
+    module.MathfieldElement.fontsDirectory = "/mathlive/0.111.4/fonts";
     module.MathfieldElement.soundsDirectory = null;
     module.MathfieldElement.computeEngine = null;
     module.MathfieldElement.locale = "zh-cn";
