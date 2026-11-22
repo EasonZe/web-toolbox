@@ -117,7 +117,7 @@
     "yaml": "2.9.1"
   },
   "devDependencies": {
-    "@cloudflare/puppeteer": "^1.4.0",
+    "@cloudflare/puppeteer": "^2.0.1",
     "@cloudflare/vite-plugin": "^1.69.1",
     "@playwright/test": "1.65.0",
     "@tailwindcss/postcss": "4.3.5",
