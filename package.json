@@ -118,8 +118,8 @@
   },
   "devDependencies": {
     "@cloudflare/puppeteer": "^1.4.0",
-    "@cloudflare/vite-plugin": "^1.69.1",
-    "@playwright/test": "1.65.0",
+    "@cloudflare/vite-plugin": "^1.70.1",
+    "@playwright/test": "1.65.1",
     "@tailwindcss/postcss": "4.3.5",
     "@tesseract.js-data/chi_sim": "1.0.0",
     "@tesseract.js-data/eng": "1.0.0",
